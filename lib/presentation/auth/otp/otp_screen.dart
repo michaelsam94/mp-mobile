@@ -3,6 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/auth/resetPassword/set_new_password_screen.dart';
+import 'package:mega_plus/presentation/main/main_screen.dart';
+
+import '../completeProfile/complete_profile_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String? phone;
@@ -161,8 +164,10 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             context.goTo(SetNewPasswordScreen());
                           } else if (widget.signUp) {
                             // continue Profile
+                            context.goTo(CompleteProfileScreen());
                           } else {
                             // login
+                            context.goOffAll(MainScreen());
                           }
                         }
                       : null,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/start/splash_screen.dart';
+import 'package:mega_plus/presentation/main/main_screen.dart';
 
 class SetNewPasswordScreen extends StatefulWidget {
   const SetNewPasswordScreen({super.key});
@@ -134,7 +134,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     ),
                   ),
                   onPressed: () {
-                    context.goOffAll(SplashScreen());
+                    context.goOffAll(MainScreen());
                   },
                   child: Text(
                     'Continue',

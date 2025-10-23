@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'presentation/main/main_screen.dart';
 import 'core/style/app_themes.dart';
 import 'presentation/start/splash_screen.dart';
 
@@ -22,7 +23,7 @@ class AppRoot extends StatelessWidget {
       themeMode: ThemeMode.light,
       locale: const Locale('en', ''),
       supportedLocales: const [Locale('en', '')],
-      home: kDebugMode ? SplashScreen() : SplashScreen(),
+      home: kDebugMode ? MainScreen() : SplashScreen(),
     );
   }
 }

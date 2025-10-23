@@ -11,10 +11,13 @@ dependencies:
   bloc: ^9.0.1
   cupertino_icons: ^1.0.8
   dio: ^5.9.0
+  dotted_border: ^3.1.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_svg: ^2.2.1
+  google_maps_flutter: ^2.13.1
+  image_picker: ^1.2.0
   shared_preferences: ^2.5.3
 
 dev_dependencies:
