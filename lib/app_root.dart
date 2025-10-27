@@ -23,7 +23,7 @@ class AppRoot extends StatelessWidget {
       themeMode: ThemeMode.light,
       locale: const Locale('en', ''),
       supportedLocales: const [Locale('en', '')],
-      home: kDebugMode ? MainScreen() : SplashScreen(),
+      home: kDebugMode ? SplashScreen() : SplashScreen(),
     );
   }
 }
