@@ -1,0 +1,21 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M20.8001 0.799805C24.4001 0.799805 27.2001 4.3998 27.2001 8.7998C27.2001 12.3757 25.1194 16.3298 21.6084 18.451C24.7614 18.8477 27.2001 21.539 27.2001 24.7998C27.2001 28.3344 24.3347 31.1998 20.8001 31.1998H11.2C7.66543 31.1998 4.80005 28.3344 4.80005 24.7998C4.80005 21.539 7.23872 18.8477 10.3918 18.4504C6.88073 16.3298 4.80005 12.3757 4.80005 8.7998C4.80005 4.3998 7.60005 0.799805 11.2 0.799805H20.8001Z" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.1999 20H20.7999C23.4509 20 25.5999 22.149 25.5999 24.8C25.5999 27.451 23.4509 29.6 20.7999 29.6H11.1999C8.54894 29.6 6.3999 27.451 6.3999 24.8C6.3999 22.149 8.54894 20 11.1999 20Z" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="20.4" cy="24.8001" r="3.2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="11.2" cy="24.8001" r="3.2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="20.4001" cy="24.8" r="0.8" fill="#121212"/>
+<circle cx="11.1999" cy="24.8" r="0.8" fill="#121212"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.1999 2.3999H20.7999C23.1999 2.3999 25.5999 5.1999 25.5999 8.7999C25.5999 13.5999 21.1999 18.3999 15.9999 18.3999C10.7999 18.3999 6.3999 13.5999 6.3999 8.7999C6.3999 5.1999 8.7999 2.3999 11.1999 2.3999Z" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="18.8" cy="13.6001" r="2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="13.2" cy="13.6001" r="2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="18.8" cy="13.5998" r="0.8" fill="#121212"/>
+<circle cx="13.1999" cy="13.5998" r="0.8" fill="#121212"/>
+<circle cx="21.6001" cy="8.3999" r="2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="16" cy="8.3999" r="2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="10.3999" cy="8.3999" r="2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="21.6" cy="8.4001" r="0.8" fill="#121212"/>
+<circle cx="16" cy="8.4001" r="0.8" fill="#121212"/>
+<circle cx="10.4001" cy="8.4001" r="0.8" fill="#121212"/>
+<circle cx="18.8" cy="4.8" r="0.8" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="13.1999" cy="4.8" r="0.8" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
