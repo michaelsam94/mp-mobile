@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/map/navigation_screen.dart';
+import 'package:mega_plus/presentation/map/qr_code_scanner_screen.dart';
 
 class StationDetailsSheet extends StatelessWidget {
   final Map<String, dynamic> station;
@@ -240,7 +241,7 @@ class ConnectorCard extends StatelessWidget {
               elevation: 0,
             ),
             onPressed: () {
-              // Handle charging logic here
+              context.goTo(QrCodeScannerScreen());
             },
             child: Text(
               "Click to charge",
