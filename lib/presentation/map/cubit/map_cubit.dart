@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:mega_plus/presentation/map/station_details_bottom_sheet.dart';
 
 import 'package:meta/meta.dart';
 
@@ -18,21 +19,53 @@ class MapCubit extends Cubit<MapState> {
   Map<StationType, BitmapDescriptor>? _icons;
   Set<Marker> markers = {};
 
-  void initState() {
+  void initState(BuildContext context) {
     emit(LoadingMapState());
     loadMarkerIcons().then((icons) {
       _icons = icons;
-      markers = _initMarkersWithIcons(icons);
+      markers = _initMarkersWithIcons(icons, context);
       emit(UpdatedMapState());
     });
   }
 
-  Set<Marker> _initMarkersWithIcons(Map<StationType, BitmapDescriptor> icons) {
+  Set<Marker> _initMarkersWithIcons(
+    Map<StationType, BitmapDescriptor> icons,
+    BuildContext context,
+  ) {
     return dummyStations.map((station) {
       final icon = icons[station.type]!;
       return Marker(
         onTap: () {
-          print("Hello Tapped");
+          final station = {
+            'name': 'Cillout Mansoura',
+            'address': '15 Tahrir Street, Downtown, Cairo',
+            'mins': '7 Mins',
+            'distance': '2.6 km',
+            'status': 'Available',
+            'isOpen': true,
+            'openHours': '24 hours',
+            'image': 'assets/images/onboarding1.png',
+            'connectors': [
+              {
+                'type': 'Type 2',
+                'kw': 22,
+                'pricePerKw': 25,
+                'description': 'Connector no/name',
+                'actionText': 'Click to charge',
+                'actionColor': 0xFF24C064,
+              },
+              {
+                'type': 'Type 2',
+                'kw': 50,
+                'pricePerKw': 25,
+                'description': 'Connector no/name',
+                'actionText': 'Click to charge',
+                'actionColor': 0xFF24C064,
+              },
+            ],
+          };
+
+          showStationDetails(context, station);
         },
         markerId: MarkerId(station.id),
         position: station.position,

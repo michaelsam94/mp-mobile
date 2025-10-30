@@ -11,7 +11,7 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MapCubit.get(context).initState();
+    MapCubit.get(context).initState(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
