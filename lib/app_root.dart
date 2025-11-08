@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
 import 'package:mega_plus/presentation/map/cubit/map_cubit.dart';
+import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
+import 'package:mega_plus/presentation/profile/profile_screen.dart';
+import 'package:mega_plus/presentation/wallet/wallet_screen.dart';
 import 'core/style/app_themes.dart';
 import 'presentation/start/splash_screen.dart';
 

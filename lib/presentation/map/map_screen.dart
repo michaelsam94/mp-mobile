@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/presentation/map/cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
+import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -87,7 +88,12 @@ class MapScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  SvgPicture.asset("assets/icons/notifications.svg"),
+                  InkWell(
+                    onTap: () {
+                      context.goTo(NotificationsScreen());
+                    },
+                    child: SvgPicture.asset("assets/icons/notifications.svg"),
+                  ),
                 ],
               ),
             ),

@@ -12,8 +12,8 @@ class MainCubit extends Cubit<MainState> {
 
   int selectedIndex = 0;
 
-  void changeIndex(int index) {
-    selectedIndex = index;
-    emit(ChangeScreenIndexState(selectedIndex: selectedIndex));
-  }
+  // void changeIndex(int index) {
+  //   selectedIndex = index;
+  //   emit(ChangeScreenIndexState(selectedIndex: selectedIndex));
+  // }
 }
