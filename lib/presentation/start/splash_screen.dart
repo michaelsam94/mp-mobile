@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/helpers/network/dio_helper.dart';
+import 'package:mega_plus/presentation/auth/login/login_screen.dart';
+import 'package:mega_plus/presentation/main/main_screen.dart';
+import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
 import '../../core/style/app_colors.dart';
 import '../onboarding/onboarding_screen.dart';
@@ -10,8 +16,31 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 2), () {
-      if (context.mounted) context.goOff(OnboardingScreen());
+    Future.delayed(Duration(seconds: 2), () async {
+      if (context.mounted) {
+        switch (CacheHelper.checkLogin()) {
+          case 1:
+            context.goOff(
+              BlocProvider(
+                create: (context) => OnBoardingCubit(),
+                child: OnboardingScreen(),
+              ),
+            );
+            break;
+          case 2:
+            bool refreshed = await DioHelper.refreshToken();
+            if (refreshed) {
+              if (context.mounted) context.goOff(MainScreen());
+            } else {
+              await CacheHelper.logout();
+              if (context.mounted) context.goOff(LoginScreen());
+            }
+            break;
+          case 3:
+            if (context.mounted) context.goOff(MainScreen());
+            break;
+        }
+      }
     });
 
     return Scaffold(

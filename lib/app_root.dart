@@ -1,11 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mega_plus/presentation/main/main_screen.dart';
+import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
 import 'package:mega_plus/presentation/map/cubit/map_cubit.dart';
-import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
-import 'package:mega_plus/presentation/profile/profile_screen.dart';
-import 'package:mega_plus/presentation/wallet/wallet_screen.dart';
 import 'core/style/app_themes.dart';
 import 'presentation/start/splash_screen.dart';
 
@@ -15,7 +12,10 @@ class AppRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => MapCubit())],
+      providers: [
+        BlocProvider(create: (context) => MapCubit()),
+        BlocProvider(create: (context) => SignUpCubit()),
+      ],
       child: MaterialApp(
         builder: (context, child) {
           return MediaQuery(
@@ -30,7 +30,7 @@ class AppRoot extends StatelessWidget {
         themeMode: ThemeMode.light,
         locale: const Locale('en', ''),
         supportedLocales: const [Locale('en', '')],
-        home: kDebugMode ? MainScreen() : SplashScreen(),
+        home: kDebugMode ? SplashScreen() : SplashScreen(),
       ),
     );
   }
