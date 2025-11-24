@@ -17,15 +17,31 @@ class ChangeCountryCodeSignUpState extends SignUpState {
 
 
 class LoadingSignUpState extends SignUpState {}
-
 class SuccessSignUpState extends SignUpState {}
 class ErrorSignUpState extends SignUpState {
     final String message;
   ErrorSignUpState(this.message);
 }
 
+class LoadingCreateAccountState extends SignUpState {}
+class SuccessCreateAccountState extends SignUpState {}
+class ErrorCreateAccountState extends SignUpState {
+    final String message;
+  ErrorCreateAccountState(this.message);
+}
+
+
 class SuccessVerifyOTPSignUpState extends SignUpState {}
 class ErrorVerifyOTPSignUpState extends SignUpState {
     final String message;
   ErrorVerifyOTPSignUpState(this.message);
+}
+
+
+
+class LoadingChangePasswordState extends SignUpState {}
+class SuccessChangePasswordState extends SignUpState {}
+class ErrorChangePasswordState extends SignUpState {
+    final String message;
+  ErrorChangePasswordState(this.message);
 }

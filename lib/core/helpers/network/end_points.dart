@@ -6,6 +6,7 @@ class EndPoints {
   static const String login = "/api/login";
   static const String register = "/api/register";
   static const String forgetPassword = "/api/password/forget";
+  static const String changePassword = "/api/password/change";
   static const String refreshToken = "/api/refresh";
   static const String onBoarding = "/api/content?type=tip";
   static const String logout = "/api/logout";

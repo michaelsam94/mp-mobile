@@ -6,7 +6,6 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/auth/completeProfile/complete_profile_screen.dart';
 import 'package:mega_plus/presentation/auth/resetPassword/set_new_password_screen.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
-import 'package:mega_plus/presentation/main/main_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String? phone;
@@ -81,7 +80,11 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           context.showErrorMessage(state.message);
         } else if (state is SuccessVerifyOTPSignUpState) {
           context.showSuccessMessage("OTP Verified Successfully");
-          context.goTo(CompleteProfileScreen());
+          if (widget.signUp) {
+            context.goTo(CompleteProfileScreen());
+          } else {
+            context.goTo(SetNewPasswordScreen());
+          }
         }
       },
       builder: (context, state) {
@@ -176,21 +179,26 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             ),
                             onPressed: isOtpComplete
                                 ? () {
-                                    if (widget.resetPassword) {
-                                      // Reset Password
-                                      context.goTo(SetNewPasswordScreen());
-                                    } else if (widget.signUp) {
-                                      // continue Profile
-
-                                      String code = "";
-                                      for (var element in controllers) {
-                                        code += element.text;
-                                      }
-                                      SignUpCubit.get(context).verifyCode(code);
-                                    } else {
-                                      // login
-                                      context.goOffAll(MainScreen());
+                                    String code = "";
+                                    for (var element in controllers) {
+                                      code += element.text;
                                     }
+                                    SignUpCubit.get(context).verifyCode(code);
+                                    // if (widget.resetPassword) {
+                                    //   // Reset Password
+                                    //   context.goTo(SetNewPasswordScreen());
+                                    // } else if (widget.signUp) {
+                                    //   // continue Profile
+
+                                    //   String code = "";
+                                    //   for (var element in controllers) {
+                                    //     code += element.text;
+                                    //   }
+                                    //   SignUpCubit.get(context).verifyCode(code);
+                                    // } else {
+                                    //   // login
+                                    //   context.goOffAll(MainScreen());
+                                    // }
                                   }
                                 : null,
                             child: Text(

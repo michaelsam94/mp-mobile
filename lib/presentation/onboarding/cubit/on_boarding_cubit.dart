@@ -14,8 +14,6 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
 
   List<TipResponseModel> tips = [];
   void getData() async {
-    tips.clear();
-
     emit(LoadingOnBoardingState());
     try {
       var response = await DioHelper.getData(

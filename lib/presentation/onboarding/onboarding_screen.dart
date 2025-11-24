@@ -29,104 +29,105 @@ class OnboardingScreen extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<OnBoardingCubit, OnBoardingState>(
           builder: (context, state) {
-            int _currentIndex = cubit.currentIndex;
             if (state is LoadingOnBoardingState) {
               return Center(child: CircularProgressIndicator());
             }
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Images
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Image.asset(
-                    images[_currentIndex],
-                    width: context.width(),
-                    height: 260,
-                    fit: BoxFit.fitHeight,
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Images
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Image.asset(
+                      images[cubit.currentIndex],
+                      width: context.width(),
+                      height: 260,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
-                ),
-                // Titles & Subtitles
-                SizedBox(height: 40),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        cubit.tips[_currentIndex].title ?? "",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                  // Titles & Subtitles
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          cubit.tips[cubit.currentIndex].title ?? "",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        cubit.tips[_currentIndex].description ?? "",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff606060),
+                        SizedBox(height: 6),
+                        Text(
+                          cubit.tips[cubit.currentIndex].description ?? "",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff606060),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 30),
-                // Indicator
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (index) {
-                    return AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      width: index == _currentIndex ? 76 : 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: index == _currentIndex
-                            ? AppColors
-                                  .primary // Green indicator
-                            : Color(0xFFE2E7EF),
-                      ),
-                    );
-                  }),
-                ),
-                SizedBox(height: 30),
-                // Next Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18.0,
-                    vertical: 8,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _goNext(context, _currentIndex);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                  SizedBox(height: 20),
+                  // Indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (index) {
+                      return AnimatedContainer(
+                        duration: Duration(milliseconds: 200),
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        width: index == cubit.currentIndex ? 76 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: index == cubit.currentIndex
+                              ? AppColors
+                                    .primary // Green indicator
+                              : Color(0xFFE2E7EF),
                         ),
-                        backgroundColor: AppColors.primary,
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'Next',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 30),
+                  // Next Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18.0,
+                      vertical: 8,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _goNext(context, cubit.currentIndex);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          backgroundColor: AppColors.primary,
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Next',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 12),
-              ],
+                  SizedBox(height: 12),
+                ],
+              ),
             );
           },
         ),
