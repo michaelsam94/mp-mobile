@@ -152,6 +152,11 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                   ),
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    focusedErrorBorder: InputBorder.none,
                                     counterText: "",
                                     hintText: '',
                                     hintStyle: TextStyle(
@@ -184,21 +189,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                       code += element.text;
                                     }
                                     SignUpCubit.get(context).verifyCode(code);
-                                    // if (widget.resetPassword) {
-                                    //   // Reset Password
-                                    //   context.goTo(SetNewPasswordScreen());
-                                    // } else if (widget.signUp) {
-                                    //   // continue Profile
-
-                                    //   String code = "";
-                                    //   for (var element in controllers) {
-                                    //     code += element.text;
-                                    //   }
-                                    //   SignUpCubit.get(context).verifyCode(code);
-                                    // } else {
-                                    //   // login
-                                    //   context.goOffAll(MainScreen());
-                                    // }
                                   }
                                 : null,
                             child: Text(

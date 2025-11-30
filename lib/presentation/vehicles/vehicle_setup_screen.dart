@@ -2,7 +2,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/brand_response_model.dart';
@@ -96,7 +95,7 @@ class VehicleSetupScreen extends StatelessWidget {
   // String? _selectedModel;
   // String? _selectedConnector;
   // File? _plateImage;
-  final _plateController = TextEditingController();
+  // final _plateController = TextEditingController();
 
   // final List<String> _brands = [
   //   'BMW',
@@ -138,8 +137,7 @@ class VehicleSetupScreen extends StatelessWidget {
   // }
 
   void _submit(BuildContext context) {
-    if (_formKey.currentState!.validate() &&
-        VehiclesCubit.get(context).plateImage != null) {
+    if (_formKey.currentState!.validate()) {
       // All fields valid
       Future.delayed(Duration(seconds: 1), () {
         if (context.mounted) {
@@ -148,8 +146,6 @@ class VehicleSetupScreen extends StatelessWidget {
         }
       });
       showVehicleAddedBottomSheet(context);
-    } else if (VehiclesCubit.get(context).plateImage == null) {
-      context.showErrorMessage("Please take a picture of your plate!");
     }
   }
 
@@ -248,49 +244,50 @@ class VehicleSetupScreen extends StatelessWidget {
                             val == null ? 'Please select a brand' : null,
                       ),
                       const SizedBox(height: 24),
+
                       // Plate number field
-                      Row(
-                        children: [
-                          const Text(
-                            'Plate number',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xff121212),
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '( Earn 100 loyalty point )',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _plateController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your plate number here',
-                          hintStyle: const TextStyle(
-                            color: Color(0xffB6B6B6),
-                            fontSize: 15,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(11),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xffF8F8F8),
-                          contentPadding: const EdgeInsets.all(16),
-                        ),
-                        validator: (val) => val == null || val.trim().isEmpty
-                            ? 'Please enter your plate number'
-                            : null,
-                      ),
+                      // Row(
+                      //   children: [
+                      //     const Text(
+                      //       'Plate number',
+                      //       style: TextStyle(
+                      //         fontWeight: FontWeight.w500,
+                      //         color: Color(0xff121212),
+                      //         fontSize: 12,
+                      //       ),
+                      //     ),
+                      //     const SizedBox(width: 8),
+                      //     Text(
+                      //       '( Earn 100 loyalty point )',
+                      //       style: TextStyle(
+                      //         fontWeight: FontWeight.w500,
+                      //         color: AppColors.primary,
+                      //         fontSize: 12,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 8),
+                      // TextFormField(
+                      //   controller: _plateController,
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Enter your plate number here',
+                      //     hintStyle: const TextStyle(
+                      //       color: Color(0xffB6B6B6),
+                      //       fontSize: 15,
+                      //     ),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(11),
+                      //       borderSide: BorderSide(color: Colors.grey.shade300),
+                      //     ),
+                      //     filled: true,
+                      //     fillColor: const Color(0xffF8F8F8),
+                      //     contentPadding: const EdgeInsets.all(16),
+                      //   ),
+                      //   validator: (val) => val == null || val.trim().isEmpty
+                      //       ? 'Please enter your plate number'
+                      //       : null,
+                      // ),
                       const SizedBox(height: 24),
                       // Take picture for plate
                       InkWell(
