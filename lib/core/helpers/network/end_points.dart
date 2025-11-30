@@ -12,4 +12,9 @@ class EndPoints {
   static const String logout = "/api/logout";
   static const String sendOtp = "/api/otp/send";
   static const String verifyOtp = "/api/otp/verify";
+  static const String brands = "/api/brands";
+  static String models(int id) => "/api/brands/$id/models";
+
+  static const String rfidCards = "/api/customer/rfid";
+
 }

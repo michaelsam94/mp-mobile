@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/presentation/profile/vehicle_details_screen.dart';
+import 'package:mega_plus/presentation/vehicles/vehicle_details_screen.dart';
 import 'package:mega_plus/presentation/vehicles/select_brand_screen.dart';
 
 import '../../core/style/app_colors.dart';

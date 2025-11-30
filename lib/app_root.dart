@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
 import 'package:mega_plus/presentation/map/cubit/map_cubit.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/profile/rfid_cards_screen.dart';
+import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'core/style/app_themes.dart';
 import 'presentation/start/splash_screen.dart';
 
@@ -15,6 +18,8 @@ class AppRoot extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => MapCubit()),
         BlocProvider(create: (context) => SignUpCubit()),
+        BlocProvider(create: (context) => ProfileCubit()),
+        BlocProvider(create: (context) => VehiclesCubit()),
       ],
       child: MaterialApp(
         builder: (context, child) {

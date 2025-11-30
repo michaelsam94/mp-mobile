@@ -1,14 +1,15 @@
-import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/main/main_screen.dart';
+import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
+import 'package:mega_plus/presentation/vehicles/models/brand_response_model.dart';
+import 'package:mega_plus/presentation/vehicles/models/model_response_model.dart';
 
-void showVehicleAddedBottomSheet(BuildContext context) {
-  showModalBottomSheet(
+Future<void> showVehicleAddedBottomSheet(BuildContext context) async {
+  await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.white,
@@ -86,307 +87,153 @@ class VehicleAddedSheet extends StatelessWidget {
   }
 }
 
-class VehicleSetupScreen extends StatefulWidget {
-  const VehicleSetupScreen({Key? key}) : super(key: key);
+class VehicleSetupScreen extends StatelessWidget {
+  VehicleSetupScreen({super.key});
 
-  @override
-  State<VehicleSetupScreen> createState() => _VehicleSetupScreenState();
-}
-
-class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _selectedBrand;
-  String? _selectedModel;
-  String? _selectedConnector;
-  File? _plateImage;
+  // String? _selectedBrand;
+  // String? _selectedModel;
+  // String? _selectedConnector;
+  // File? _plateImage;
   final _plateController = TextEditingController();
 
-  final List<String> _brands = [
-    'BMW',
-    'Kia',
-    'Hyundai',
-    'Tata Moters',
-    'Volvo',
-    'Ford',
-    'Tesla',
-    'Audi',
-  ];
-  final Map<String, List<String>> _models = {
-    'BMW': ['I3', 'I8', 'IX', 'I4'],
-    'Kia': ['EV6', 'Soul EV'],
-    'Hyundai': ['Ioniq 5', 'Kona Electric'],
-    'Tata Moters': ['Nexon EV'],
-    'Volvo': ['XC40 Recharge', 'C40 Recharge'],
-    'Ford': ['Mustang Mach-E'],
-    'Tesla': ['Model S', 'Model 3', 'Model X', 'Model Y'],
-    'Audi': ['E-Tron', 'Q4 E-Tron'],
-  };
-  final List<String> _connectors = [
-    'Type 1',
-    'Type 2',
-    'CHAdeMO',
-    'CCS',
-    'Tesla',
-  ];
+  // final List<String> _brands = [
+  //   'BMW',
+  //   'Kia',
+  //   'Hyundai',
+  //   'Tata Moters',
+  //   'Volvo',
+  //   'Ford',
+  //   'Tesla',
+  //   'Audi',
+  // ];
+  // final Map<String, List<String>> _models = {
+  //   'BMW': ['I3', 'I8', 'IX', 'I4'],
+  //   'Kia': ['EV6', 'Soul EV'],
+  //   'Hyundai': ['Ioniq 5', 'Kona Electric'],
+  //   'Tata Moters': ['Nexon EV'],
+  //   'Volvo': ['XC40 Recharge', 'C40 Recharge'],
+  //   'Ford': ['Mustang Mach-E'],
+  //   'Tesla': ['Model S', 'Model 3', 'Model X', 'Model Y'],
+  //   'Audi': ['E-Tron', 'Q4 E-Tron'],
+  // };
+  // final List<String> _connectors = [
+  //   'Type 1',
+  //   'Type 2',
+  //   'CHAdeMO',
+  //   'CCS',
+  //   'Tesla',
+  // ];
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        _plateImage = File(pickedFile.path);
-      });
-    }
-  }
+  // Future<void> _pickImage() async {
+  // final pickedFile = await ImagePicker().pickImage(
+  //   source: ImageSource.gallery,
+  // );
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _plateImage = File(pickedFile.path);
+  //     });
+  //   }
+  // }
 
-  void _submit() {
-    if (_formKey.currentState!.validate() && _plateImage != null) {
+  void _submit(BuildContext context) {
+    if (_formKey.currentState!.validate() &&
+        VehiclesCubit.get(context).plateImage != null) {
       // All fields valid
-      Future.delayed(Duration(seconds: 3), () {
-        context.goOffAll(MainScreen());
+      Future.delayed(Duration(seconds: 1), () {
+        if (context.mounted) {
+          // context.goOffAll(MainScreen());
+          // Todo Add Vehicle
+        }
       });
       showVehicleAddedBottomSheet(context);
-    } else if (_plateImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please take a picture of your plate!')),
-      );
+    } else if (VehiclesCubit.get(context).plateImage == null) {
+      context.showErrorMessage("Please take a picture of your plate!");
     }
-  }
-
-  @override
-  void dispose() {
-    _plateController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final cubit = VehiclesCubit.get(context);
+    cubit.getBrands();
     const padding = 16.0;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: padding),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: SvgPicture.asset("assets/icons/back.svg"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  const SizedBox(height: 32),
-                  const Text(
-                    'Add Your Car Details',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 32,
-                      color: Color(0xff121212),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Enter your vehicle’s license plate number to\ncomplete registration.",
-                    style: TextStyle(fontSize: 16, color: Color(0xff606060)),
-                  ),
-                  const SizedBox(height: 40),
-                  // Brand Dropdown
-                  const Text(
-                    'Brand',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff121212),
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: Color(0xff121212),
-                    ),
-                    value: _selectedBrand,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      hintText: 'Select Vehicle Brand',
-                      hintStyle: TextStyle(
-                        color: Color(0xffB6B6B6),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(11),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffFBFBFB),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    items: _brands
-                        .map(
-                          (b) => DropdownMenuItem(
-                            value: b,
-                            child: Text(
-                              b,
-                              style: const TextStyle(color: Color(0xff121212)),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedBrand = val;
-                        _selectedModel = null;
-                      });
-                    },
-                    validator: (val) =>
-                        val == null ? 'Please select a brand' : null,
-                  ),
-                  const SizedBox(height: 24),
-                  // Plate number field
-                  Row(
+        child: BlocBuilder<VehiclesCubit, VehiclesState>(
+          builder: (context, state) {
+            return Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: padding),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      IconButton(
+                        icon: SvgPicture.asset("assets/icons/back.svg"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(height: 32),
                       const Text(
-                        'Plate number',
+                        'Add Your Car Details',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                          color: Color(0xff121212),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "Enter your vehicle’s license plate number to\ncomplete registration.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xff606060),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      // Brand Dropdown
+                      const Text(
+                        'Brand',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Color(0xff121212),
                           fontSize: 12,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '( Earn 100 loyalty point )',
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<BrandResponseModel>(
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: AppColors.primary,
                           fontSize: 12,
+                          color: Color(0xff121212),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _plateController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter your plate number here',
-                      hintStyle: const TextStyle(
-                        color: Color(0xffB6B6B6),
-                        fontSize: 15,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(11),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffF8F8F8),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    validator: (val) => val == null || val.trim().isEmpty
-                        ? 'Please enter your plate number'
-                        : null,
-                  ),
-                  const SizedBox(height: 24),
-                  // Take picture for plate
-                  InkWell(
-                    onTap: _pickImage,
-                    borderRadius: BorderRadius.circular(12),
-                    child: DottedBorder(
-                      options: RectDottedBorderOptions(
-                        color: AppColors.primary,
-                        dashPattern: [10, 5],
-                        strokeWidth: 2,
-                        // padding: EdgeInsets.all(16),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        height: 150,
-                        decoration: BoxDecoration(color: Colors.transparent),
-                        child: _plateImage == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset("assets/icons/camera.svg"),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    'Take a picture now',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xff121212),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Image.file(
-                                _plateImage!,
-                                width: double.infinity,
-                                height: 150,
-                                fit: BoxFit.cover,
-                              ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Center(
-                    child: Text(
-                      '( Earn 100 loyalty point )',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.primary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Model',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff121212),
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: Color(0xff121212),
-                    ),
-                    value: _selectedModel,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      hintText: 'Select Vehicle Model',
-                      hintStyle: const TextStyle(
-                        color: Color(0xffB6B6B6),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(11),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffFBFBFB),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    items:
-                        (_selectedBrand == null
-                                ? []
-                                : _models[_selectedBrand] ?? [])
+                        value: cubit.selectedBrand,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          hintText: 'Select Vehicle Brand',
+                          hintStyle: TextStyle(
+                            color: Color(0xffB6B6B6),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFBFBFB),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        items: cubit.brands
                             .map(
-                              (m) => DropdownMenuItem<String>(
-                                value: m,
+                              (b) => DropdownMenuItem(
+                                value: b,
                                 child: Text(
-                                  m,
+                                  b.name ?? "",
                                   style: const TextStyle(
                                     color: Color(0xff121212),
                                   ),
@@ -394,86 +241,249 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               ),
                             )
                             .toList(),
-                    onChanged: (val) => setState(() => _selectedModel = val),
-                    validator: (val) =>
-                        val == null ? 'Please select a model' : null,
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Connectors',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff121212),
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
-                      color: Color(0xff121212),
-                    ),
-                    value: _selectedConnector,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      hintText: 'Select Connectors',
-                      hintStyle: const TextStyle(
-                        color: Color(0xffB6B6B6),
-                        fontSize: 15,
+                        onChanged: (val) {
+                          cubit.selectBrand(val);
+                        },
+                        validator: (val) =>
+                            val == null ? 'Please select a brand' : null,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(11),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffF8F8F8),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    items: _connectors
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(
-                              c,
-                              style: const TextStyle(color: Color(0xff121212)),
+                      const SizedBox(height: 24),
+                      // Plate number field
+                      Row(
+                        children: [
+                          const Text(
+                            'Plate number',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff121212),
+                              fontSize: 12,
                             ),
                           ),
-                        )
-                        .toList(),
-                    onChanged: (val) =>
-                        setState(() => _selectedConnector = val),
-                    validator: (val) =>
-                        val == null ? 'Please select a connector' : null,
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(11),
-                        ),
-                        elevation: 0,
+                          const SizedBox(width: 8),
+                          Text(
+                            '( Earn 100 loyalty point )',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      onPressed: _submit,
-                      child: const Text(
-                        'Add Vehicle',
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _plateController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter your plate number here',
+                          hintStyle: const TextStyle(
+                            color: Color(0xffB6B6B6),
+                            fontSize: 15,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffF8F8F8),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        validator: (val) => val == null || val.trim().isEmpty
+                            ? 'Please enter your plate number'
+                            : null,
+                      ),
+                      const SizedBox(height: 24),
+                      // Take picture for plate
+                      InkWell(
+                        onTap: () {
+                          cubit.chooseImage();
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: DottedBorder(
+                          options: RectDottedBorderOptions(
+                            color: AppColors.primary,
+                            dashPattern: [10, 5],
+                            strokeWidth: 2,
+                            // padding: EdgeInsets.all(16),
+                          ),
+                          child: Container(
+                            width: double.infinity,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            child: cubit.plateImage == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/icons/camera.svg",
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        'Take a picture now',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xff121212),
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Image.file(
+                                    cubit.plateImage!,
+                                    width: double.infinity,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          '( Earn 100 loyalty point )',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Model',
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff121212),
+                          fontSize: 12,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<ModelResponseModel>(
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: Color(0xff121212),
+                        ),
+                        value: cubit.selectedModel,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          hintText: 'Select Vehicle Model',
+                          hintStyle: const TextStyle(
+                            color: Color(0xffB6B6B6),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xffFBFBFB),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        items: (cubit.selectedBrand == null ? [] : cubit.models)
+                            .map(
+                              (m) => DropdownMenuItem<ModelResponseModel>(
+                                value: m,
+                                child: Text(
+                                  m.name,
+                                  style: const TextStyle(
+                                    color: Color(0xff121212),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) {
+                          cubit.selectModel(val);
+                        },
+                        validator: (val) =>
+                            val == null ? 'Please select a model' : null,
+                      ),
+
+                      // const SizedBox(height: 24),
+                      // const Text(
+                      //   'Connectors',
+                      //   style: TextStyle(
+                      //     fontWeight: FontWeight.w500,
+                      //     color: Color(0xff121212),
+                      //     fontSize: 12,
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 8),
+                      // DropdownButtonFormField<String>(
+                      //   style: TextStyle(
+                      //     fontWeight: FontWeight.w500,
+                      //     fontSize: 12,
+                      //     color: Color(0xff121212),
+                      //   ),
+                      //   value: _selectedConnector,
+                      //   isExpanded: true,
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Select Connectors',
+                      //     hintStyle: const TextStyle(
+                      //       color: Color(0xffB6B6B6),
+                      //       fontSize: 15,
+                      //     ),
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(11),
+                      //       borderSide: BorderSide(color: Colors.grey.shade300),
+                      //     ),
+                      //     filled: true,
+                      //     fillColor: const Color(0xffF8F8F8),
+                      //     contentPadding: const EdgeInsets.all(16),
+                      //   ),
+                      //   items: _connectors
+                      //       .map(
+                      //         (c) => DropdownMenuItem(
+                      //           value: c,
+                      //           child: Text(
+                      //             c,
+                      //             style: const TextStyle(
+                      //               color: Color(0xff121212),
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       )
+                      //       .toList(),
+                      //   onChanged: (val) =>
+                      //       setState(() => _selectedConnector = val),
+                      //   validator: (val) =>
+                      //       val == null ? 'Please select a connector' : null,
+                      // ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 60,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(11),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            _submit(context);
+                          },
+                          child: const Text(
+                            'Add Vehicle',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                    ],
                   ),
-                  const SizedBox(height: 18),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

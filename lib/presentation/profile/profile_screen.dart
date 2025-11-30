@@ -11,19 +11,7 @@ import 'package:mega_plus/presentation/profile/terms_conditions_screen.dart';
 import 'package:mega_plus/presentation/start/splash_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileCubit(),
-      child: ProfileScreenUI(),
-    );
-  }
-}
-
-class ProfileScreenUI extends StatelessWidget {
-  ProfileScreenUI({super.key});
+  ProfileScreen({super.key});
 
   final Color green = Color(0xFF19C37D);
   final Color bgGreen = Color(0xFFECFDF3);

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
 
 class RFIDCardsScreen extends StatelessWidget {
   RFIDCardsScreen({super.key});
@@ -12,11 +15,7 @@ class RFIDCardsScreen extends StatelessWidget {
   final Color bgRed = Color(0xFFB71C1C);
   final Color blue = Color(0xFF256FEF);
 
-  Widget cardItem({
-    bool isDefault = false,
-    required String lastDigits,
-    required String expiry,
-  }) {
+  Widget cardItem(BuildContext context, RFIDResponseModel item) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 9),
       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 18),
@@ -43,7 +42,7 @@ class RFIDCardsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "7359 024",
+                item.code ?? "",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
@@ -65,7 +64,11 @@ class RFIDCardsScreen extends StatelessWidget {
                     color: Colors.transparent,
                   ),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ProfileCubit.get(
+                        context,
+                      ).deactivateRFID(item.id!, item.status == 1 ? "0" : "1");
+                    },
                     style: TextButton.styleFrom(
                       foregroundColor: green,
                       backgroundColor: Colors.transparent,
@@ -74,7 +77,7 @@ class RFIDCardsScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      isDefault ? "Deactivate" : "Set as Default",
+                      item.status == 1 ? "Deactivate" : "Activate",
                       style: TextStyle(
                         color: green,
                         fontWeight: FontWeight.bold,
@@ -93,7 +96,9 @@ class RFIDCardsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      ProfileCubit.get(context).deleteRFID(item.id!);
+                    },
                     icon: Icon(
                       Icons.delete_outline,
                       color: Colors.white,
@@ -126,64 +131,293 @@ class RFIDCardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileCubit.get(context).getRFID();
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            // AppBar
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              width: double.infinity,
-              height: 57,
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xffF2F4F8))),
-                color: Colors.white,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: SvgPicture.asset("assets/icons/back.svg"),
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          return SafeArea(
+            child: ListView(
+              children: [
+                // AppBar
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  width: double.infinity,
+                  height: 57,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xffF2F4F8)),
                     ),
+                    color: Colors.white,
                   ),
-                  Center(
-                    child: Text(
-                      "RFID Cards",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff212121),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: SvgPicture.asset("assets/icons/back.svg"),
+                        ),
                       ),
+                      Center(
+                        child: Text(
+                          "RFID Cards",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff212121),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          onTap: () async {
+                            final rfid = await showAddRfidBottomSheet(context);
+                            if (rfid != null) {
+                              ProfileCubit.get(context).addRFID(rfid);
+                            }
+                          },
+
+                          child: Text(
+                            "Add",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 15),
+                state is LoadingGetRFIDState
+                    ? Center(child: CircularProgressIndicator())
+                    : ProfileCubit.get(context).rfidCards.isEmpty
+                    ? Center(child: Text("No RFID Cards Added Please Add One"))
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: ProfileCubit.get(context).rfidCards.length,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final item = ProfileCubit.get(
+                            context,
+                          ).rfidCards[index];
+                          return cardItem(context, item);
+                        },
+                      ),
+
+                SizedBox(height: 27),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<String?> showAddRfidBottomSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final rfidController = TextEditingController();
+
+    return showModalBottomSheet<String?>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        final mediaQuery = MediaQuery.of(context);
+        final bottomInset = mediaQuery.viewInsets.bottom;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: bottomInset, // عشان الكيبورد
+            top: 12,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Indicator bar فوق
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffE0E0E0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Add RFID Card',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff121212),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // زر Scan QR Code
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // TODO: استدعاء مسح الـ QR
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.qr_code_scanner, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'Scan QR Code',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {},
+                ),
+
+                const SizedBox(height: 12),
+
+                // Text تحت زر الـ Scan
+                const Text(
+                  'Scan the QR code on your RFID card for instant registration',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Color(0xff9E9E9E)),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Or line
+                Row(
+                  children: const [
+                    Expanded(child: Divider(color: Color(0xffE7E7E7))),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        "Add",
+                        'Or',
                         style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Color(0xff606060),
                         ),
                       ),
                     ),
+                    Expanded(child: Divider(color: Color(0xffE7E7E7))),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Label
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Enter your RFID Cards',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff121212),
+                    ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // TextField بنفس ستايل الديزاين
+                Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xffEFF0F6)),
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Center(
+                    child: TextFormField(
+                      controller: rfidController,
+                      maxLength: 16,
+                      decoration: const InputDecoration(
+                        counterText: '',
+                        border: InputBorder.none,
+                        hintText: 'XXXXXXXXXXXXXX',
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xffDCDCDC),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      validator: (value) {
+                        final text = value?.trim() ?? '';
+                        if (text.isEmpty) {
+                          return 'Please enter your RFID card number';
+                        }
+
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ADD Card button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState?.validate() ?? false) {
+                        // هنا متغيّرش اللوجيك بتاعك
+                        // ابعت rfidController.text للـ cubit / API
+                        Navigator.pop(context, rfidController.text.trim());
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'ADD Card',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+              ],
             ),
-            SizedBox(height: 15),
-            cardItem(isDefault: true, lastDigits: "2367", expiry: "08/26"),
-            SizedBox(height: 27),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

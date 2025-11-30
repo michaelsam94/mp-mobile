@@ -137,6 +137,41 @@ class DioHelper {
   }
 
 
+  // تعديل مشابه على putData
+  static Future<Response> patchData({
+    required String url,
+    required dynamic data,
+    Map<String, dynamic>? query,
+    bool auth = true,
+  }) async {
+    Options options = Options();
+
+    if (auth) {
+      options.headers = await getAuthHeaders();
+    }
+
+    if (data is FormData) {
+      options.contentType = 'multipart/form-data';
+    } else {
+      options.contentType = 'application/json';
+    }
+
+    try {
+      return await dio.patch(
+        url,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print(e.message.toString());
+      }
+      rethrow;
+    }
+  }
+
+
 
   static Future<Response> deleteData({
     required String url,

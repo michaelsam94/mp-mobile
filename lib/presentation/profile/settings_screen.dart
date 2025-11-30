@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/presentation/profile/my_vehicles_screen.dart';
+import 'package:mega_plus/presentation/vehicles/my_vehicles_screen.dart';
 import 'package:mega_plus/presentation/wallet/manage_cards_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
