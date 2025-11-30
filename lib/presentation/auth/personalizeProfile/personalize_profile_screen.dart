@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
-import 'package:mega_plus/presentation/vehicles/select_brand_screen.dart';
+
+import '../../vehicles/vehicle_setup_screen.dart';
 
 class PersonalizeProfileScreen extends StatelessWidget {
   const PersonalizeProfileScreen({super.key});
@@ -86,7 +87,7 @@ class PersonalizeProfileScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         onPressed: () {
-                          context.goTo(SelectBrandScreen());
+                          context.goTo(VehicleSetupScreen());
                         },
                         child: const Text(
                           'Add Vehicle',

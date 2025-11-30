@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
 class SelectBrandScreen extends StatefulWidget {
   const SelectBrandScreen({Key? key}) : super(key: key);
@@ -47,7 +45,7 @@ class _SelectBrandScreenState extends State<SelectBrandScreen> {
       ).showSnackBar(const SnackBar(content: Text('Please select a brand!')));
     } else {
       // Selected
-      context.goTo(VehicleSetupScreen());
+      // context.goTo(VehicleSetupScreen());
     }
   }
 

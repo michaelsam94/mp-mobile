@@ -1,40 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
+import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/vehicle_details_screen.dart';
-import 'package:mega_plus/presentation/vehicles/select_brand_screen.dart';
+import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
 import '../../core/style/app_colors.dart';
 
 class MyVehiclesScreen extends StatelessWidget {
-  MyVehiclesScreen({super.key});
+  const MyVehiclesScreen({super.key});
 
-  final List<Map<String, String>> vehicles = [
-    {
-      "model": "Tesla Model 3",
-      "year_color": "2023 • Pearl White",
-      "plate": "ABC 1234",
-      "image": "assets/images/vehicle_image.png",
-
-      "connector": "CCS2",
-    },
-    {
-      "model": "Tesla Model 3",
-      "year_color": "2023 • Pearl White",
-      "plate": "ABC 1234",
-      "image": "assets/images/vehicle_image.png",
-      "connector": "CCS2",
-    },
-    {
-      "model": "Tesla Model 3",
-      "year_color": "2023 • Pearl White",
-      "plate": "ABC 1234",
-      "image": "assets/images/vehicle_image.png",
-      "connector": "CCS2",
-    },
-  ];
-
-  Widget vehicleCard(Map<String, String> v, BuildContext context) {
+  Widget vehicleCard(VehicleResponseModel item, BuildContext context) {
     return InkWell(
       onTap: () {
         context.goTo(VehicleDetailsScreen());
@@ -54,7 +32,7 @@ class MyVehiclesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(
-                  v["image"] ?? "",
+                  "assets/images/vehicle_image.png",
                   width: 140,
                   height: 80,
                   fit: BoxFit.contain,
@@ -66,7 +44,7 @@ class MyVehiclesScreen extends StatelessWidget {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
                   child: Text(
-                    v["connector"] ?? "",
+                    item.connectorType ?? "",
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontWeight: FontWeight.bold,
@@ -78,7 +56,7 @@ class MyVehiclesScreen extends StatelessWidget {
             ),
             SizedBox(height: 14),
             Text(
-              v["model"] ?? "",
+              item.brandModel?.name ?? "",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
@@ -87,25 +65,25 @@ class MyVehiclesScreen extends StatelessWidget {
             ),
             SizedBox(height: 2),
             Text(
-              v["year_color"] ?? "",
+              item.brandModel?.brand?.name ?? "",
               style: TextStyle(color: Colors.grey[700], fontSize: 15),
             ),
-            SizedBox(height: 10),
-            Divider(color: Color(0xffE6ECEF)),
-            SizedBox(height: 10),
-            Text(
-              "License Plate",
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            ),
-            SizedBox(height: 2),
-            Text(
-              v["plate"] ?? "",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 19,
-                color: Colors.black,
-              ),
-            ),
+            // SizedBox(height: 10),
+            // Divider(color: Color(0xffE6ECEF)),
+            // SizedBox(height: 10),
+            // Text(
+            //   "License Plate",
+            //   style: TextStyle(color: Colors.grey[600], fontSize: 14),
+            // ),
+            // SizedBox(height: 2),
+            // Text(
+            //   "",
+            //   style: TextStyle(
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: 19,
+            //     color: Colors.black,
+            //   ),
+            // ),
             SizedBox(width: 8),
           ],
         ),
@@ -115,6 +93,8 @@ class MyVehiclesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = VehiclesCubit.get(context);
+    cubit.getVehicles();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -154,7 +134,7 @@ class MyVehiclesScreen extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: InkWell(
                       onTap: () {
-                        context.goTo(SelectBrandScreen());
+                        context.goTo(VehicleSetupScreen());
                       },
                       child: Text(
                         "Add",
@@ -168,11 +148,24 @@ class MyVehiclesScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: vehicles.length,
-                itemBuilder: (context, i) => vehicleCard(vehicles[i], context),
-              ),
+            BlocBuilder<VehiclesCubit, VehiclesState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: state is LoadingGetVehiclesState
+                      ? Center(child: CircularProgressIndicator())
+                      : cubit.vehicles.isEmpty
+                      ? Center(
+                          child: Text(
+                            "No Vehicles Found, Please add you first vehicle",
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: cubit.vehicles.length,
+                          itemBuilder: (context, i) =>
+                              vehicleCard(cubit.vehicles[i], context),
+                        ),
+                );
+              },
             ),
           ],
         ),
