@@ -19,4 +19,6 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
+  static const String getMapStations =
+      "/api/stations/map/nearby?lat=31.6214&lng=-55.0531&radius=5000";
 }
