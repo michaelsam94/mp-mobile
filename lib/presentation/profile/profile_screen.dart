@@ -171,7 +171,8 @@ class ProfileScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Ali Maged',
+                                    CacheHelper.getUserData().user?.fullName ??
+                                        "",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -180,14 +181,17 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 3),
                                   Text(
-                                    'ali********@gmail.com',
+                                    CacheHelper.getUserData().user?.email ?? "",
                                     style: TextStyle(
                                       color: Colors.grey[700],
                                       fontSize: 13,
                                     ),
                                   ),
                                   Text(
-                                    '+201********51',
+                                    CacheHelper.getUserData()
+                                            .user
+                                            ?.mobileNumber ??
+                                        "",
                                     style: TextStyle(
                                       color: Colors.grey[700],
                                       fontSize: 13,

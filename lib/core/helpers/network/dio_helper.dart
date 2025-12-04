@@ -47,6 +47,7 @@ class DioHelper {
   static Future<Response> getData({
     required String url,
     Map<String, dynamic>? query,
+    dynamic data,
     bool auth = true,
   }) async {
     Options options = Options();
@@ -54,9 +55,20 @@ class DioHelper {
     if (auth) {
       options.headers = await getAuthHeaders();
     }
-
+    if (data != null) {
+      if (data is FormData) {
+        options.contentType = 'multipart/form-data';
+      } else {
+        options.contentType = 'application/json';
+      }
+    }
     try {
-      return await dio.get(url, queryParameters: query, options: options);
+      return await dio.get(
+        url,
+        queryParameters: query,
+        options: options,
+        data: data,
+      );
     } on DioException catch (e) {
       if (kDebugMode) {
         print(e.message.toString());
@@ -136,7 +148,6 @@ class DioHelper {
     }
   }
 
-
   // تعديل مشابه على putData
   static Future<Response> patchData({
     required String url,
@@ -170,8 +181,6 @@ class DioHelper {
       rethrow;
     }
   }
-
-
 
   static Future<Response> deleteData({
     required String url,

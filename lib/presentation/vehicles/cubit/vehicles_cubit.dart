@@ -135,6 +135,7 @@ class VehiclesCubit extends Cubit<VehiclesState> {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         emit(SuccessAddVehiclesState());
+        getVehicles();
       } else {
         emit(
           ErrorAddVehiclesState(response.data["errors"]["connector_type"][0]),

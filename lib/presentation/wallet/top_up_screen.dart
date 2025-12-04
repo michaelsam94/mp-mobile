@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
+import 'package:mega_plus/presentation/wallet/pay_url_screen.dart';
 // import 'package:mega_plus/core/style/app_colors.dart'; // Replace with your color system
 
 class TopUpScreen extends StatefulWidget {
@@ -276,29 +279,54 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
             SizedBox(height: 40),
             // Submit button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 58,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+            BlocConsumer<WalletCubit, WalletState>(
+              listener: (context, state) async {
+                if (state is SuccessPayWalletState) {
+                  var result = await context.goTo(
+                    PayWithUrlScreen(
+                      checkoutUrl: WalletCubit.get(context).payUrl ?? "",
+                    ),
+                  );
+                  if (result != null && result == true) {
+                    WalletCubit.get(context).getWallet();
+                    Navigator.pop(context);
+                  }
+                }
+              },
+              builder: (context, state) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 58,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        WalletCubit.get(context).getPayUrl(selectedAmount);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: state is LoadingPayWalletState
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              'Top-Up $selectedAmount EGP',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 21,
+                              ),
+                            ),
                     ),
                   ),
-                  child: Text(
-                    'Top-Up $selectedAmount EGP',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 21,
-                    ),
-                  ),
-                ),
-              ),
+                );
+              },
             ),
             SizedBox(height: 22),
           ],

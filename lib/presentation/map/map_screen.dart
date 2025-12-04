@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/presentation/map/cubit/map_cubit.dart';
+import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
 
@@ -106,20 +106,20 @@ class MapScreen extends StatelessWidget {
                   return Stack(
                     children: [
                       //Todo Get it back
-                      GoogleMap(
-                        padding: const EdgeInsets.only(top: 120, bottom: 0),
-                        initialCameraPosition: const CameraPosition(
-                          target: LatLng(30.0444, 31.2357),
-                          zoom: 13,
-                        ),
-                        markers: MapCubit.get(context).markers,
-                        onMapCreated: (ctrl) =>
-                            MapCubit.get(context).mapController = ctrl,
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: false,
-                        buildingsEnabled: false,
-                        compassEnabled: false,
-                      ),
+                      // GoogleMap(
+                      //   padding: const EdgeInsets.only(top: 120, bottom: 0),
+                      //   initialCameraPosition: const CameraPosition(
+                      //     target: LatLng(30.0444, 31.2357),
+                      //     zoom: 13,
+                      //   ),
+                      //   markers: MapCubit.get(context).markers,
+                      //   onMapCreated: (ctrl) =>
+                      //       MapCubit.get(context).mapController = ctrl,
+                      //   myLocationEnabled: true,
+                      //   myLocationButtonEnabled: false,
+                      //   buildingsEnabled: false,
+                      //   compassEnabled: false,
+                      // ),
 
                       // Status Container
                       Positioned(

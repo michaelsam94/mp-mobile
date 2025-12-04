@@ -126,22 +126,22 @@ class SettingsScreen extends StatelessWidget {
                 context.goTo(MyVehiclesScreen());
               },
             ),
-            settingsItem(
-              icon: Icons.credit_card,
-              title: "Payment Methods",
-              subtitle: "2 cards • ************9909",
-              iconColor: green,
-              onTap: () {
-                context.goTo(ManageCardsScreen());
-              },
-            ),
-            settingsItem(
-              icon:
-                  Icons.military_tech, // Use medallion or gift icon for loyalty
-              title: "Loyalty Points 🏅",
-              subtitle: "850 Points • Gold Member",
-              iconColor: green,
-            ),
+            // settingsItem(
+            //   icon: Icons.credit_card,
+            //   title: "Payment Methods",
+            //   subtitle: "2 cards • ************9909",
+            //   iconColor: green,
+            //   onTap: () {
+            //     context.goTo(ManageCardsScreen());
+            //   },
+            // ),
+            // settingsItem(
+            //   icon:
+            //       Icons.military_tech, // Use medallion or gift icon for loyalty
+            //   title: "Loyalty Points 🏅",
+            //   subtitle: "850 Points • Gold Member",
+            //   iconColor: green,
+            // ),
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),
               child: Text(

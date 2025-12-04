@@ -67,6 +67,14 @@ class CacheHelper {
     return 3;
   }
 
+  static UserCacheModel getUserData() {
+    var login = _preferences!.getString(CacheKeys.login.name);
+
+    var loginData = UserCacheModel.fromJson(jsonDecode(login!));
+
+    return loginData;
+  }
+
   static Future<void> refreshToken(String newToken, int newExpiresIn) async {
     var login = _preferences!.getString(CacheKeys.login.name);
     var loginData = UserCacheModel.fromJson(jsonDecode(login!));
