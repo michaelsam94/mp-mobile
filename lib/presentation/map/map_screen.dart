@@ -106,20 +106,20 @@ class MapScreen extends StatelessWidget {
                   return Stack(
                     children: [
                       //Todo Get it back
-                      // GoogleMap(
-                      //   padding: const EdgeInsets.only(top: 120, bottom: 0),
-                      //   initialCameraPosition: const CameraPosition(
-                      //     target: LatLng(30.0444, 31.2357),
-                      //     zoom: 13,
-                      //   ),
-                      //   markers: MapCubit.get(context).markers,
-                      //   onMapCreated: (ctrl) =>
-                      //       MapCubit.get(context).mapController = ctrl,
-                      //   myLocationEnabled: true,
-                      //   myLocationButtonEnabled: false,
-                      //   buildingsEnabled: false,
-                      //   compassEnabled: false,
-                      // ),
+                      GoogleMap(
+                        padding: const EdgeInsets.only(top: 120, bottom: 0),
+                        initialCameraPosition: const CameraPosition(
+                          target: LatLng(30.0444, 31.2357),
+                          zoom: 13,
+                        ),
+                        markers: MapCubit.get(context).markers,
+                        onMapCreated: (ctrl) =>
+                            MapCubit.get(context).mapController = ctrl,
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: false,
+                        buildingsEnabled: false,
+                        compassEnabled: false,
+                      ),
 
                       // Status Container
                       Positioned(
