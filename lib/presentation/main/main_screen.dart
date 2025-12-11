@@ -128,3 +128,63 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
+// import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
+
+// class MainScreen extends StatelessWidget {
+//   const MainScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     context.read<WebSocketCubit>().connect();
+
+//     int? transactionId;
+
+//     return Scaffold(
+//       body: BlocConsumer<ChargingCubit, ChargingState>(
+//         listener: (context, state) {
+//           if (state is ChargingSuccess) {
+//             print(state.data);
+//           } else if (state is ChargingError) {
+//             print(state.message);
+//           }
+//         },
+//         builder: (context, state) {
+//           return BlocConsumer<WebSocketCubit, WebSocketState>(
+//             listener: (context, state) {
+//               print(state);
+//               if (state is SessionUpdate) {
+//                 transactionId = state.data["transaction_id"];
+//               }
+//             },
+//             builder: (context, state) {
+//               return Center(
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     ElevatedButton(
+//                       onPressed: () async {
+//                         ChargingCubit.get(
+//                           context,
+//                         ).startCharging("minus", 60, "CF60186600");
+//                       },
+//                       child: Text("Start"),
+//                     ),
+//                     ElevatedButton(onPressed: () {
+//                       ChargingCubit.get(
+//                           context,
+//                         ).stopCharging("minus", transactionId!);
+//                     }, child: Text("Stop")),
+//                   ],
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

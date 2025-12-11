@@ -7,12 +7,26 @@ import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
 
-class MapScreen extends StatelessWidget {
+class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
   @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    /// Initialize cubit only once
+    // Future.microtask(() {
+    //   MapCubit.get(context).initState(context);
+    // });
+  }
+  @override
   Widget build(BuildContext context) {
-    MapCubit.get(context).initState(context);
+    // MapCubit.get(context).initState(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -100,26 +114,38 @@ class MapScreen extends StatelessWidget {
             Expanded(
               child: BlocBuilder<MapCubit, MapState>(
                 builder: (context, state) {
+                                    final cubit = MapCubit.get(context);
+
                   if (state is LoadingMapState) {
                     return Center(child: CircularProgressIndicator());
                   }
                   return Stack(
                     children: [
                       //Todo Get it back
-                      GoogleMap(
-                        padding: const EdgeInsets.only(top: 120, bottom: 0),
-                        initialCameraPosition: const CameraPosition(
-                          target: LatLng(30.0444, 31.2357),
-                          zoom: 13,
-                        ),
-                        markers: MapCubit.get(context).markers,
-                        onMapCreated: (ctrl) =>
-                            MapCubit.get(context).mapController = ctrl,
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: false,
-                        buildingsEnabled: false,
-                        compassEnabled: false,
-                      ),
+//                      GoogleMap(
+//                     padding: EdgeInsets.only(top: 120),
+//                     initialCameraPosition: CameraPosition(
+//                       target: LatLng(30.0444, 31.2357),
+//                       zoom: 13,
+//                     ),
+
+//                     markers: cubit.markers,
+
+//                     onMapCreated: (ctrl) {
+//                       cubit.mapController = ctrl;
+// cubit.initState(context);
+//                     },
+
+//                     /// CLUSTERING HOOKS
+//                     onCameraMove: cubit.onCameraMove,
+//                     onCameraIdle: cubit.onCameraIdle,
+
+//                     myLocationEnabled: true,
+//                     myLocationButtonEnabled: false,
+//                     buildingsEnabled: false,
+//                     compassEnabled: false,
+//                   ),
+
 
                       // Status Container
                       Positioned(

@@ -23,8 +23,13 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
-  static const String getMapStations =
-      "/api/stations/map/nearby?lat=31.6214&lng=-55.0531&radius=5000";
+  static  String getMapStations(lat,long) =>
+      "/api/stations/map/nearby?lat=$lat&lng=-$long&radius=5000";
 
   static const String getStations = "/api/stations/list";
+
+  static const String startCharging = "/api/charging/start";
+  static const String stopCharging = "/api/charging/stop";
+
+
 }

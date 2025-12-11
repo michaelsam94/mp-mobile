@@ -193,89 +193,89 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 17),
+            // SizedBox(height: 17),
 
-            // Payment card select
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 2,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Color(0xFFE9E9E9)),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Select Payment Card",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: bgGreen,
-                        border: Border.all(color: green, width: 2),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 18,
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Visa',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(height: 6),
-                              Text(
-                                '****  8831   ****   2367',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Spacer(),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/icons/card_type_icon.png"),
-                              SizedBox(height: 5),
-                              Text(
-                                '08/26',
-                                style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // // Payment card select
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(
+            //     horizontal: 12.0,
+            //     vertical: 2,
+            //   ),
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.circular(18),
+            //       border: Border.all(color: Color(0xFFE9E9E9)),
+            //     ),
+            //     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(
+            //           "Select Payment Card",
+            //           style: TextStyle(
+            //             fontWeight: FontWeight.bold,
+            //             fontSize: 22,
+            //             color: Colors.black,
+            //           ),
+            //         ),
+            //         SizedBox(height: 16),
+            //         Container(
+            //           decoration: BoxDecoration(
+            //             color: bgGreen,
+            //             border: Border.all(color: green, width: 2),
+            //             borderRadius: BorderRadius.circular(24),
+            //           ),
+            //           padding: EdgeInsets.symmetric(
+            //             vertical: 18,
+            //             horizontal: 20,
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text(
+            //                     'Visa',
+            //                     style: TextStyle(
+            //                       color: AppColors.primary,
+            //                       fontSize: 16,
+            //                       fontWeight: FontWeight.w700,
+            //                     ),
+            //                   ),
+            //                   SizedBox(height: 6),
+            //                   Text(
+            //                     '****  8831   ****   2367',
+            //                     style: TextStyle(
+            //                       color: AppColors.primary,
+            //                       fontSize: 14,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //               Spacer(),
+            //               Column(
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 children: [
+            //                   Image.asset("assets/icons/card_type_icon.png"),
+            //                   SizedBox(height: 5),
+            //                   Text(
+            //                     '08/26',
+            //                     style: TextStyle(
+            //                       color: AppColors.primary,
+            //                       fontWeight: FontWeight.bold,
+            //                       fontSize: 14,
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
 
             SizedBox(height: 40),
             // Submit button
