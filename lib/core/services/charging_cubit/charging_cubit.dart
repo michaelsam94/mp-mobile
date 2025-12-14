@@ -59,7 +59,7 @@ class ChargingCubit extends Cubit<ChargingState> {
       print(response.statusCode);
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        pdfUrl = response.data["data"];
+        pdfUrl = response.data["data"][0];
         emit(StopChargingSuccess(response.data['success']));
       } else {
         emit(ChargingError(response.data['message']));

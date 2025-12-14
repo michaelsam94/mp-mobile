@@ -123,29 +123,29 @@ class _MapScreenState extends State<MapScreen> {
                   return Stack(
                     children: [
                       //Todo Get it back
-                      GoogleMap(
-                        padding: EdgeInsets.only(top: 120),
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(30.0444, 31.2357),
-                          zoom: 13,
-                        ),
+                      // GoogleMap(
+                      //   padding: EdgeInsets.only(top: 120),
+                      //   initialCameraPosition: CameraPosition(
+                      //     target: LatLng(30.0444, 31.2357),
+                      //     zoom: 13,
+                      //   ),
 
-                        markers: cubit.markers,
+                      //   markers: cubit.markers,
 
-                        onMapCreated: (ctrl) {
-                          cubit.mapController = ctrl;
-                          cubit.initState(context);
-                        },
+                      //   onMapCreated: (ctrl) {
+                      //     cubit.mapController = ctrl;
+                      //     cubit.initState(context);
+                      //   },
 
-                        /// CLUSTERING HOOKS
-                        onCameraMove: cubit.onCameraMove,
-                        onCameraIdle: cubit.onCameraIdle,
+                      //   /// CLUSTERING HOOKS
+                      //   onCameraMove: cubit.onCameraMove,
+                      //   onCameraIdle: cubit.onCameraIdle,
 
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: false,
-                        buildingsEnabled: false,
-                        compassEnabled: false,
-                      ),
+                      //   myLocationEnabled: true,
+                      //   myLocationButtonEnabled: false,
+                      //   buildingsEnabled: false,
+                      //   compassEnabled: false,
+                      // ),
 
                       // Status Container
                       Positioned(
