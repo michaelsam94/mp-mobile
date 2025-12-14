@@ -13,8 +13,14 @@ class SearchCubit extends Cubit<SearchState> {
   static SearchCubit get(context) => BlocProvider.of(context);
 
   List<StationResponseModel> stations = [];
-  List<StationResponseModel> filteredStations = []; // للنتائج المفلترة
+  List<StationResponseModel> filteredStations = [];
   String searchQuery = '';
+
+  // Filter variables
+  String? filterStatus;
+  String? filterConnectorType;
+  bool filterFavouriteOnly = false;
+  String? filterMinimumPower;
 
   void getStations() async {
     emit(LoadingGetStationsSearchState());
@@ -23,7 +29,7 @@ class SearchCubit extends Cubit<SearchState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
         stations = data.map((e) => StationResponseModel.fromJson(e)).toList();
-        filteredStations = List.from(stations); // نسخة أولية
+        applyFiltersAndSearch();
         emit(SuccessGetStationsSearchState());
       } else {
         emit(ErrorGetStationsSearchState());
@@ -33,27 +39,82 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
-  // دالة البحث الجديدة
   void searchStations(String query) {
     searchQuery = query.toLowerCase();
-
-    if (query.isEmpty) {
-      filteredStations = List.from(stations); // إرجاع الكل
-    } else {
-      filteredStations = stations.where((station) {
-        return station.name!.toLowerCase().contains(searchQuery) ||
-            station.address!.toLowerCase().contains(searchQuery) ||
-            station.city!.toLowerCase().contains(searchQuery);
-      }).toList();
-    }
-
-    emit(SearchUpdatedState()); // state جديد للـ search
+    applyFiltersAndSearch();
   }
 
-  // clear search
+  void applyFilters({
+    String? status,
+    String? connectorType,
+    bool? favouriteOnly,
+    String? minimumPower,
+  }) {
+    filterStatus = status;
+    filterConnectorType = connectorType;
+    filterFavouriteOnly = favouriteOnly ?? false;
+    filterMinimumPower = minimumPower;
+    applyFiltersAndSearch();
+  }
+
+  void applyFiltersAndSearch() {
+    filteredStations = stations.where((station) {
+      // Search filter
+      bool matchesSearch =
+          searchQuery.isEmpty ||
+          station.name!.toLowerCase().contains(searchQuery) ||
+          station.address!.toLowerCase().contains(searchQuery) ||
+          station.city!.toLowerCase().contains(searchQuery);
+
+      // Status filter
+      bool matchesStatus =
+          filterStatus == null || station.status == filterStatus;
+
+      // Connector Type filter
+      bool matchesConnectorType =
+          filterConnectorType == null ||
+          station.guns!.any(
+            (gun) =>
+                gun.type?.toUpperCase().contains(filterConnectorType!) ?? false,
+          );
+
+      // Favourite filter (assuming you have a favourite field)
+      // bool matchesFavourite = !filterFavouriteOnly || station.isFavourite == true;
+
+      // Minimum Power filter
+      bool matchesPower =
+          filterMinimumPower == null ||
+          station.guns!.any((gun) {
+            int? gunPower = int.tryParse(
+              gun.maxPower?.replaceAll('kw', '').replaceAll('KW', '') ?? '0',
+            );
+            int? minPower = int.tryParse(
+              filterMinimumPower?.replaceAll('kw', '').replaceAll('KW', '') ??
+                  '0',
+            );
+            return gunPower != null && minPower != null && gunPower >= minPower;
+          });
+
+      return matchesSearch &&
+          matchesStatus &&
+          matchesConnectorType &&
+          // matchesFavourite &&
+          matchesPower;
+    }).toList();
+
+    emit(SearchUpdatedState());
+  }
+
   void clearSearch() {
     searchQuery = '';
-    filteredStations = List.from(stations);
-    emit(SearchUpdatedState());
+    applyFiltersAndSearch();
+  }
+
+  void clearFilters() {
+    filterStatus = null;
+    filterConnectorType = null;
+    filterFavouriteOnly = false;
+    filterMinimumPower = null;
+    applyFiltersAndSearch();
   }
 }

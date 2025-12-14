@@ -17,8 +17,8 @@ class DioHelper {
       BaseOptions(
         baseUrl: EndPoints.baseUrl,
         receiveDataWhenStatusError: true,
-        connectTimeout: Duration(seconds: 20),
-        receiveTimeout: Duration(seconds: 20),
+        connectTimeout: Duration(seconds: 100),
+        receiveTimeout: Duration(seconds: 100),
         validateStatus: (status) => status! <= 500,
         headers: {
           'Accept': 'application/json',

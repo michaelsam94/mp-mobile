@@ -95,23 +95,61 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
 
-                    // SizedBox(width: 16),
-                    // Container(
-                    //   width: 48,
-                    //   height: 48,
-                    //   padding: EdgeInsets.all(12),
-                    //   decoration: BoxDecoration(
-                    //     color: AppColors.primary,
-                    //     borderRadius: BorderRadius.circular(8),
-                    //   ),
-                    //   child: SvgPicture.asset(
-                    //     "assets/icons/filter.svg",
-                    //     colorFilter: ColorFilter.mode(
-                    //       Colors.white,
-                    //       BlendMode.srcIn,
-                    //     ),
-                    //   ),
-                    // ),
+                    // في search_screen.dart، فك الـ comment على الـ filter button:
+                    SizedBox(width: 16),
+                    InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => FilterBottomSheet(
+                            selectedStatus: SearchCubit.get(
+                              context,
+                            ).filterStatus,
+                            selectedConnectorType: SearchCubit.get(
+                              context,
+                            ).filterConnectorType,
+                            favouriteOnly: SearchCubit.get(
+                              context,
+                            ).filterFavouriteOnly,
+                            minimumPower: SearchCubit.get(
+                              context,
+                            ).filterMinimumPower,
+                            onApplyFilters:
+                                ({
+                                  status,
+                                  connectorType,
+                                  favouriteOnly,
+                                  minimumPower,
+                                }) {
+                                  SearchCubit.get(context).applyFilters(
+                                    status: status,
+                                    connectorType: connectorType,
+                                    favouriteOnly: favouriteOnly,
+                                    minimumPower: minimumPower,
+                                  );
+                                },
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: SvgPicture.asset(
+                          "assets/icons/filter.svg",
+                          colorFilter: ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -355,6 +393,404 @@ class _SearchScreenState extends State<SearchScreen> {
           fontWeight: FontWeight.w500,
           fontSize: 12,
           color: colorText,
+        ),
+      ),
+    );
+  }
+}
+
+class FilterBottomSheet extends StatefulWidget {
+  final String? selectedStatus;
+  final String? selectedConnectorType;
+  final bool? favouriteOnly;
+  final String? minimumPower;
+  final Function({
+    String? status,
+    String? connectorType,
+    bool? favouriteOnly,
+    String? minimumPower,
+  })
+  onApplyFilters;
+
+  const FilterBottomSheet({
+    super.key,
+    this.selectedStatus,
+    this.selectedConnectorType,
+    this.favouriteOnly,
+    this.minimumPower,
+    required this.onApplyFilters,
+  });
+
+  @override
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  String? selectedStatus;
+  String? selectedConnectorType;
+  bool favouriteOnly = false;
+  String? selectedPower;
+
+  final List<String> powerOptions = [
+    '7kw',
+    '11kw',
+    '22kw',
+    '50kw',
+    '100kw',
+    '150kw',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedStatus = widget.selectedStatus;
+    selectedConnectorType = widget.selectedConnectorType;
+    favouriteOnly = widget.favouriteOnly ?? false;
+    selectedPower = widget.minimumPower;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            margin: EdgeInsets.only(top: 12),
+            width: 48,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Color(0xFFE0E0E0),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          SizedBox(height: 20),
+
+          // Title
+          Text(
+            'Filter By',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF212121),
+            ),
+          ),
+          SizedBox(height: 24),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Station Status
+                  Text(
+                    'Station Status',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF212121),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _filterButton(
+                          label: 'Available',
+                          isSelected: selectedStatus == 'available',
+                          onTap: () {
+                            setState(() {
+                              selectedStatus = selectedStatus == 'available'
+                                  ? null
+                                  : 'available';
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _filterButton(
+                          label: 'In Use',
+                          isSelected: selectedStatus == 'inUse',
+                          onTap: () {
+                            setState(() {
+                              selectedStatus = selectedStatus == 'inUse'
+                                  ? null
+                                  : 'inUse';
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+
+                  // Connector Type
+                  Text(
+                    'Connector Type',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF212121),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _filterButton(
+                          label: 'AC',
+                          isSelected: selectedConnectorType == 'AC',
+                          onTap: () {
+                            setState(() {
+                              selectedConnectorType =
+                                  selectedConnectorType == 'AC' ? null : 'AC';
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _filterButton(
+                          label: 'DC',
+                          isSelected: selectedConnectorType == 'DC',
+                          onTap: () {
+                            setState(() {
+                              selectedConnectorType =
+                                  selectedConnectorType == 'DC' ? null : 'DC';
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+
+                  // Favourite Stations
+                  Text(
+                    'Favourite Stations',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF212121),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  _filterButton(
+                    label: 'Favourite Only',
+                    icon: Icons.star_border,
+                    isSelected: favouriteOnly,
+                    onTap: () {
+                      setState(() {
+                        favouriteOnly = !favouriteOnly;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 24),
+
+                  // Minimum Power
+                  Text(
+                    'Minimum Power',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF212121),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Color(0xFFE0E0E0), width: 1),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: selectedPower,
+                        hint: Text(
+                          'Select minimum power',
+                          style: TextStyle(
+                            color: Color(0xFFBDBDBD),
+                            fontSize: 14,
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Color(0xFF212121),
+                        ),
+                        items: powerOptions.map((String power) {
+                          return DropdownMenuItem<String>(
+                            value: power,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  power,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFF212121),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedPower = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+
+          // Buttons
+          Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              children: [
+                // Apply Filters Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      widget.onApplyFilters(
+                        status: selectedStatus,
+                        connectorType: selectedConnectorType,
+                        favouriteOnly: favouriteOnly,
+                        minimumPower: selectedPower,
+                      );
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Apply Filters',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+
+                // Reset All Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedStatus = null;
+                        selectedConnectorType = null;
+                        favouriteOnly = false;
+                        selectedPower = null;
+                      });
+                      widget.onApplyFilters(
+                        status: null,
+                        connectorType: null,
+                        favouriteOnly: false,
+                        minimumPower: null,
+                      );
+                      Navigator.pop(context);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: AppColors.primary, width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      'Reset All',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filterButton({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    IconData? icon,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFFD1FADF) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Color(0xFFE0E0E0),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                color: isSelected ? AppColors.primary : Color(0xFFBDBDBD),
+                size: 20,
+              ),
+              SizedBox(width: 8),
+            ],
+            if (isSelected)
+              Icon(Icons.check, color: AppColors.primary, size: 18),
+            if (isSelected) SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? AppColors.primary : Color(0xFF757575),
+              ),
+            ),
+          ],
         ),
       ),
     );
