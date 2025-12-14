@@ -41,7 +41,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         rfidCards = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
 
         // Todo Edit
-        defaultRFID = rfidCards[1];
+        defaultRFID = rfidCards[0];
         emit(SuccessGetRFIDState());
       } else {
         emit(ErrorGetRFIDState());
@@ -115,4 +115,87 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ErrorGetRFIDState());
     }
   }
+
+  List<String> complaintsCategories = [];
+  void getcomplaintsCategories() async {
+    try {
+      emit(LoadingGetCategoriesComplaintsState());
+
+      var response = await DioHelper.getData(url: "/api/complains/categories");
+      if (response.statusCode == 200) {
+        var data = response.data["data"] as List;
+        complaintsCategories = data.map((e) => "$e").toList();
+        emit(SuccessGetCategoriesComplaintsState());
+      } else {
+        emit(ErrorGetCategoriesComplaintsState());
+      }
+    } catch (e) {
+      emit(ErrorGetCategoriesComplaintsState());
+    }
+  }
+
+  String? selectedCategory;
+  void editCategory(String? newValue) {
+    selectedCategory = newValue;
+    emit(SelectComplaintCategoryState(selectedCategory));
+  }
+
+  bool agreePrivacy = false;
+  void editAgreePriivacy(bool newValue) {
+    agreePrivacy = newValue;
+    emit(ChangeAgreePrivacyState(agreePrivacy));
+  }
+
+  void makeComplaint(String title, String desc) async {
+    try {
+      emit(LoadingMakeComplaintsState());
+
+      var response = await DioHelper.postData(
+        url: "/api/complains",
+        data: FormData.fromMap({
+          "title": title,
+          "description": desc,
+          "category": selectedCategory,
+        }),
+      );
+      if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+        emit(SuccessMakeComplaintsState());
+      } else {
+        emit(ErrorGetCategoriesComplaintsState());
+      }
+    } catch (e) {
+      emit(ErrorGetCategoriesComplaintsState());
+    }
+  }
+
+
+void changePassword({
+  required String oldPassword,
+  required String newPassword,
+}) async {
+  emit(LoadingChangePasswordState());
+
+  try {
+    var response = await DioHelper.postData(
+      url: EndPoints.changePassword, 
+      data: {
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      },
+    );
+
+    if (response.statusCode == 200 && response.data['success'] == true) {
+      emit(SuccessChangePasswordState());
+    } else {
+      emit(ErrorChangePasswordState(
+        message: response.data['message'] ?? 'Failed to change password',
+      ));
+    }
+  } catch (e) {
+    emit(ErrorChangePasswordState(
+      message: 'An error occurred: ${e.toString()}',
+    ));
+  }
+}
+
 }

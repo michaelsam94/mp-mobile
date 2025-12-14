@@ -185,7 +185,9 @@ class LoginScreenUI extends StatelessWidget {
                           children: [
                             Checkbox(
                               value: cubit.checked,
-                              onChanged: (_) {},
+                              onChanged: (_) {
+                                cubit.changeChecked();
+                              },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadiusGeometry.circular(4),
                               ),

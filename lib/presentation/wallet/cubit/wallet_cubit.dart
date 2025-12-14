@@ -85,12 +85,64 @@ class WalletCubit extends Cubit<WalletState> {
         savedCards = data
             .map((e) => SavedCardResponseModel.fromJson(e))
             .toList();
+        print(response.data);
         emit(SuccessGetSavedCardsState());
       } else {
         emit(ErrorGetSavedCardsState());
       }
     } catch (e) {
       emit(ErrorGetSavedCardsState());
+    }
+  }
+
+  void deleteCard(int id) async {
+    emit(LoadingGetSavedCardsState());
+    try {
+      var response = await DioHelper.deleteData(
+        url: "${EndPoints.deleteSavedCards}$id",
+      );
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        getSavedCards();
+      } else {
+        emit(ErrorDeleteSavedCardsState());
+      }
+    } catch (e) {
+      emit(ErrorDeleteSavedCardsState());
+    }
+  }
+
+  
+  void deactivateCard(int id) async {
+    emit(LoadingGetSavedCardsState());
+    try {
+      var response = await DioHelper.patchData(
+        url: EndPoints.deactivateSavedCards(id),
+        data: {}
+      );
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        getSavedCards();
+      } else {
+        emit(ErrorDeactivateSavedCardsState());
+      }
+    } catch (e) {
+      emit(ErrorDeactivateSavedCardsState());
+    }
+  }
+  
+  void setDefaultCard(int id) async {
+    emit(LoadingGetSavedCardsState());
+    try {
+      var response = await DioHelper.patchData(
+        url: EndPoints.setDefaultSavedCards(id),
+        data: {}
+      );
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        getSavedCards();
+      } else {
+        emit(ErrorSetDefaultSavedCardsState());
+      }
+    } catch (e) {
+      emit(ErrorSetDefaultSavedCardsState());
     }
   }
 }

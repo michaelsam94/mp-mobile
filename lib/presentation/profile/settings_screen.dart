@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/presentation/profile/change_password_screen.dart';
 import 'package:mega_plus/presentation/vehicles/my_vehicles_screen.dart';
-import 'package:mega_plus/presentation/wallet/manage_cards_screen.dart';
+
+import 'delete_account_reason_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});
@@ -135,13 +137,13 @@ class SettingsScreen extends StatelessWidget {
             //     context.goTo(ManageCardsScreen());
             //   },
             // ),
-            // settingsItem(
-            //   icon:
-            //       Icons.military_tech, // Use medallion or gift icon for loyalty
-            //   title: "Loyalty Points 🏅",
-            //   subtitle: "850 Points • Gold Member",
-            //   iconColor: green,
-            // ),
+            settingsItem(
+              icon:
+                  Icons.military_tech, // Use medallion or gift icon for loyalty
+              title: "Loyalty Points 🏅",
+              subtitle: "850 Points • Gold Member",
+              iconColor: green,
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),
               child: Text(
@@ -153,12 +155,21 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            settingsItem(icon: Icons.lock_outline, title: "Change Password"),
+            settingsItem(
+              icon: Icons.lock_outline,
+              title: "Change Password",
+              onTap: () {
+                context.goTo(ChangePasswordScreen());
+              },
+            ),
             settingsItem(
               icon: Icons.delete_outline,
               title: "Delete Account",
               isDanger: true,
               textColor: Colors.red,
+              onTap: () {
+                context.goTo(DeleteAccountReasonScreen());
+              },
             ),
             SizedBox(height: 15),
           ],

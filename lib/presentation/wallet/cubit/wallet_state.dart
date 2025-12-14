@@ -22,3 +22,7 @@ final class WalletInitial extends WalletState {}
  class LoadingGetSavedCardsState extends WalletState {}
  class SuccessGetSavedCardsState extends WalletState {}
  class ErrorGetSavedCardsState extends WalletState {}
+
+ class ErrorDeleteSavedCardsState extends WalletState {}
+ class ErrorDeactivateSavedCardsState extends WalletState {}
+ class ErrorSetDefaultSavedCardsState extends WalletState {}

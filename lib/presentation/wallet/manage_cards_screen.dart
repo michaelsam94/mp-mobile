@@ -1,148 +1,156 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
+import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
+
+import 'details_card_sreen.dart';
 
 class ManageCardsScreen extends StatelessWidget {
   ManageCardsScreen({super.key});
 
   final Color green = AppColors.primary;
-  final Color bgGreen = Color(0xFFECFDF3);
-  final Color borderGreen = Color(0xFF19C37D);
-  final Color red = Color(0xFFD03534);
-  final Color bgRed = Color(0xFFB71C1C);
-  final Color blue = Color(0xFF256FEF);
-
+  final Color bgGreen = Color(0xFFD1FADF);
+  final Color borderGreen = Color(0xFFABEFC6);
   Widget cardItem({
-    bool isDefault = false,
-    required String lastDigits,
-    required String type,
+    required SavedCardResponseModel card, // 👈 بدل كل الـ parameters
+    required BuildContext context,
   }) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 9),
-      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-      decoration: BoxDecoration(
-        color: isDefault ? bgGreen : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: borderGreen.withOpacity(0.5), width: 2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                type,
-                style: TextStyle(
-                  color: green,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              if (isDefault)
-                Container(
-                  margin: EdgeInsets.only(left: 9),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: blue,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Default',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 7),
-          Text(
-            lastDigits,
-            style: TextStyle(
-              color: green,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CardDetailsScreen(
+              card: card, // 👈 بنبعت الـ object كله
             ),
           ),
-          SizedBox(height: 6),
-          // Text(
-          //   'Expires $expiry',
-          //   style: TextStyle(
-          //     fontSize: 12,
-          //     color: green,
-          //     fontWeight: FontWeight.bold,
-          //   ),
-          // ),
-          // SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: green.withOpacity(0.7), width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.transparent,
-                  ),
-                  child: TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      foregroundColor: green,
-                      backgroundColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      isDefault ? "Deactivate" : "Set as Default",
-                      style: TextStyle(
-                        color: green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    label: Text(
-                      "Delete",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Color(0xffB71C1C),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: (card.isDefault == 1) ? borderGreen : Color(0xFFE8E8E8),
+            width: 2,
           ),
-        ],
+          boxShadow: (card.isDefault == 1)
+              ? [
+                  BoxShadow(
+                    color: borderGreen.withOpacity(0.15),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ]
+              : [],
+        ),
+        child: Row(
+          children: [
+            // Card Icon
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: green,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.credit_card, color: Colors.white, size: 28),
+            ),
+            SizedBox(width: 16),
+
+            // Card Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        card.cardType ?? "Visa",
+                        style: TextStyle(
+                          color: Color(0xFF212121),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (card.isDefault == 1) ...[
+                        SizedBox(width: 8),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF2563EB),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Default',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      if (card.status == "inactive") ...[
+                        SizedBox(width: 8),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Deactivated',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    card.maskedPan ?? "**** **** **** ****",
+                    style: TextStyle(
+                      color: Color(0xFF212121),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  // if (card.expiryDate != null && card.expiryDate!.isNotEmpty)
+                  //   Padding(
+                  //     padding: EdgeInsets.only(top: 4),
+                  //     child: Text(
+                  //       'Expires ${card.expiryDate}',
+                  //       style: TextStyle(
+                  //         fontSize: 13,
+                  //         color: Color(0xFF039855),
+                  //         fontWeight: FontWeight.w500,
+                  //       ),
+                  //     ),
+                  //   ),
+                ],
+              ),
+            ),
+
+            // Arrow Icon
+            Icon(Icons.arrow_forward_ios, color: Color(0xFFBDBDBD), size: 18),
+          ],
+        ),
       ),
     );
   }
@@ -150,103 +158,132 @@ class ManageCardsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WalletCubit.get(context).getSavedCards();
+
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // AppBar
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                width: double.infinity,
-                height: 57,
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Color(0xffF2F4F8))),
-                  color: Colors.white,
+        child: Column(
+          children: [
+            // AppBar
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Color(0xFFE8E8E8), width: 1),
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: SvgPicture.asset("assets/icons/back.svg"),
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        "Manage Card",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff212121),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xFF212121),
+                          size: 18,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Payment Methods",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff212121),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 15),
+            ),
 
-              BlocBuilder<WalletCubit, WalletState>(
+            // Cards List
+            Expanded(
+              child: BlocBuilder<WalletCubit, WalletState>(
                 builder: (context, state) {
                   if (state is LoadingGetSavedCardsState) {
                     return Center(child: CircularProgressIndicator());
                   }
+
+                  final cubit = WalletCubit.get(context);
+
                   return ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.only(top: 16, bottom: 100),
+                    itemCount: cubit.savedCards.length,
                     itemBuilder: (context, index) {
-                      final item = WalletCubit.get(context).savedCards[index];
+                      final card = cubit.savedCards[index];
                       return cardItem(
-                        isDefault: item.isDefault == 1,
-                        lastDigits: item.maskedPan ?? "",
-                        type: item.cardType ?? "",
+                        card: card, // 👈 بنبعت الـ object مباشرة
+                        context: context,
                       );
                     },
-                    itemCount: WalletCubit.get(context).savedCards.length,
                   );
                 },
               ),
-              // cardItem(isDefault: true, lastDigits: "2367", expiry: "08/26"),
-              // cardItem(isDefault: false, lastDigits: "2367", expiry: "08/26"),
-              // SizedBox(height: 27),
-              // Add New Card Button
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              //   child: SizedBox(
-              //     width: double.infinity,
-              //     height: 58,
-              //     child: ElevatedButton.icon(
-              //       onPressed: () {
-              //         context.goTo(AddCardScreen());
-              //       },
-              //       icon: Icon(Icons.add, size: 27, color: Colors.white),
-              //       label: Text(
-              //         'Add New Card',
-              //         style: TextStyle(
-              //           color: Colors.white,
-              //           fontWeight: FontWeight.bold,
-              //           fontSize: 20,
-              //         ),
-              //       ),
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: green,
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(14),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+
+      // Add New Card Button (Fixed at bottom)
+      // floatingActionButton: Container(
+      //   width: double.infinity,
+      //   padding: EdgeInsets.all(16),
+      //   decoration: BoxDecoration(
+      //     color: Colors.white,
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black.withOpacity(0.05),
+      //         blurRadius: 10,
+      //         offset: Offset(0, -2),
+      //       ),
+      //     ],
+      //   ),
+      //   child: SafeArea(
+      //     child: SizedBox(
+      //       width: double.infinity,
+      //       height: 56,
+      //       child: ElevatedButton.icon(
+      //         onPressed: () {
+      //           // context.goTo(AddCardScreen());
+      //         },
+      //         icon: Icon(Icons.add, size: 24, color: Colors.white),
+      //         label: Text(
+      //           'Add New Card',
+      //           style: TextStyle(
+      //             color: Colors.white,
+      //             fontWeight: FontWeight.w600,
+      //             fontSize: 16,
+      //           ),
+      //         ),
+      //         style: ElevatedButton.styleFrom(
+      //           backgroundColor: green,
+      //           shape: RoundedRectangleBorder(
+      //             borderRadius: BorderRadius.circular(16),
+      //           ),
+      //           elevation: 0,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

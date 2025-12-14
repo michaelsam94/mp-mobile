@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
@@ -18,25 +19,22 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-
-    /// Initialize cubit only once
-    // Future.microtask(() {
-    //   MapCubit.get(context).initState(context);
-    // });
+    // ✅ Load data مرة واحدة بس في initState
+    Future.microtask(() {
+      //Todo Get Back
+      MapCubit.get(context).initData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // MapCubit.get(context).initState(context);
+    print(CacheHelper.getString("token"));
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: 16,
-                vertical: 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Row(
                 children: [
                   Expanded(
@@ -118,34 +116,58 @@ class _MapScreenState extends State<MapScreen> {
                   final cubit = MapCubit.get(context);
 
                   if (state is LoadingMapState) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Loading stations...'),
+                        ],
+                      ),
+                    );
                   }
+
+                  if (state is ErrorMapState) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: Colors.red,
+                          ),
+                          SizedBox(height: 16),
+                          Text('Error: ${state.message}'),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => cubit.initData(),
+                            child: Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
                   return Stack(
                     children: [
-                      //Todo Get it back
-                      // GoogleMap(
-                      //   padding: EdgeInsets.only(top: 120),
-                      //   initialCameraPosition: CameraPosition(
-                      //     target: LatLng(30.0444, 31.2357),
-                      //     zoom: 13,
-                      //   ),
-
-                      //   markers: cubit.markers,
-
-                      //   onMapCreated: (ctrl) {
-                      //     cubit.mapController = ctrl;
-                      //     cubit.initState(context);
-                      //   },
-
-                      //   /// CLUSTERING HOOKS
-                      //   onCameraMove: cubit.onCameraMove,
-                      //   onCameraIdle: cubit.onCameraIdle,
-
-                      //   myLocationEnabled: true,
-                      //   myLocationButtonEnabled: false,
-                      //   buildingsEnabled: false,
-                      //   compassEnabled: false,
-                      // ),
+                      //Todo Get Back
+                      GoogleMap(
+                        padding: EdgeInsets.only(top: 120),
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(30.0, 0.0),
+                          zoom: 3,
+                        ),
+                        markers: cubit.markers,
+                        onMapCreated: cubit.onMapCreated,
+                        onCameraMove: cubit.onCameraMove,
+                        onCameraIdle: cubit.onCameraIdle,
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: false,
+                        buildingsEnabled: false,
+                        compassEnabled: false,
+                      ),
 
                       // Status Container
                       Positioned(

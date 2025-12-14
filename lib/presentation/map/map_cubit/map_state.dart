@@ -5,5 +5,11 @@ sealed class MapState {}
 
 final class MapInitial extends MapState {}
 
-class LoadingMapState extends MapState{}
-class UpdatedMapState extends MapState{}
+class LoadingMapState extends MapState {}
+
+class LoadedMapState extends MapState {}
+
+class ErrorMapState extends MapState {
+  final String message;
+  ErrorMapState(this.message);
+}

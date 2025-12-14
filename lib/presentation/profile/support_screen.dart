@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -13,6 +16,15 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
   int selectedTab = 0; // 0 = Support, 1 = Complain
   final Color green = Color(0xFF19C37D);
   final Color bgGreen = Color(0xFFECFDF3);
+
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ProfileCubit.get(context).getcomplaintsCategories();
+  }
 
   Widget _buildTabBar() {
     return Container(
@@ -165,6 +177,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     required String label,
     required List<String> items,
     String? value,
+    void Function(String?)? onChanged,
   }) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
@@ -178,13 +191,13 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
       ),
       items: items
           .map(
-            (e) => DropdownMenuItem(
+            (e) => DropdownMenuItem<String>(
               value: e,
               child: Text(e, style: TextStyle(fontSize: 12)),
             ),
           )
           .toList(),
-      onChanged: (_) {},
+      onChanged: onChanged,
       value: value ?? items.first,
     );
   }
@@ -202,6 +215,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           ),
           SizedBox(height: 5),
           TextField(
+            controller: titleController,
             decoration: InputDecoration(
               hintText: "Complaint Title",
               filled: true,
@@ -224,6 +238,8 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           SizedBox(height: 5),
           TextField(
             maxLines: 5,
+            controller: descController,
+
             decoration: InputDecoration(
               hintText: "Description of the complaint",
               filled: true,
@@ -244,74 +260,91 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),
           SizedBox(height: 8),
-          _buildDropdown(
-            label: "Complaint category *",
-            items: ["Complaint category"],
-            value: "Complaint category",
+          BlocBuilder<ProfileCubit, ProfileState>(
+            builder: (context, state) {
+              return ProfileCubit.get(context).complaintsCategories.isEmpty
+                  ? Text("Loading....")
+                  : _buildDropdown(
+                      label: "Complaint category *",
+                      items: ProfileCubit.get(context).complaintsCategories,
+                      value: ProfileCubit.get(context).selectedCategory,
+                      onChanged: (val) {
+                        ProfileCubit.get(context).editCategory(val);
+                      },
+                    );
+            },
           ),
+          // SizedBox(height: 14),
+          // Text(
+          //   "Connectors",
+          //   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+          // ),
+          // SizedBox(height: 8),
+          // _buildDropdown(
+          //   label: "Connectors",
+          //   items: ["Select Connectors"],
+          //   value: "Select Connectors",
+          // ),
           SizedBox(height: 14),
-          Text(
-            "Connectors",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-          ),
-          SizedBox(height: 8),
-          _buildDropdown(
-            label: "Connectors",
-            items: ["Select Connectors"],
-            value: "Select Connectors",
-          ),
-          SizedBox(height: 14),
-          Text(
-            "Media Upload",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-          ),
-          SizedBox(height: 9),
-          Container(
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: green,
-                width: 1,
-                style: BorderStyle.solid,
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.file_upload, color: green, size: 32),
-                  SizedBox(height: 6),
-                  Text(
-                    "Drag your file(s) to start uploading",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                  SizedBox(height: 2),
-                  Text("OR", style: TextStyle(fontSize: 16)),
-                  SizedBox(height: 2),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: green,
-                      backgroundColor: bgGreen,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text("Open Camera", style: TextStyle(color: green)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 13),
+          // Text(
+          //   "Media Upload",
+          //   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          // ),
+          // SizedBox(height: 9),
+          // Container(
+          //   height: 200,
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(14),
+          //     border: Border.all(
+          //       color: green,
+          //       width: 1,
+          //       style: BorderStyle.solid,
+          //     ),
+          //   ),
+          //   child: Center(
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Icon(Icons.file_upload, color: green, size: 32),
+          //         SizedBox(height: 6),
+          //         Text(
+          //           "Drag your file(s) to start uploading",
+          //           style: TextStyle(fontSize: 16, color: Colors.black),
+          //         ),
+          //         SizedBox(height: 2),
+          //         Text("OR", style: TextStyle(fontSize: 16)),
+          //         SizedBox(height: 2),
+          //         ElevatedButton(
+          //           onPressed: () {},
+          //           style: ElevatedButton.styleFrom(
+          //             foregroundColor: green,
+          //             backgroundColor: bgGreen,
+          //             shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(8),
+          //             ),
+          //           ),
+          //           child: Text("Open Camera", style: TextStyle(color: green)),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // SizedBox(height: 13),
           Row(
             children: [
-              Checkbox(
-                value: true,
-                onChanged: (_) {},
-                activeColor: AppColors.primary,
-                shape: CircleBorder(),
+              BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  return Checkbox(
+                    value: ProfileCubit.get(context).agreePrivacy,
+                    onChanged: (value) {
+                      ProfileCubit.get(
+                        context,
+                      ).editAgreePriivacy(value ?? false);
+                    },
+                    activeColor: AppColors.primary,
+                    shape: CircleBorder(),
+                  );
+                },
               ),
               Expanded(
                 child: Text.rich(
@@ -346,7 +379,28 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (!ProfileCubit.get(context).agreePrivacy) {
+                  context.showErrorMessage("Please agree on privacy first");
+                  return;
+                }
+                if (ProfileCubit.get(context).selectedCategory == null) {
+                  context.showErrorMessage("Please select cateogry");
+                  return;
+                }
+                if (titleController.text.isEmpty) {
+                  context.showErrorMessage("Please enter title");
+                  return;
+                }
+                if (descController.text.isEmpty) {
+                  context.showErrorMessage("Please enter description");
+                  return;
+                }
+
+                ProfileCubit.get(
+                  context,
+                ).makeComplaint(titleController.text, descController.text);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 shape: RoundedRectangleBorder(
@@ -372,52 +426,66 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // AppBar
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              height: 57,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xffF2F4F8))),
-                color: Colors.white,
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset("assets/icons/back.svg"),
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is SuccessMakeComplaintsState) {
+            Navigator.pop(context);
+          }
+        },
+        builder: (context, state) {
+          if (state is LoadingMakeComplaintsState) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return SafeArea(
+            child: Column(
+              children: [
+                // AppBar
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  height: 57,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xffF2F4F8)),
                     ),
+                    color: Colors.white,
                   ),
-                  Center(
-                    child: Text(
-                      "Support and complain",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff212121),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: SvgPicture.asset("assets/icons/back.svg"),
+                        ),
                       ),
-                    ),
+                      Center(
+                        child: Text(
+                          "Support and complain",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff212121),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                _buildTabBar(),
+                // Main Tab View
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: selectedTab == 0
+                        ? _buildSupportTab()
+                        : _buildComplaintTab(),
+                  ),
+                ),
+              ],
             ),
-            _buildTabBar(),
-            // Main Tab View
-            Expanded(
-              child: SingleChildScrollView(
-                child: selectedTab == 0
-                    ? _buildSupportTab()
-                    : _buildComplaintTab(),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

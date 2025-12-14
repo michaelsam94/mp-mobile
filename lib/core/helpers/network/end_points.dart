@@ -16,6 +16,11 @@ class EndPoints {
   static const String connectors = "/api/connectors";
   static String models(int id) => "/api/brands/$id/models";
 
+  static String deactivateSavedCards(int id) =>
+      "/api/customer/cards/$id/deactivate";
+  static String setDefaultSavedCards(int id) =>
+      "/api/customer/cards/$id/setDefault";
+  static const String deleteSavedCards = "/api/customer/cards/";
   static const String getSavedCards = "/api/customer/cards/saved";
   static const String getTopUpTransactions = "/api/payments/transactions/topup";
   static const String getWalletBalance = "/api/customer/wallet";
@@ -23,13 +28,11 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
-  static  String getMapStations(lat,long) =>
-      "/api/stations/map/nearby?lat=$lat&lng=-$long&radius=5000";
+  static String getMapStations(double lat, double long) =>
+      "/api/stations/map/nearby?lat=$lat&lng=$long&radius=5000";
 
   static const String getStations = "/api/stations/list";
 
   static const String startCharging = "/api/charging/start";
   static const String stopCharging = "/api/charging/stop";
-
-
 }
