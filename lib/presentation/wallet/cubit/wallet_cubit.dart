@@ -62,6 +62,7 @@ class WalletCubit extends Cubit<WalletState> {
         query: {"amount": amount},
         // data: FormData.fromMap({"amount": amount}),
       );
+      print(response.data.toString());
       if (response.statusCode == 200 && response.data["success"] == true) {
         payUrl = response.data["data"]["iframeUrl"];
         emit(SuccessPayWalletState());
@@ -69,6 +70,7 @@ class WalletCubit extends Cubit<WalletState> {
         emit(ErrorPayWalletState());
       }
     } catch (e) {
+      print(e.toString());
       emit(ErrorPayWalletState());
     }
   }

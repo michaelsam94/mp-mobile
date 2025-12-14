@@ -1,53 +1,25 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'dart:async';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../core/services/models/session_update_model.dart';
+import '../../core/services/websocket_cubit/websocket_cubit.dart';
 
 class ChargerScreen extends StatefulWidget {
+  const ChargerScreen({super.key});
+
   @override
   State<ChargerScreen> createState() => _ChargerScreenState();
 }
 
 class _ChargerScreenState extends State<ChargerScreen> {
-  static const int totalSeconds = 20 * 60; // 20 minutes for full progress
-  int remainingSeconds = totalSeconds;
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    startTimer();
-  }
-
-  void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (remainingSeconds > 0) {
-        setState(() {
-          remainingSeconds--;
-        });
-      } else {
-        _timer?.cancel();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  double get percent => 1 - remainingSeconds / totalSeconds;
-
-  int get percentValue => (percent * 100).round();
-
-  String get minutesRemaining {
-    final min = remainingSeconds ~/ 60;
-    return '$min min remaining';
-  }
-
+  SessionStoppedData? stoppedData;
+  bool? isSessionStopped;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,173 +32,329 @@ class _ChargerScreenState extends State<ChargerScreen> {
         shadowColor: Colors.white,
         surfaceTintColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
+      body: BlocConsumer<WebSocketCubit, WebSocketState>(
+        listener: (context, state) {
+          if (state is SessionUpdate) {
+            final session = state.data;
+
+            // إذا تم إيقاف الجلسة
+            if (session.isSessionStopped) {
+              isSessionStopped = true;
+              stoppedData = session.stoppedData!;
+              // showDialog(
+              //   context: context,
+              //   barrierDismissible: false,
+              //   builder: (_) => AlertDialog(
+              //     title: Text('Charging Complete'),
+              //     content: Column(
+              //       mainAxisSize: MainAxisSize.min,
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text('Reason: ${stopped.stopReason}'),
+              //         SizedBox(height: 8),
+              //         Text(
+              //           'Energy Delivered: ${stopped.energyDeliveredValue.toStringAsFixed(2)} kWh',
+              //         ),
+              //         Text(
+              //           'Duration: ${(stopped.durationValue / 60).toStringAsFixed(1)} min',
+              //         ),
+              //       ],
+              //     ),
+              //     actions: [
+              //       TextButton(
+              //         onPressed: () {
+              //           Navigator.of(context).pop(); // Close dialog
+              //           Navigator.of(context).pop(); // Go back
+              //         },
+              //         child: Text('OK'),
+              //       ),
+              //     ],
+              //   ),
+              // );
+            }
+          }
+
+          if (state is NotificationUpdate) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.data.message)));
+          }
+        },
+        builder: (context, state) {
+          MeterValueData? meterData;
+          String? transactionId;
+
+          // الحصول على آخر meter data
+          if (state is SessionUpdate && state.data.isMeterValue) {
+            meterData = state.data.meterData;
+            transactionId = state.data.transactionId;
+          } else if (state is SessionUpdate && state.data.isSessionStopped) {
+            isSessionStopped = true;
+            stoppedData = state.data.stoppedData!;
+            meterData = context.read<WebSocketCubit>().currentMeterData;
+          }
+
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                children: [
+                  _buildStationInfo(meterData),
+                  SizedBox(height: 24),
+                  _buildChargeProgress(meterData),
+                  SizedBox(height: 28),
+                  _buildInfoTiles(meterData),
+                  SizedBox(height: 24),
+
+                  isSessionStopped ?? false
+                      ? _buildDownloadPDF()
+                      : state is SessionUpdate && state.data.isMeterValue
+                      ? _buildStopButton(meterData, transactionId)
+                      : SizedBox(),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDownloadPDF() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: Icon(Icons.file_download_outlined, color: Colors.white, size: 27),
+        label: Text(
+          'Download Report (PDF)',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 19,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 17),
+        ),
+        onPressed: () async {
+          String? url = ChargingCubit.get(context).pdfUrl;
+          if (url != null) {
+            try {
+              if (await canLaunchUrl(Uri.parse(url))) {
+                launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+              }
+            } catch (e) {
+              context.showErrorMessage("This pdf link is not working");
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildStationInfo(MeterValueData? meterData) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Image.asset(
+            "assets/icons/ac.png",
+            width: 32,
+            height: 40,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              spacing: 4,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  meterData?.stationName ?? "N/A",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                    fontSize: 18,
+                  ),
+                ),
+                Text(
+                  meterData?.stationAddress ?? "N/A",
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Color(0xffE6F9EE),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "Available",
+              style: TextStyle(color: Color(0xff058A3C)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChargeProgress(MeterValueData? meterData) {
+    final percent = (meterData?.chargePercentageValue ?? 0) / 100;
+    final percentValue = (meterData?.chargePercentageValue ?? 0).toInt();
+    final timeRemaining =
+        meterData?.timeRemainingDisplay ??
+        meterData?.chargingDurationDisplay ??
+        'Calculating...';
+
+    return Center(
+      child: DashedCircularProgress(
+        percent: percent,
+        totalTicks: 60,
+        diameter: 280,
+        activeColor: AppColors.primary,
+        inactiveColor: AppColors.primary.withValues(alpha: .2),
+        strokeWidth: 3,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset("assets/icons/flash.svg"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "$percentValue",
+                  style: TextStyle(
+                    fontSize: 72,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+                Text(
+                  "%",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              timeRemaining,
+              style: TextStyle(fontSize: 17, color: Colors.grey[700]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoTiles(MeterValueData? meterData) {
+    return Column(
+      spacing: 16,
+      children: [
+        Row(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _infoTile(
+              'Power Consumption',
+              '${meterData?.energyConsumedValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.energyConsumedUnit ?? 'kWh'}',
+              "assets/icons/power_cons.png",
+            ),
+            _infoTile(
+              'Cost consumption',
+              '${meterData?.costValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.costCurrency ?? 'EGP'}',
+              "assets/icons/cost_con.png",
+            ),
+          ],
+        ),
+        Row(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _infoTile(
+              'Charging time',
+              meterData?.chargingDurationDisplay ?? '0 min',
+              "assets/icons/battery.png",
+            ),
+            _infoTile(
+              'Output power from gun',
+              '${meterData?.outputPowerValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.outputPowerUnit ?? 'kW'}',
+              "assets/icons/output_power.png",
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStopButton(MeterValueData? meterData, String? transactionId) {
+    return BlocListener<ChargingCubit, ChargingState>(
+      listener: (context, state) {
+        if (state is StopChargingSuccess) {
+          Navigator.pop(context);
+        }
+      },
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xffF8E8E8),
+            padding: EdgeInsets.symmetric(vertical: 18),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: Color(0xffB71C1C)),
+            ),
+          ),
+          onPressed: () async {
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: Text('Stop Charging?'),
+                content: Text('Are you sure you want to stop charging?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Call API here
+                      context.read<ChargingCubit>().stopCharging(
+                        meterData?.chargerId.toString() ?? "",
+                        transactionId ?? "",
+                      );
+                    },
+                    child: Text('Stop', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      "assets/icons/ac.png",
-                      width: 32,
-                      height: 40,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        spacing: 4,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Cillout Mansoura",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            "15 Tahrir Street, Downtown, Cairo",
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(0xffE6F9EE),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        "Available",
-                        style: TextStyle(color: Color(0xff058A3C)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 24),
-              Center(
-                child: DashedCircularProgress(
-                  percent: percent,
-                  totalTicks: 60, // feel free to adjust for smoothness
-                  diameter: 280,
-                  activeColor: AppColors.primary,
-                  inactiveColor: AppColors.primary.withValues(alpha: .2),
-                  strokeWidth: 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset("assets/icons/flash.svg"),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "$percentValue",
-                            style: TextStyle(
-                              fontSize: 72,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                          Text(
-                            "%",
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      Text(
-                        minutesRemaining,
-                        style: TextStyle(fontSize: 17, color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 28),
-              Row(
-                spacing: 16,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  infoTile(
-                    'Power Consumption',
-                    '42.5 kWh',
-                    "assets/icons/power_cons.png",
-                  ),
-                  infoTile(
-                    'Cost consumption',
-                    '315 EGP',
-                    "assets/icons/cost_con.png",
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                spacing: 16,
-
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  infoTile(
-                    'Charging time',
-                    '2hr 15min',
-                    "assets/icons/battery.png",
-                  ),
-                  infoTile(
-                    'Output power from gun',
-                    '22.0 kW',
-                    "assets/icons/output_power.png",
-                  ),
-                ],
-              ),
-              SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffF8E8E8),
-
-                    padding: EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Color(0xffB71C1C)),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.pause, color: Color(0xffB71C1C)),
-                      SizedBox(width: 8),
-                      Text(
-                        'Stop Charging',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xffB71C1C),
-                        ),
-                      ),
-                    ],
-                  ),
+              Icon(Icons.stop, color: Color(0xffB71C1C)),
+              SizedBox(width: 8),
+              Text(
+                'Stop Charging',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xffB71C1C),
                 ),
               ),
             ],
@@ -236,11 +364,10 @@ class _ChargerScreenState extends State<ChargerScreen> {
     );
   }
 
-  Widget infoTile(String title, String value, String icon) {
+  Widget _infoTile(String title, String value, String icon) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(12),
-
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -259,14 +386,17 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
             Row(
               children: [
-                Image.asset(icon),
+                Image.asset(icon, width: 24, height: 24),
                 SizedBox(width: 6),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                Flexible(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -278,6 +408,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
   }
 }
 
+// Keep the DashedCircularProgress class as is
 class DashedCircularProgress extends StatelessWidget {
   final double percent;
   final int totalTicks;
@@ -351,7 +482,7 @@ class _TicksRingPainter extends CustomPainter {
       final startAngle = -pi / 2 + i * angle;
       final x1 = size.width / 2 + radius * cos(startAngle);
       final y1 = size.height / 2 + radius * sin(startAngle);
-      final gap = 12.0; // px length of each tick
+      final gap = 12.0;
       final x2 = size.width / 2 + (radius - gap) * cos(startAngle);
       final y2 = size.height / 2 + (radius - gap) * sin(startAngle);
 

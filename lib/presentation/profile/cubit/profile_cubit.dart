@@ -28,6 +28,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   List<RFIDResponseModel> rfidCards = [];
+
+  RFIDResponseModel? defaultRFID;
   void getRFID() async {
     emit(LoadingGetRFIDState());
 
@@ -37,6 +39,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         var data = response.data["data"] as List;
         var rfidData = data[0]["rfids"] as List;
         rfidCards = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
+
+        // Todo Edit
+        defaultRFID = rfidCards[1];
         emit(SuccessGetRFIDState());
       } else {
         emit(ErrorGetRFIDState());

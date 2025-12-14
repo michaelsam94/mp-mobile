@@ -13,6 +13,13 @@ final class ChargingSuccess extends ChargingState {
   ChargingSuccess(this.data);
 }
 
+
+final class StopChargingSuccess extends ChargingState {
+  final bool data;
+  // final Map<String, dynamic> data;
+  StopChargingSuccess(this.data);
+}
+
 final class ChargingError extends ChargingState {
   final String message;
   ChargingError(this.message);

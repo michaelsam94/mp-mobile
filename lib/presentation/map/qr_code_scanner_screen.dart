@@ -2,10 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/presentation/map/start_session_screen.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class QrCodeScannerScreen extends StatelessWidget {
+class QrCodeScannerScreen extends StatefulWidget {
   const QrCodeScannerScreen({super.key});
+
+  @override
+  State<QrCodeScannerScreen> createState() => _QrCodeScannerScreenState();
+}
+
+class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
+  final MobileScannerController controller = MobileScannerController();
+  bool isProcessing = false;
+
+  void _handleBarcode(BarcodeCapture barcodeCapture) {
+    // منع المعالجة المتعددة
+    if (isProcessing) return;
+
+    if (barcodeCapture.barcodes.isEmpty) return;
+
+    final barcode = barcodeCapture.barcodes.first;
+    final String? code = barcode.rawValue;
+
+    if (code != null && code.isNotEmpty) {
+      setState(() => isProcessing = true);
+
+      // إيقاف السكانر مؤقتاً
+      controller.stop();
+
+      // الانتقال للشاشة التالية
+      _processQrCode(code);
+    }
+  }
+
+  void _processQrCode(String qrCode) {
+    try {
+      if (qrCode.length == 12) {
+        final chargerId = qrCode.substring(0, 10);
+        final connectorId = qrCode.substring(10, 12);
+
+        if (ProfileCubit.get(context).defaultRFID != null) {
+          context.goOff(
+            StartSessionScreen(
+              chargerId: chargerId,
+              connectorId: connectorId,
+              rfidCode: ProfileCubit.get(context).defaultRFID?.code ?? "",
+            ),
+          );
+          
+        } else {
+          context.showErrorMessage("No RFID Card found");
+        }
+      } else {
+        context.showErrorMessage("Code is invalid");
+      }
+    } catch (e) {
+      print('Error parsing QR Code: $e');
+      context.showErrorMessage("Invalid QR Code format");
+      // إعادة تشغيل السكانر
+      Future.delayed(Duration(seconds: 2), () {
+        controller.start();
+        setState(() => isProcessing = false);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +93,11 @@ class QrCodeScannerScreen extends StatelessWidget {
               height: 200,
               width: 200,
               padding: const EdgeInsets.only(top: 50),
-
               child: Stack(
                 children: [
                   MobileScanner(
-                    onDetect: (barcodes) {
-                      if (barcodes.raw != null) {
-                        context.goTo(StartSessionScreen());
-                      }
-                      print(barcodes.raw.toString());
-                      print(barcodes.barcodes[0].rawValue);
-                    },
+                    controller: controller,
+                    onDetect: _handleBarcode,
                   ),
                   SvgPicture.asset("assets/icons/Crosshair.svg"),
                 ],
@@ -50,7 +111,7 @@ class QrCodeScannerScreen extends StatelessWidget {
               ),
               padding: EdgeInsets.all(16),
               child: Text(
-                "Find a code to scan",
+                isProcessing ? "Processing..." : "Find a code to scan",
                 style: TextStyle(color: Colors.white),
               ),
             ),

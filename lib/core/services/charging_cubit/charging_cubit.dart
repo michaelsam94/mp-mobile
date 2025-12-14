@@ -13,14 +13,21 @@ class ChargingCubit extends Cubit<ChargingState> {
 
   static ChargingCubit get(context) => BlocProvider.of(context);
 
-  Future<void> startCharging(String chargerId, int connectorId,String rfid) async {
+  Future<void> startCharging(
+    String chargerId,
+    int connectorId,
+    String rfid,
+  ) async {
     emit(ChargingLoading());
     try {
       final response = await ChargingApiService.startCharging(
         chargerId,
         connectorId,
-        rfid
+        rfid,
       );
+
+      print(response.data);
+      print(response.statusCode);
       if (response.statusCode == 200 && response.data['success'] == true) {
         emit(ChargingSuccess(response.data['data']));
       } else {
@@ -39,12 +46,21 @@ class ChargingCubit extends Cubit<ChargingState> {
     }
   }
 
-  Future<void> stopCharging(String chargerId,int transactionId) async {
+  String? pdfUrl;
+  Future<void> stopCharging(String chargerId, String transactionId) async {
     emit(ChargingLoading());
     try {
-      final response = await ChargingApiService.stopCharging(chargerId,transactionId);
+      final response = await ChargingApiService.stopCharging(
+        chargerId,
+        transactionId,
+      );
+
+      print(response.data);
+      print(response.statusCode);
+
       if (response.statusCode == 200 && response.data['success'] == true) {
-        emit(ChargingSuccess(response.data['data']));
+        pdfUrl = response.data["data"];
+        emit(StopChargingSuccess(response.data['success']));
       } else {
         emit(ChargingError(response.data['message']));
       }

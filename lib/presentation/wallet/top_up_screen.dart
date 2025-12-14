@@ -176,14 +176,14 @@ class _TopUpScreenState extends State<TopUpScreen> {
                         decoration: InputDecoration(
                           hintText: "Enter amount",
                           border: InputBorder.none,
-                          suffixIcon: Container(
-                            margin: EdgeInsets.only(right: 8),
-                            child: SvgPicture.asset(
-                              "assets/icons/arrow_down.svg",
-                              height: 24,
-                              width: 24,
-                            ),
-                          ),
+                          // suffixIcon: Container(
+                          //   margin: EdgeInsets.only(right: 8),
+                          //   child: SvgPicture.asset(
+                          //     "assets/icons/arrow_down.svg",
+                          //     height: 24,
+                          //     width: 24,
+                          //   ),
+                          // ),
                           contentPadding: EdgeInsets.symmetric(horizontal: 16),
                         ),
                         style: TextStyle(fontSize: 18),
@@ -193,6 +193,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                 ),
               ),
             ),
+
             // SizedBox(height: 17),
 
             // // Payment card select
@@ -276,7 +277,6 @@ class _TopUpScreenState extends State<TopUpScreen> {
             //     ),
             //   ),
             // ),
-
             SizedBox(height: 40),
             // Submit button
             BlocConsumer<WalletCubit, WalletState>(

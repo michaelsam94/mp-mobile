@@ -3,12 +3,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../models/notification_update_model.dart';
+import '../models/session_update_model.dart';
+import '../models/websocket_response.dart';
 import '../websocket_service.dart';
 
 part 'websocket_state.dart';
 
 class WebSocketCubit extends Cubit<WebSocketState> {
   final WebSocketService service;
+
+  // حفظ آخر session data
+  MeterValueData? _currentMeterData;
+
+  MeterValueData? get currentMeterData => _currentMeterData;
 
   WebSocketCubit(this.service) : super(WebSocketInitial()) {
     service.setMessageHandler(_handleMessage);
@@ -28,27 +36,25 @@ class WebSocketCubit extends Cubit<WebSocketState> {
   void _handleMessage(dynamic message) {
     if (message is Map<String, dynamic>) {
       print(message);
-      switch (message['type']) {
-        case 'charger_status_update':      
-          emit(ChargerStatusUpdate(message));
-          break;
-        case 'session_update':
-          emit(SessionUpdate(message));
-          break;
-        case 'active_session_update':
-          emit(ActiveSessionUpdate(message));
-          break;
-        case 'charger_list_update':
-          emit(ChargerListUpdate(message));
-          break;
-        case 'notification':
-          emit(NotificationUpdate(message));
-          break;
-        case 'error':
-          emit(WebSocketError(message['message']));
-          break;
-        default:
-          emit(WebSocketMessage(message));
+
+      final parsedMessage = WebSocketResponse.parseMessage(message);
+
+      if (parsedMessage == null) {
+        emit(WebSocketError('Unknown message type'));
+        return;
+      }
+
+      // Emit specific states based on message type
+      if (parsedMessage is NotificationUpdateModel) {
+        emit(NotificationUpdate(parsedMessage));
+      } else if (parsedMessage is SessionUpdateModel) {
+        // حفظ الـ meter data
+        if (parsedMessage.isMeterValue) {
+          _currentMeterData = parsedMessage.meterData;
+        }
+        emit(SessionUpdate(parsedMessage));
+      } else {
+        emit(WebSocketMessage(parsedMessage));
       }
     }
   }

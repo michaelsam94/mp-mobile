@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/history/history_screen.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/profile_screen.dart';
 import 'package:mega_plus/presentation/wallet/wallet_screen.dart';
 
+import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/map_screen.dart';
+import '../map/qr_code_scanner_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    context.read<WebSocketCubit>().connect();
+    context.read<ProfileCubit>().getRFID();
+    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: MapScreen(),
@@ -101,7 +109,9 @@ class MainScreen extends StatelessWidget {
           Positioned(
             top: 5,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                context.goTo(QrCodeScannerScreen());
+              },
               child: Container(
                 height: 62,
                 width: 62,
@@ -146,19 +156,21 @@ class MainScreen extends StatelessWidget {
 //     return Scaffold(
 //       body: BlocConsumer<ChargingCubit, ChargingState>(
 //         listener: (context, state) {
-//           if (state is ChargingSuccess) {
-//             print(state.data);
-//           } else if (state is ChargingError) {
-//             print(state.message);
-//           }
+          // if (state is ChargingSuccess) {
+          //   print(state.data);
+          // } else if (state is ChargingError) {
+          //   print(state.message);
+          // }
 //         },
 //         builder: (context, state) {
 //           return BlocConsumer<WebSocketCubit, WebSocketState>(
 //             listener: (context, state) {
 //               print(state);
-//               if (state is SessionUpdate) {
-//                 transactionId = state.data["transaction_id"];
-//               }
+              // if (state is SessionUpdate) {
+              //   if (state.data.event != "session_stopped") {
+              //     transactionId = state.data.transactionId;
+              //   }
+              // }
 //             },
 //             builder: (context, state) {
 //               return Center(
@@ -173,11 +185,14 @@ class MainScreen extends StatelessWidget {
 //                       },
 //                       child: Text("Start"),
 //                     ),
-//                     ElevatedButton(onPressed: () {
-//                       ChargingCubit.get(
+//                     ElevatedButton(
+//                       onPressed: () {
+//                         ChargingCubit.get(
 //                           context,
 //                         ).stopCharging("minus", transactionId!);
-//                     }, child: Text("Stop")),
+//                       },
+//                       child: Text("Stop"),
+//                     ),
 //                   ],
 //                 ),
 //               );
