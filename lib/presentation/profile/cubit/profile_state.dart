@@ -41,3 +41,12 @@ class ErrorChangePasswordState extends ProfileState {
   final String? message;
   ErrorChangePasswordState({this.message});
 }
+// Add these to your existing states
+class LoadingGetTermsState extends ProfileState {}
+
+class SuccessGetTermsState extends ProfileState {}
+
+class ErrorGetTermsState extends ProfileState {
+  final String message;
+  ErrorGetTermsState({this.message = 'Failed to load terms'});
+}

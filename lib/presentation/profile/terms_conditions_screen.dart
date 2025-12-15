@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
-class TermsConditionsScreen extends StatelessWidget {
+import 'cubit/profile_cubit.dart';
+
+class TermsConditionsScreen extends StatefulWidget {
   const TermsConditionsScreen({super.key});
+
+  @override
+  State<TermsConditionsScreen> createState() => _TermsConditionsScreenState();
+}
+
+class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ProfileCubit.get(context).getTermsConditions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,83 +58,88 @@ class TermsConditionsScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Terms and Conditions",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19,
-                        color: Colors.black,
+              child: BlocBuilder<ProfileCubit, ProfileState>(
+                builder: (context, state) {
+                  if (state is LoadingGetTermsState) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is ErrorGetTermsState) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 60,
+                            color: Colors.red,
+                          ),
+                          SizedBox(height: 16),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              state.message,
+                              style: TextStyle(fontSize: 16, color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ProfileCubit.get(context).getTermsConditions();
+                            },
+                            child: Text("Retry"),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 3),
-                    Text(
-                      "Last updated: 30 May 2024",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
+                    );
+                  }
+
+                  var cubit = ProfileCubit.get(context);
+
+                  if (cubit.termsConditions.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "No terms and conditions available",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
+                    );
+                  }
+
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Text(
+                        //   "Terms and Conditions",
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 19,
+                        //     color: Colors.black,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 3),
+                        // Text(
+                        //   "Last updated: ${DateTime.now().day} ${_getMonthName(DateTime.now().month)} ${DateTime.now().year}",
+                        //   style: TextStyle(
+                        //     color: Colors.grey[600],
+                        //     fontSize: 13,
+                        //     fontWeight: FontWeight.w400,
+                        //   ),
+                        // ),
+                        SizedBox(height: 20),
+                        // Dynamic content from API with HTML support
+                        ...cubit.termsConditions.map((term) {
+                          return _buildTermSection(
+                            term.title,
+                            term.description,
+                          );
+                        }).toList(),
+                      ],
                     ),
-                    SizedBox(height: 11),
-                    Text(
-                      "Please read these Terms and Conditions carefully before creating an account or using the Electric Vehicle (EV) Charging Service.",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: 14),
-                    _section("1. About the Service", [
-                      "When you create an account, you must provide accurate, complete, and up-to-date information.",
-                      "You are responsible for safeguarding your password and any activity that occurs under your account.",
-                      "Notify us immediately if you suspect unauthorized access or any security breach.",
-                    ]),
-                    _section("3. Charging Sessions", [
-                      "Charging sessions depend on the availability and condition of the selected charging station.",
-                      "Session time, energy delivered, and pricing may vary based on the station or operator.",
-                      "In case of technical issues (e.g., power outage, connector failure, or network problem), we will assist you but cannot guarantee uninterrupted service.",
-                    ]),
-                    _section("4. Payments and Cancellations", [
-                      "All charging and service fees are processed through your registered payment method within the app.",
-                      "Cancellation or refund policies depend on the station operator or company policy, displayed before you confirm a session or purchase.",
-                      "If you dispute any transaction, you may contact support for investigation; decisions will be based on charging records and payment logs.",
-                    ]),
-                    _section("5. User Responsibilities", [
-                      "Ensure your vehicle is compatible with the charging station before starting a session.",
-                      "Follow all on-site safety instructions and cooperate with station personnel if applicable.",
-                      "Do not misuse, damage, or interfere with charging equipment or the mobile application.",
-                    ]),
-                    _section("6. Safety and Technical Compliance", [
-                      "Some stations are operated by third parties. We do not control their maintenance or safety directly.",
-                      "We are not liable for any vehicle damage or malfunction resulting from third-party station use, except where negligence from our side is proven.",
-                    ]),
-                    _section("7. Account Termination or Suspension", [
-                      "We may suspend or terminate your account immediately if you violate these Terms or if fraudulent or harmful activity is detected.",
-                      "You may delete your account at any time from the app settings. Refunds or outstanding balances will be handled according to our payment policy.",
-                    ]),
-                    _section("8. Limitation of Liability", [
-                      "To the maximum extent permitted by law, we shall not be liable for indirect, incidental, or consequential damages (including loss of data, profits, or vehicle functionality) arising from your use of the Service.",
-                      "You agree to indemnify and hold us harmless from any claims arising from your misuse of the Service or breach of these Terms.",
-                    ]),
-                    _section("9. Privacy and Data Protection", [
-                      "We collect and process your data in accordance with our Privacy Policy, which explains what information we collect, how we use it, and how it is stored securely.",
-                      "By using the app, you consent to the processing of your data for operational and support purposes (e.g., managing sessions, payments, and support requests).",
-                    ]),
-                    _section("10. Modifications to the Terms", [
-                      "We may update or revise these Terms from time to time. If significant changes are made, we will notify you before they take effect.",
-                      "Continued use of the Service after such updates means you agree to the revised Terms.",
-                    ]),
-                    _section("10. Modifications to the Terms", [
-                      "These Terms shall be governed by and interpreted in accordance with the laws of the country or region where the company operates. Any disputes will be subject to the jurisdiction of the appropriate courts in that region.",
-                    ]),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -128,13 +148,12 @@ class TermsConditionsScreen extends StatelessWidget {
     );
   }
 
-  Widget _section(String title, List<String> bullets) {
+  Widget _buildTermSection(String title, String htmlDescription) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 11),
           Text(
             title,
             style: TextStyle(
@@ -143,23 +162,50 @@ class TermsConditionsScreen extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          ...bullets.map(
-            (b) => Padding(
-              padding: const EdgeInsets.only(left: 17, top: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text("• ", style: TextStyle(fontSize: 15)),
-                  ),
-                  Expanded(child: Text(b, style: TextStyle(fontSize: 15))),
-                ],
-              ),
+          SizedBox(height: 8),
+          HtmlWidget(
+            htmlDescription,
+            textStyle: TextStyle(
+              fontSize: 15,
+              color: Colors.black87,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
             ),
+            // Customize link handling
+            onTapUrl: (url) {
+              // Handle link taps here
+              print('Tapped on: $url');
+              return true; // Return true to prevent default behavior
+            },
+            // Customize rendering
+            customStylesBuilder: (element) {
+              // Add custom styles for specific HTML elements
+              if (element.localName == 'p') {
+                return {'margin': '0', 'padding': '0'};
+              }
+              return null;
+            },
           ),
         ],
       ),
     );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 }

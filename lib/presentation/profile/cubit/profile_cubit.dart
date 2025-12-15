@@ -7,6 +7,8 @@ import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
 import 'package:meta/meta.dart';
 
+import '../models/content_page_model.dart';
+
 part 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
@@ -168,34 +170,68 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  void changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    emit(LoadingChangePasswordState());
 
-void changePassword({
-  required String oldPassword,
-  required String newPassword,
-}) async {
-  emit(LoadingChangePasswordState());
+    try {
+      var response = await DioHelper.postData(
+        url: EndPoints.changePassword,
+        data: {'old_password': oldPassword, 'new_password': newPassword},
+      );
 
-  try {
-    var response = await DioHelper.postData(
-      url: EndPoints.changePassword, 
-      data: {
-        'old_password': oldPassword,
-        'new_password': newPassword,
-      },
-    );
-
-    if (response.statusCode == 200 && response.data['success'] == true) {
-      emit(SuccessChangePasswordState());
-    } else {
-      emit(ErrorChangePasswordState(
-        message: response.data['message'] ?? 'Failed to change password',
-      ));
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        emit(SuccessChangePasswordState());
+      } else {
+        emit(
+          ErrorChangePasswordState(
+            message: response.data['message'] ?? 'Failed to change password',
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        ErrorChangePasswordState(message: 'An error occurred: ${e.toString()}'),
+      );
     }
-  } catch (e) {
-    emit(ErrorChangePasswordState(
-      message: 'An error occurred: ${e.toString()}',
-    ));
   }
-}
 
+  List<ContentPageModel> termsConditions = [];
+
+  void getTermsConditions() async {
+    emit(LoadingGetTermsState());
+
+    try {
+      var response = await DioHelper.getData(
+        url: "/api/content",
+        query: {"type": "page"},
+        auth: false, // Set to true if authentication is required
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        var data = response.data["data"]["tips"] as List;
+        termsConditions = data
+            .map((e) => ContentPageModel.fromJson(e))
+            .toList();
+
+        // Sort by sort field
+        termsConditions.sort((a, b) => a.sort.compareTo(b.sort));
+
+        emit(SuccessGetTermsState());
+      } else {
+        emit(
+          ErrorGetTermsState(
+            message: response.data["message"] ?? "Failed to load terms",
+          ),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      emit(ErrorGetTermsState(message: e.toString()));
+    }
+  }
 }
