@@ -320,29 +320,32 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
           ),
           onPressed: () async {
-            showDialog(
+            final bool? confirmed = await showDialog<bool>(
               context: context,
               builder: (_) => AlertDialog(
                 title: Text('Stop Charging?'),
                 content: Text('Are you sure you want to stop charging?'),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () =>
+                        Navigator.pop(context, false), // Return false
                     child: Text('Cancel'),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Call API here
-                      context.read<ChargingCubit>().stopCharging(
-                        meterData?.chargerId.toString() ?? "",
-                        transactionId ?? "",
-                      );
-                    },
+                    onPressed: () =>
+                        Navigator.pop(context, true), // Return true
                     child: Text('Stop', style: TextStyle(color: Colors.red)),
                   ),
                 ],
               ),
             );
+
+            if (confirmed == true) {
+              context.read<ChargingCubit>().stopCharging(
+                meterData?.chargerId.toString() ?? "",
+                transactionId ?? "",
+              );
+            }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
