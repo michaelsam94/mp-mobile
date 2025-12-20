@@ -1,8 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
+import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
+import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/search_cubit/search_cubit.dart';
+import 'package:mega_plus/presentation/map/station_details_bottom_sheet.dart';
+import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -13,6 +20,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -24,8 +32,25 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    // Cancel previous timer if it exists
+    _debounceTimer?.cancel();
+    
+    // Create a new timer with debounce duration (e.g., 500ms)
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      // This callback will be called after the debounce duration
+      if (mounted) {
+        // Get cached stations from MapCubit
+        final mapCubit = MapCubit.get(context);
+        final cachedStations = mapCubit.mapStations;
+        SearchCubit.get(context).searchStations(value, cachedStations: cachedStations);
+      }
+    });
   }
 
   @override
@@ -50,10 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         child: TextField(
                           controller: _searchController,
-                          onChanged: (value) {
-                            // كل ما اليوزر يكتب، نبحث فورًا
-                            SearchCubit.get(context).searchStations(value);
-                          },
+                          onChanged: _onSearchChanged,
                           decoration: InputDecoration(
                             hintText: 'Search stations, cities, addresses...',
                             hintStyle: const TextStyle(
@@ -156,12 +178,135 @@ class _SearchScreenState extends State<SearchScreen> {
               BlocBuilder<SearchCubit, SearchState>(
                 builder: (context, state) {
                   if (state is LoadingGetStationsSearchState) {
-                    return Center(child: CircularProgressIndicator());
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 2,
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ShimmerWidget(
+                                      width: 80,
+                                      height: 24,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    ShimmerWidget(
+                                      width: 24,
+                                      height: 24,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 8),
+                                    ShimmerWidget(
+                                      width: 39,
+                                      height: 48,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          ShimmerWidget(
+                                            width: double.infinity,
+                                            height: 20,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          SizedBox(height: 8),
+                                          ShimmerWidget(
+                                            width: 120,
+                                            height: 16,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 12),
+                                ShimmerWidget(
+                                  width: double.infinity,
+                                  height: 1,
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    ShimmerWidget(
+                                      width: 40,
+                                      height: 40,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          ShimmerWidget(
+                                            width: double.infinity,
+                                            height: 18,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          SizedBox(height: 6),
+                                          ShimmerWidget(
+                                            width: 100,
+                                            height: 14,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   }
 
                   final cubit = SearchCubit.get(context);
-                  final displayStations =
-                      cubit.filteredStations; // استخدم المفلترة
+                  final mapCubit = MapCubit.get(context);
+                  
+                  // Determine which stations to display
+                  List<dynamic> displayStations;
+                  bool isNearbyMode = !cubit.useCachedStations && 
+                                      cubit.searchQuery.isEmpty && 
+                                      cubit.filterStatus == null &&
+                                      cubit.filterConnectorType == null &&
+                                      cubit.filterMinimumPower == null;
+                  
+                  if (isNearbyMode) {
+                    // Show nearby stations (MapStationResponseModel)
+                    displayStations = cubit.nearbyStations;
+                  } else {
+                    // Use cached stations from map if available, otherwise use filtered
+                    if (mapCubit.mapStations.isNotEmpty && !cubit.useCachedStations) {
+                      // Switch to cached stations for search/filter
+                      cubit.useMapCachedStations(mapCubit.mapStations);
+                    }
+                    // Show filtered cached stations (StationResponseModel)
+                    displayStations = cubit.filteredStations;
+                  }
 
                   if (displayStations.isEmpty) {
                     return Center(
@@ -198,22 +343,55 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemCount: displayStations.length,
                     itemBuilder: (context, index) {
                       final station = displayStations[index];
+                      final isNearbyStation = station is MapStationResponseModel;
+                      
+                      // Extract station data based on type
+                      int? stationId;
+                      String? stationName;
+                      String? stationStatus;
+                      MapStationResponseModel? nearbyStation;
+                      StationResponseModel? fullStation;
+                      
+                      if (isNearbyStation) {
+                        nearbyStation = station;
+                        stationId = nearbyStation.id;
+                        stationName = nearbyStation.name;
+                        stationStatus = nearbyStation.status;
+                      } else {
+                        fullStation = station;
+                        stationId = fullStation!.id;
+                        stationName = fullStation.name;
+                        stationStatus = fullStation.status;
+                      }
+                      
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 2,
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
+                        child: InkWell(
+                          onTap: () {
+                            if (stationId != null) {
+                              // Show bottom sheet first, then fetch data
+                              showStationDetails(context);
+                              // Fetch station details after bottom sheet is shown
+                              Future.microtask(() {
+                                StationDetailsCubit.get(context).getStationDetails(stationId!);
+                              });
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _statusBadge(station.status ?? ""),
+                                  _statusBadge(stationStatus ?? ""),
                                   Icon(
                                     Icons.star_border,
                                     color: AppColors.primary,
@@ -238,20 +416,47 @@ class _SearchScreenState extends State<SearchScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          station.name ?? "",
+                                          stationName ?? "",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18,
                                             color: AppColors.primary,
                                           ),
                                         ),
-                                        Text(
-                                          station.address ?? "",
-                                          style: TextStyle(
-                                            color: Colors.grey[700],
-                                            fontSize: 15,
+                                        if (isNearbyStation && nearbyStation != null) ...[
+                                          if (nearbyStation.distance != null)
+                                            Text(
+                                              '${double.parse(nearbyStation.distance!).toStringAsFixed(1)} km away',
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          if (nearbyStation.totalGunsFormat != null)
+                                            Text(
+                                              'Guns: ${nearbyStation.totalGunsFormat}',
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                        ] else if (fullStation != null) ...[
+                                          Text(
+                                            fullStation.address ?? "",
+                                            style: TextStyle(
+                                              color: Colors.grey[700],
+                                              fontSize: 15,
+                                            ),
                                           ),
-                                        ),
+                                          if (fullStation.city != null)
+                                            Text(
+                                              fullStation.city ?? "",
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                        ],
                                         // Row(
                                         //   children: [
                                         //     SvgPicture.asset(
@@ -280,64 +485,113 @@ class _SearchScreenState extends State<SearchScreen> {
                                   // SvgPicture.asset("assets/icons/navigation.svg"),
                                 ],
                               ),
-                              SizedBox(height: 16),
-                              Divider(color: Color(0xffE6ECEF)),
-                              SizedBox(height: 16),
-                              Text(
-                                'Connectors Types',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  decoration: TextDecoration.underline,
+                              if (!isNearbyStation && fullStation != null) ...[
+                                SizedBox(height: 16),
+                                Divider(color: Color(0xffE6ECEF)),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Connectors Types',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    decoration: TextDecoration.underline,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 16),
-                              Column(
-                                children: station.guns!.map<Widget>((
-                                  connector,
-                                ) {
-                                  return Container(
-                                    margin: EdgeInsets.only(bottom: 12),
-                                    child: Row(
-                                      children: [
-                                        Column(
+                                SizedBox(height: 16),
+                                if (fullStation.guns != null && 
+                                    fullStation.guns!.isNotEmpty)
+                                  Column(
+                                    children: fullStation.guns!.map<Widget>((
+                                      connector,
+                                    ) {
+                                      return Container(
+                                        margin: EdgeInsets.only(bottom: 12),
+                                        child: Row(
                                           children: [
-                                            SvgPicture.asset(
-                                              "assets/icons/charger.svg",
+                                            Column(
+                                              children: [
+                                                SvgPicture.asset(
+                                                  "assets/icons/charger.svg",
+                                                ),
+                                              ],
                                             ),
-                                            // Text(
-                                            //   '${connector['kw']}kw',
-                                            //   style: TextStyle(
-                                            //     fontSize: 13,
-                                            //     color: Colors.grey,
-                                            //   ),
-                                            // ),
+                                            SizedBox(width: 16),
+                                            Container(
+                                              width: 1,
+                                              color: Color(0xffE6ECEF),
+                                              height: 30,
+                                            ),
+                                            SizedBox(width: 16),
+                                            SvgPicture.asset(
+                                              "assets/icons/comboccs.svg",
+                                            ),
+                                            SizedBox(width: 4),
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      connector.type ?? "",
+                                                      style: TextStyle(fontSize: 15),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  if (connector.maxPower != null) ...[
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      '${connector.maxPower}kW',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            _statusBadge(connector.status ?? ""),
                                           ],
                                         ),
-                                        SizedBox(width: 16),
-                                        Container(
-                                          width: 1,
-                                          color: Color(0xffE6ECEF),
-                                          height: 30,
-                                        ),
-                                        SizedBox(width: 16),
-                                        SvgPicture.asset(
-                                          "assets/icons/comboccs.svg",
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          connector.type ?? "",
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Spacer(),
-                                        _statusBadge(connector.status ?? ""),
-                                      ],
+                                      );
+                                    }).toList(),
+                                  )
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'No connectors available',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      ),
                                     ),
-                                  );
-                                }).toList(),
-                              ),
+                                  ),
+                              ] else if (isNearbyStation && nearbyStation != null && nearbyStation.totalGunsFormat != null) ...[
+                                SizedBox(height: 16),
+                                Divider(color: Color(0xffE6ECEF)),
+                                SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Available Guns: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${nearbyStation.availableGuns ?? "0"}/${nearbyStation.totalGuns ?? "0"}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
+                          ),
                           ),
                         ),
                       );

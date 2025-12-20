@@ -282,15 +282,14 @@ class _TopUpScreenState extends State<TopUpScreen> {
             BlocConsumer<WalletCubit, WalletState>(
               listener: (context, state) async {
                 if (state is SuccessPayWalletState) {
-                  var result = await context.goTo(
+                  await context.goTo(
                     PayWithUrlScreen(
                       checkoutUrl: WalletCubit.get(context).payUrl ?? "",
                     ),
                   );
-                  if (result != null && result == true) {
-                    WalletCubit.get(context).getWallet();
-                    Navigator.pop(context);
-                  }
+                  // Refresh balance and go back to wallet screen
+                  WalletCubit.get(context).getWallet();
+                  Navigator.pop(context);
                 }
               },
               builder: (context, state) {

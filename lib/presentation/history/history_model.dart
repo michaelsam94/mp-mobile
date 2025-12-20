@@ -182,6 +182,6 @@ class HistorySummary {
   }
 
   // Helper getters
-  String get displayTotalKwh => '${(totalKwh / 1000).toStringAsFixed(1)} kWh';
-  String get displayTotalCost => '$totalCost EGP';
+  String get displayTotalKwh => '${totalKwh.toStringAsFixed(2)} kWh';
+  String get displayTotalCost => '${totalCost.toStringAsFixed(2)} EGP';
 }

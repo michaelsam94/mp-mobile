@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
 
@@ -218,7 +219,13 @@ class ManageCardsScreen extends StatelessWidget {
               child: BlocBuilder<WalletCubit, WalletState>(
                 builder: (context, state) {
                   if (state is LoadingGetSavedCardsState) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: ShimmerWidget(
+                        width: 50,
+                        height: 50,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    );
                   }
 
                   final cubit = WalletCubit.get(context);

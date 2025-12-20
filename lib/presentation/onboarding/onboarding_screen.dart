@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
@@ -30,7 +31,18 @@ class OnboardingScreen extends StatelessWidget {
         child: BlocBuilder<OnBoardingCubit, OnBoardingState>(
           builder: (context, state) {
             if (state is LoadingOnBoardingState) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ShimmerWidget(
+                      width: 50,
+                      height: 50,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ],
+                ),
+              );
             }
             return SingleChildScrollView(
               child: Column(

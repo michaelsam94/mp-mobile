@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/completeProfile/complete_profile_screen.dart';
 import 'package:mega_plus/presentation/auth/resetPassword/set_new_password_screen.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
@@ -91,7 +92,13 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         return Scaffold(
           body: SafeArea(
             child: state is LoadingSignUpState
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: ShimmerWidget(
+                      width: 50,
+                      height: 50,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  )
                 : Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(

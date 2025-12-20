@@ -10,7 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
-import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
+import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 
 part 'map_state.dart';
 
@@ -20,7 +20,7 @@ class MapCubit extends Cubit<MapState> {
   static MapCubit get(context) => BlocProvider.of(context);
 
   GoogleMapController? mapController;
-  List<MapStationResponseModel> mapStations = [];
+  List<StationResponseModel> mapStations = [];
   Set<Marker> markers = {};
   LatLng? userLatLng;
   double currentZoom = 3.0; // بدأنا بـ zoom صغير لأن الداتا منتشرة
@@ -113,15 +113,10 @@ class MapCubit extends Cubit<MapState> {
   }
 
   Future<void> _fetchStations() async {
-    if (userLatLng == null) return;
-
     try {
       var response = await DioHelper.getData(
-        url: EndPoints.getMapStations(
-          userLatLng!.latitude,
-          userLatLng!.longitude,
-         
-        ),
+        url: EndPoints.getStations,
+        auth: false, // This endpoint doesn't require authentication
       ).timeout(Duration(seconds: 10));
 
       print("-" * 25);
@@ -130,7 +125,7 @@ class MapCubit extends Cubit<MapState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
         mapStations = data
-            .map((e) => MapStationResponseModel.fromJson(e))
+            .map((e) => StationResponseModel.fromJson(e))
             .toList();
 
         // Create initial clustered markers
@@ -153,20 +148,20 @@ class MapCubit extends Cubit<MapState> {
   void _fitBoundsToStations() {
     if (mapStations.isEmpty || mapController == null) return;
 
-    double minLat = double.parse(mapStations.first.latitude!);
-    double maxLat = double.parse(mapStations.first.latitude!);
-    double minLng = double.parse(mapStations.first.longitude!);
-    double maxLng = double.parse(mapStations.first.longitude!);
+    double minLat = mapStations.first.latitude ?? 0.0;
+    double maxLat = mapStations.first.latitude ?? 0.0;
+    double minLng = mapStations.first.longitude ?? 0.0;
+    double maxLng = mapStations.first.longitude ?? 0.0;
 
     for (var station in mapStations) {
-      if (double.parse(station.latitude!) < minLat)
-        minLat = double.parse(station.latitude!);
-      if (double.parse(station.latitude!) > maxLat)
-        maxLat = double.parse(station.latitude!);
-      if (double.parse(station.longitude!) < minLng)
-        minLng = double.parse(station.longitude!);
-      if (double.parse(station.longitude!) > maxLng)
-        maxLng = double.parse(station.longitude!);
+      if (station.latitude != null && station.latitude! < minLat)
+        minLat = station.latitude!;
+      if (station.latitude != null && station.latitude! > maxLat)
+        maxLat = station.latitude!;
+      if (station.longitude != null && station.longitude! < minLng)
+        minLng = station.longitude!;
+      if (station.longitude != null && station.longitude! > maxLng)
+        maxLng = station.longitude!;
     }
 
     mapController!.animateCamera(
@@ -207,9 +202,10 @@ class MapCubit extends Cubit<MapState> {
       bool addedToCluster = false;
 
       for (var cluster in clusters) {
+        if (station.latitude == null || station.longitude == null) continue;
         double distance = _calculateDistanceInKm(
-          double.parse(station.latitude!),
-          double.parse(station.longitude!),
+          station.latitude!,
+          station.longitude!,
           cluster.centerLat,
           cluster.centerLon,
         );
@@ -223,11 +219,11 @@ class MapCubit extends Cubit<MapState> {
         }
       }
 
-      if (!addedToCluster) {
+      if (!addedToCluster && station.latitude != null && station.longitude != null) {
         clusters.add(
           _StationCluster(
-            centerLat: double.parse(station.latitude!),
-            centerLon: double.parse(station.longitude!),
+            centerLat: station.latitude!,
+            centerLon: station.longitude!,
             stations: [station],
           ),
         );
@@ -245,21 +241,24 @@ class MapCubit extends Cubit<MapState> {
       if (cluster.stations.length == 1) {
         // Single marker
         var station = cluster.stations.first;
+        if (station.latitude == null || station.longitude == null) continue;
         newMarkers.add(
           Marker(
             markerId: MarkerId('station_${station.id}'),
             position: LatLng(
-              double.parse(station.latitude!),
-              double.parse(station.longitude!),
+              station.latitude!,
+              station.longitude!,
             ),
-            icon: iconCache[station.status] ?? BitmapDescriptor.defaultMarker,
+            icon: iconCache[station.status ?? 'available'] ?? BitmapDescriptor.defaultMarker,
             infoWindow: InfoWindow(
-              title: station.name,
-              snippet:
-                  '${station.totalGunsFormat} - ${double.parse(station.distance ?? "0").toStringAsFixed(0)} km',
+              title: station.name ?? 'Unknown Station',
+              snippet: station.address ?? station.city ?? '',
             ),
             onTap: () {
               print('Station: ${station.name}');
+              if (station.id != null) {
+                emit(MarkerTappedState(station.id!));
+              }
             },
           ),
         );
@@ -437,7 +436,7 @@ class MapCubit extends Cubit<MapState> {
 class _StationCluster {
   double centerLat;
   double centerLon;
-  List<MapStationResponseModel> stations;
+  List<StationResponseModel> stations;
 
   _StationCluster({
     required this.centerLat,
@@ -449,13 +448,19 @@ class _StationCluster {
     // احسب متوسط الموقع لكل الـ stations في الـ cluster
     double sumLat = 0;
     double sumLon = 0;
+    int count = 0;
 
     for (var station in stations) {
-      sumLat += double.parse(station.latitude!);
-      sumLon += double.parse(station.longitude!);
+      if (station.latitude != null && station.longitude != null) {
+        sumLat += station.latitude!;
+        sumLon += station.longitude!;
+        count++;
+      }
     }
 
-    centerLat = sumLat / stations.length;
-    centerLon = sumLon / stations.length;
+    if (count > 0) {
+      centerLat = sumLat / count;
+      centerLon = sumLon / count;
+    }
   }
 }

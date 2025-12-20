@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
 
@@ -196,7 +197,13 @@ class RFIDCardsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 15),
                 state is LoadingGetRFIDState
-                    ? Center(child: CircularProgressIndicator())
+                    ? Center(
+                        child: ShimmerWidget(
+                          width: 50,
+                          height: 50,
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      )
                     : ProfileCubit.get(context).rfidCards.isEmpty
                     ? Center(child: Text("No RFID Cards Added Please Add One"))
                     : ListView.builder(

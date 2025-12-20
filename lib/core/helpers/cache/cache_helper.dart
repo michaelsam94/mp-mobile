@@ -67,10 +67,11 @@ class CacheHelper {
     return 3;
   }
 
-  static UserCacheModel getUserData() {
+  static UserCacheModel? getUserData() {
     var login = _preferences!.getString(CacheKeys.login.name);
+    if (login == null) return null;
 
-    var loginData = UserCacheModel.fromJson(jsonDecode(login!));
+    var loginData = UserCacheModel.fromJson(jsonDecode(login));
 
     return loginData;
   }

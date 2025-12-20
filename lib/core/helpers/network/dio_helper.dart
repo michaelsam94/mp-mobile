@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:mega_plus/app_root.dart';
+import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import '../cache/cache_helper.dart';
 import '../cache/cache_keys.dart';
 import 'end_points.dart';
@@ -25,6 +28,54 @@ class DioHelper {
           'Content-Type': 'application/json',
         },
       ),
+    );
+
+    // Add logging interceptor in debug mode
+    if (kDebugMode) {
+      dio.interceptors.add(LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: false,
+        responseBody: true,
+        error: true,
+        logPrint: (obj) => print(obj),
+      ));
+    }
+
+    // Add unauthorized interceptor
+    dio.interceptors.add(InterceptorsWrapper(
+      onResponse: (response, handler) {
+        // Check if response indicates unauthorized
+        if (response.statusCode == 401 || 
+            (response.data is Map && 
+             response.data['success'] == false && 
+             (response.data['message']?.toString().toLowerCase().contains('unauthorized') == true ||
+              response.data['message']?.toString().toLowerCase().contains('login') == true))) {
+          _handleUnauthorized();
+        }
+        handler.next(response);
+      },
+      onError: (error, handler) {
+        // Check if error indicates unauthorized
+        if (error.response?.statusCode == 401 ||
+            (error.response?.data is Map && 
+             error.response?.data['success'] == false && 
+             (error.response?.data['message']?.toString().toLowerCase().contains('unauthorized') == true ||
+              error.response?.data['message']?.toString().toLowerCase().contains('login') == true))) {
+          _handleUnauthorized();
+        }
+        handler.next(error);
+      },
+    ));
+  }
+
+  static void _handleUnauthorized() {
+    // Clear cache and navigate to login
+    CacheHelper.logout();
+    navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
     );
   }
 

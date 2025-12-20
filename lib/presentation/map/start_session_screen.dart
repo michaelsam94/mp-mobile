@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/map/charger_screen.dart';
 
 import '../../core/services/charging_cubit/charging_cubit.dart';
@@ -46,7 +47,24 @@ class StartSessionScreen extends StatelessWidget {
           },
           builder: (context, state) {
             if (state is ChargingLoading || state is ChargingSuccess) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ShimmerWidget(
+                      width: 50,
+                      height: 50,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    SizedBox(height: 16),
+                    ShimmerWidget(
+                      width: 150,
+                      height: 16,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ],
+                ),
+              );
             }
             return Container(
               width: context.width(),

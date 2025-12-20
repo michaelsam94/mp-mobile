@@ -5,6 +5,7 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/auth/otp/otp_screen.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
+import 'package:mega_plus/presentation/main/main_screen.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -247,7 +248,13 @@ class SignUpScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MainScreen()),
+                              (route) => false,
+                            );
+                          },
                         ),
                       ),
                     SizedBox(height: 8),

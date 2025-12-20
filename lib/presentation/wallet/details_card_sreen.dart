@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
 
@@ -43,7 +44,13 @@ class CardDetailsScreen extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is LoadingGetSavedCardsState) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: ShimmerWidget(
+                width: 50,
+                height: 50,
+                borderRadius: BorderRadius.circular(25),
+              ),
+            );
           }
           return SafeArea(
             child: Column(

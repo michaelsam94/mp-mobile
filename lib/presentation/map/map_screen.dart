@@ -4,8 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
+import 'package:mega_plus/presentation/map/station_details_bottom_sheet.dart';
+import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -16,6 +20,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  bool _isStatusCardCollapsed = false;
+
   @override
   void initState() {
     super.initState();
@@ -103,6 +109,11 @@ class _MapScreenState extends State<MapScreen> {
                   const SizedBox(width: 16),
                   InkWell(
                     onTap: () {
+                      // Check if user is logged in for notifications
+                      if (CacheHelper.checkLogin() != 3) {
+                        GuestBottomSheet.show(context);
+                        return;
+                      }
                       context.goTo(NotificationsScreen());
                     },
                     child: SvgPicture.asset("assets/icons/notifications.svg"),
@@ -111,7 +122,17 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             Expanded(
-              child: BlocBuilder<MapCubit, MapState>(
+              child: BlocConsumer<MapCubit, MapState>(
+                listener: (context, state) {
+                  if (state is MarkerTappedState) {
+                    // Show bottom sheet first, then fetch data
+                    showStationDetails(context);
+                    // Fetch station details after bottom sheet is shown
+                    Future.microtask(() {
+                      StationDetailsCubit.get(context).getStationDetails(state.stationId);
+                    });
+                  }
+                },
                 builder: (context, state) {
                   final cubit = MapCubit.get(context);
 
@@ -120,9 +141,17 @@ class _MapScreenState extends State<MapScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(),
+                          ShimmerWidget(
+                            width: 50,
+                            height: 50,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                           SizedBox(height: 16),
-                          Text('Loading stations...'),
+                          ShimmerWidget(
+                            width: 150,
+                            height: 16,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ],
                       ),
                     );
@@ -150,7 +179,10 @@ class _MapScreenState extends State<MapScreen> {
                     );
                   }
 
-                  return Stack(
+                  // Handle MarkerTappedState by showing the map (listener handles the bottom sheet)
+                  // Treat MarkerTappedState as LoadedMapState for UI purposes
+                  if (state is MarkerTappedState || state is LoadedMapState) {
+                    return Stack(
                     children: [
                       //Todo Get Back
                       GoogleMap(
@@ -173,10 +205,12 @@ class _MapScreenState extends State<MapScreen> {
                       Positioned(
                         top: 8,
                         right: 8,
-                        child: Container(
-                          width: 170,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          width: _isStatusCardCollapsed ? 50 : 170,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: _isStatusCardCollapsed ? 0 : 12,
                             vertical: 15,
                           ),
                           decoration: BoxDecoration(
@@ -189,68 +223,133 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Station Status",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: Color(0xff242426),
+                          child: _isStatusCardCollapsed
+                              ? Center(
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.chevron_left,
+                                      color: Color(0xff242426),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isStatusCardCollapsed = false;
+                                      });
+                                    },
+                                  ),
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: const Text(
+                                            "Station Status",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                              color: Color(0xff242426),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          padding: EdgeInsets.zero,
+                                          constraints: BoxConstraints(
+                                            minWidth: 24,
+                                            minHeight: 24,
+                                          ),
+                                          icon: Icon(
+                                            Icons.chevron_right,
+                                            size: 20,
+                                            color: Color(0xff242426),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _isStatusCardCollapsed = true;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/ac.png",
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: const Text(
+                                            "Available",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xff606060),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/unavailable.png",
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: const Text(
+                                            "Unavailable",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xff606060),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/icons/use.png",
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: const Text(
+                                            "In Use",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xff606060),
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  _Dot(color: Colors.green),
-                                  const SizedBox(width: 6),
-                                  const Text(
-                                    "Available",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xff606060),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  _Dot(color: Colors.red),
-                                  const SizedBox(width: 6),
-                                  const Text(
-                                    "Unavailable",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xff606060),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  _Dot(color: Colors.blue),
-                                  const SizedBox(width: 6),
-                                  const Text(
-                                    "In Use",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xff606060),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
                         ),
                       ),
                     ],
                   );
+                  }
+
+                  return SizedBox.shrink();
                 },
               ),
             ),
@@ -261,16 +360,3 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
-class _Dot extends StatelessWidget {
-  final Color color;
-  const _Dot({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
-}

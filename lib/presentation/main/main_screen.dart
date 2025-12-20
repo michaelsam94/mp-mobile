@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/history/history_screen.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/profile_screen.dart';
@@ -12,18 +14,39 @@ import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/map_screen.dart';
 import '../map/qr_code_scanner_screen.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    MapScreen(),
+    WalletScreen(),
+    const SizedBox(), // Placeholder for center button
+    HistoryScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
     context.read<WebSocketCubit>().connect();
     context.read<ProfileCubit>().getRFID();
-    
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: MapScreen(),
+      body: IndexedStack(
+        index: _currentIndex == 2 ? 0 : _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -32,19 +55,27 @@ class MainScreen extends StatelessWidget {
             alignment: AlignmentDirectional.bottomCenter,
             padding: const EdgeInsets.only(bottom: 20),
             child: BottomNavigationBar(
-              currentIndex: 0,
+              currentIndex: _currentIndex,
               onTap: (index) {
-                switch (index) {
-                  case 1:
-                    context.goTo(WalletScreen());
-                  case 3:
-                    context.goTo(HistoryScreen());
-                  case 4:
-                    context.goTo(ProfileScreen());
-                }
                 if (index == 2) {
+                  // Check if user is logged in for charge button
+                  if (CacheHelper.checkLogin() != 3) {
+                    GuestBottomSheet.show(context);
+                    return;
+                  }
+                  context.goTo(QrCodeScannerScreen());
                   return;
                 }
+                
+                // Check if user is logged in for other tabs (except map which is index 0)
+                if (index != 0 && CacheHelper.checkLogin() != 3) {
+                  GuestBottomSheet.show(context);
+                  return;
+                }
+                
+                setState(() {
+                  _currentIndex = index;
+                });
               },
               type: BottomNavigationBarType.fixed,
               elevation: 0,
@@ -110,6 +141,11 @@ class MainScreen extends StatelessWidget {
             top: 5,
             child: GestureDetector(
               onTap: () {
+                // Check if user is logged in for charge button
+                if (CacheHelper.checkLogin() != 3) {
+                  GuestBottomSheet.show(context);
+                  return;
+                }
                 context.goTo(QrCodeScannerScreen());
               },
               child: Container(

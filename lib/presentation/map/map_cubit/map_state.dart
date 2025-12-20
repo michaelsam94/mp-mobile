@@ -13,3 +13,8 @@ class ErrorMapState extends MapState {
   final String message;
   ErrorMapState(this.message);
 }
+
+class MarkerTappedState extends MapState {
+  final int stationId;
+  MarkerTappedState(this.stationId);
+}

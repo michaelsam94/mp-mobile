@@ -119,29 +119,15 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     color: Colors.white,
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: SvgPicture.asset("assets/icons/back.svg"),
-                        ),
+                  child: Center(
+                    child: Text(
+                      "Profile",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff212121),
                       ),
-                      Center(
-                        child: Text(
-                          "Profile",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xff212121),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
 
@@ -171,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    CacheHelper.getUserData().user?.fullName ??
+                                    CacheHelper.getUserData()?.user?.fullName ??
                                         "",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -181,7 +167,7 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 3),
                                   Text(
-                                    CacheHelper.getUserData().user?.email ?? "",
+                                    CacheHelper.getUserData()?.user?.email ?? "",
                                     style: TextStyle(
                                       color: Colors.grey[700],
                                       fontSize: 13,
@@ -189,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     CacheHelper.getUserData()
-                                            .user
+                                            ?.user
                                             ?.mobileNumber ??
                                         "",
                                     style: TextStyle(

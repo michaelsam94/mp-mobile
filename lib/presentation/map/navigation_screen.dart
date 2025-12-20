@@ -30,17 +30,60 @@ class _NavigationScreenState extends State<NavigationScreen> {
   double distanceKm = 0;
   int durationMin = 0;
   double batteryPercent = 45; // for demo
+  StreamSubscription<Position>? _positionStreamSubscription;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     _initLocationAndRoute();
-    Geolocator.getPositionStream().listen((Position pos) {
-      setState(() {
-        userLatLng = LatLng(pos.latitude, pos.longitude);
-      });
-      _updateRoute();
-    });
+    _positionStreamSubscription = Geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen(
+      (Position pos) {
+        // Double check before any operations
+        if (_isDisposed || !mounted) return;
+        
+        try {
+          // Check again right before setState
+          if (!_isDisposed && mounted) {
+            setState(() {
+              if (!_isDisposed && mounted) {
+                userLatLng = LatLng(pos.latitude, pos.longitude);
+              }
+            });
+          }
+          // Check again before calling _updateRoute
+          if (!_isDisposed && mounted) {
+            _updateRoute();
+          }
+        } catch (e) {
+          // Silently ignore if widget is disposed
+          if (!_isDisposed && mounted) {
+            print('Error updating position: $e');
+          }
+        }
+      },
+      onError: (error) {
+        // Handle errors silently if disposed
+        if (!_isDisposed && mounted) {
+          print('Position stream error: $error');
+        }
+      },
+      cancelOnError: false,
+    );
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _positionStreamSubscription?.cancel();
+    _positionStreamSubscription = null;
+    mapController?.dispose();
+    super.dispose();
   }
 
   Future<void> _initLocationAndRoute() async {
@@ -76,14 +119,16 @@ class _NavigationScreenState extends State<NavigationScreen> {
       );
     }
     Position pos = await Geolocator.getCurrentPosition();
-    setState(() {
-      userLatLng = LatLng(pos.latitude, pos.longitude);
-    });
-    _updateRoute();
+    if (mounted) {
+      setState(() {
+        userLatLng = LatLng(pos.latitude, pos.longitude);
+      });
+      _updateRoute();
+    }
   }
 
   Future<void> _updateRoute() async {
-    if (userLatLng == null) return;
+    if (_isDisposed || !mounted || userLatLng == null) return;
 
     print("Get Data");
 

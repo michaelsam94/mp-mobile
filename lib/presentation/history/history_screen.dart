@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'cubit/history_cubit.dart';
@@ -35,8 +36,152 @@ class HistoryView extends StatelessWidget {
               child: BlocBuilder<HistoryCubit, HistoryState>(
                 builder: (context, state) {
                   if (state is HistoryLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          // Stats grid shimmer
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 0,
+                            crossAxisSpacing: 0,
+                            childAspectRatio: 1.4,
+                            children: List.generate(4, (index) => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: const Color(0xFFE9E9E9), width: 1),
+                                color: Colors.white,
+                              ),
+                              margin: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ShimmerWidget(
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ShimmerWidget(
+                                    width: 80,
+                                    height: 13,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  ShimmerWidget(
+                                    width: 60,
+                                    height: 20,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ],
+                              ),
+                            )),
+                          ),
+                          const SizedBox(height: 14),
+                          // Filters shimmer
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 50,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                const SizedBox(width: 11),
+                                ShimmerWidget(
+                                  width: 120,
+                                  height: 50,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          // Sessions list shimmer
+                          ...List.generate(3, (index) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: const Color(0xFFE9E9E9)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    ShimmerWidget(
+                                      width: 24,
+                                      height: 24,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          ShimmerWidget(
+                                            width: 100,
+                                            height: 15,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          ShimmerWidget(
+                                            width: 150,
+                                            height: 32,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    ShimmerWidget(
+                                      width: 80,
+                                      height: 30,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                ShimmerWidget(
+                                  width: 200,
+                                  height: 15,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    ShimmerWidget(
+                                      width: 21,
+                                      height: 21,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Expanded(
+                                      child: ShimmerWidget(
+                                        width: double.infinity,
+                                        height: 15,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     );
                   } else if (state is HistoryError) {
                     return Center(
@@ -81,29 +226,15 @@ class HistoryView extends StatelessWidget {
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xffF2F4F8))),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          InkWell(
-            onTap: () => Navigator.pop(context),
-            child: SvgPicture.asset("assets/icons/back.svg"),
+      child: Center(
+        child: Text(
+          "Charging History",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xff212121),
           ),
-          const Text(
-            "Charging History",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xff212121),
-            ),
-          ),
-          SvgPicture.asset(
-            "assets/icons/search.svg",
-            colorFilter: const ColorFilter.mode(
-              Colors.black,
-              BlendMode.srcIn,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -134,7 +265,7 @@ class HistoryView extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: 0,
       crossAxisSpacing: 0,
-      childAspectRatio: 1.2,
+      childAspectRatio: 1.4,
       children: [
         _buildCard(
           "assets/icons/total_energy.svg",
@@ -168,20 +299,24 @@ class HistoryView extends StatelessWidget {
         color: Colors.white,
       ),
       margin: const EdgeInsets.all(4),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(icon),
-          const SizedBox(height: 20),
-          Text(title, style: TextStyle(color: Colors.grey[700], fontSize: 15)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
+          SvgPicture.asset(icon, height: 24),
+          const SizedBox(height: 8),
+          Text(title, style: TextStyle(color: Colors.grey[700], fontSize: 13)),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ),
         ],

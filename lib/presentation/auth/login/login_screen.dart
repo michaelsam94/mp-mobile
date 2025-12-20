@@ -274,7 +274,13 @@ class LoginScreenUI extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MainScreen()),
+                          (route) => false,
+                        );
+                      },
                     ),
                   ),
 

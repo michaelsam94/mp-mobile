@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/vehicle_details_screen.dart';
@@ -152,7 +153,55 @@ class MyVehiclesScreen extends StatelessWidget {
               builder: (context, state) {
                 return Expanded(
                   child: state is LoadingGetVehiclesState
-                      ? Center(child: CircularProgressIndicator())
+                      ? ListView.builder(
+                          padding: EdgeInsets.all(16),
+                          itemCount: 3,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.only(bottom: 16),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Color(0xFFE6E7EF)),
+                              ),
+                              child: Row(
+                                children: [
+                                  ShimmerWidget(
+                                    width: 80,
+                                    height: 80,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ShimmerWidget(
+                                          width: double.infinity,
+                                          height: 20,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        SizedBox(height: 8),
+                                        ShimmerWidget(
+                                          width: 150,
+                                          height: 16,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        SizedBox(height: 8),
+                                        ShimmerWidget(
+                                          width: 100,
+                                          height: 16,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
                       : cubit.vehicles.isEmpty
                       ? Center(
                           child: Text(

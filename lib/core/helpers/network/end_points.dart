@@ -32,6 +32,7 @@ class EndPoints {
       "/api/stations/map/nearby?lat=$lat&lng=$long&radius=5000";
 
   static const String getStations = "/api/stations/list";
+  static String getStationDetails(int id) => "/api/stations/$id/details";
 
   static const String startCharging = "/api/charging/start";
   static const String stopCharging = "/api/charging/stop";

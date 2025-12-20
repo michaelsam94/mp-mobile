@@ -111,8 +111,8 @@ class SignUpCubit extends Cubit<SignUpState> {
         }),
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
-        resendSeconds = response.data["data"]["resend_available_in"];
-        codeSent = response.data["data"]["code"];
+        resendSeconds = response.data["data"]["resend_available_in"] ?? 0;
+        codeSent = response.data["data"]["code"] ?? "";
         print(codeSent);
         print(resendSeconds);
         emit(SuccessSignUpState());
@@ -120,6 +120,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         emit(ErrorSignUpState(response.data["message"]));
       }
     } catch (e) {
+      print("sendOTP Error: $e");
       emit(ErrorSignUpState("Error,Please try again"));
     }
   }

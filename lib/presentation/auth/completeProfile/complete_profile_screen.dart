@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
 
 import '../personalizeProfile/personalize_profile_screen.dart';
@@ -70,7 +71,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         },
         builder: (context, state) {
           if (state is LoadingCreateAccountState) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: ShimmerWidget(
+                width: 50,
+                height: 50,
+                borderRadius: BorderRadius.circular(25),
+              ),
+            );
           }
           return SafeArea(
             child: SingleChildScrollView(

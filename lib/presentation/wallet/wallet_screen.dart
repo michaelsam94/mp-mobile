@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/manage_cards_screen.dart';
 import 'package:mega_plus/presentation/wallet/top_up_screen.dart';
@@ -33,62 +34,44 @@ class WalletScreen extends StatelessWidget {
                 border: Border(bottom: BorderSide(color: Color(0xffF2F4F8))),
                 color: Colors.white,
               ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: SvgPicture.asset("assets/icons/back.svg"),
-                    ),
+              child: Center(
+                child: Text(
+                  "Wallet",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff212121),
                   ),
-                  Center(
-                    child: Text(
-                      "Wallet",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff212121),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
             // Wallet card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/credit_card_bg.png"),
-                    fit: BoxFit.fill,
-                  ),
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 26),
-                child: BlocBuilder<WalletCubit, WalletState>(
-                  builder: (context, state) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/credit_card_bg.png"),
+                        fit: BoxFit.fill,
+                      ),
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 26),
+                    child: BlocBuilder<WalletCubit, WalletState>(
+                      builder: (context, state) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Hello, ${CacheHelper.getUserData().user?.fullName}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 21,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Text("👋", style: TextStyle(fontSize: 21)),
-                          ],
+                        Text(
+                          "Hello, ${CacheHelper.getUserData()?.user?.fullName ?? ''}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 21,
+                            color: Colors.black,
+                          ),
                         ),
                         SizedBox(height: 19),
                         Text(
@@ -218,10 +201,32 @@ class WalletScreen extends StatelessWidget {
                         //     ),
                         //   ),
                         // ),
-                      ],
-                    );
-                  },
-                ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  // Logo in top-right corner
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                        child: Image.asset(
+                          "assets/images/logo.png",
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 24),
@@ -242,7 +247,68 @@ class WalletScreen extends StatelessWidget {
             BlocBuilder<WalletCubit, WalletState>(
               builder: (context, state) {
                 if (state is LoadingGetTransactionsWalletState) {
-                  return Center(child: CircularProgressIndicator());
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 11,
+                          vertical: 7,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Color(0xFFE6E7EF),
+                              width: 1,
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 17,
+                            vertical: 19,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              ShimmerWidget(
+                                width: 40,
+                                height: 40,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ShimmerWidget(
+                                      width: double.infinity,
+                                      height: 18,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    SizedBox(height: 8),
+                                    ShimmerWidget(
+                                      width: 120,
+                                      height: 14,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              ShimmerWidget(
+                                width: 80,
+                                height: 20,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 }
                 return ListView.builder(
                   shrinkWrap: true,
