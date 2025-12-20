@@ -24,6 +24,7 @@ class MapCubit extends Cubit<MapState> {
   Set<Marker> markers = {};
   LatLng? userLatLng;
   double currentZoom = 3.0; // بدأنا بـ zoom صغير لأن الداتا منتشرة
+  bool hasZoomedToLocation = false; // Track if we've zoomed to location initially
 
   Map<String, BitmapDescriptor> iconCache = {};
   bool isIconsLoaded = false;
@@ -139,10 +140,38 @@ class MapCubit extends Cubit<MapState> {
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
 
-    if (mapStations.isNotEmpty && state is LoadedMapState) {
+    // Zoom to current location with 5km radius if available
+    if (userLatLng != null && !hasZoomedToLocation) {
+      _zoomToCurrentLocation();
+      hasZoomedToLocation = true;
+    } else if (mapStations.isNotEmpty && state is LoadedMapState && !hasZoomedToLocation) {
       // احسب الـ bounds لكل الـ stations
       _fitBoundsToStations();
     }
+  }
+
+  Future<void> zoomToCurrentLocation() async {
+    if (userLatLng == null) {
+      // Try to get current location
+      await _initLocationAndRoute();
+    }
+    
+    if (userLatLng != null && mapController != null) {
+      _zoomToCurrentLocation();
+      hasZoomedToLocation = true; // Mark as zoomed when button is pressed
+    }
+  }
+
+  void _zoomToCurrentLocation() {
+    if (userLatLng == null || mapController == null) return;
+    
+    // Zoom level 13.5 is approximately 5km radius
+    mapController!.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        userLatLng!,
+        13.5,
+      ),
+    );
   }
 
   void _fitBoundsToStations() {
