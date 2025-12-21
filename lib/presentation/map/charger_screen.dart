@@ -212,10 +212,6 @@ class _ChargerScreenState extends State<ChargerScreen> {
   Widget _buildChargeProgress(MeterValueData? meterData) {
     final percent = (meterData?.chargePercentageValue ?? 0) / 100;
     final percentValue = (meterData?.chargePercentageValue ?? 0).toInt();
-    final timeRemaining =
-        meterData?.timeRemainingDisplay ??
-        meterData?.chargingDurationDisplay ??
-        'Calculating...';
 
     return Center(
       child: DashedCircularProgress(
@@ -250,10 +246,6 @@ class _ChargerScreenState extends State<ChargerScreen> {
                   ),
                 ),
               ],
-            ),
-            Text(
-              timeRemaining,
-              style: TextStyle(fontSize: 17, color: Colors.grey[700]),
             ),
           ],
         ),

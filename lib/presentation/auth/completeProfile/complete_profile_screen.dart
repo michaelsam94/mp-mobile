@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,6 +27,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -215,7 +217,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: _passwordController,
-                          keyboardType: TextInputType.phone,
+                          obscureText: _obscurePassword,
+                          keyboardType: TextInputType.text,
+                        
                           decoration: InputDecoration(
                             hintText: 'Password',
                             border: OutlineInputBorder(
@@ -226,13 +230,26 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             ),
                             fillColor: Color(0xffFBFBFB),
                             filled: true,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
                           ),
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
                               return 'Please enter your password';
                             }
                             if (val.length < 6) {
-                              return 'Enter a valid password';
+                              return 'Password must be at least 6 digits';
                             }
                             return null;
                           },

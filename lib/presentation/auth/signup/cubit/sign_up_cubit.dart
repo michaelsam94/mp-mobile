@@ -160,6 +160,7 @@ class SignUpCubit extends Cubit<SignUpState> {
           "mobile_number": phone,
           "country_code": countryCode,
           "full_name": name,
+          "device_token": "device_token",
         }),
         auth: false,
       );

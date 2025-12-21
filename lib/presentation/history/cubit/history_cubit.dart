@@ -97,15 +97,15 @@ class HistoryCubit extends Cubit<HistoryState> {
         break;
       case 'Highest Energy':
         sortedList.sort((a, b) {
-          final aKwh = int.tryParse(a.kwh ?? '0') ?? 0;
-          final bKwh = int.tryParse(b.kwh ?? '0') ?? 0;
+          final aKwh = double.tryParse(a.kwh ?? '0') ?? 0.0;
+          final bKwh = double.tryParse(b.kwh ?? '0') ?? 0.0;
           return bKwh.compareTo(aKwh);
         });
         break;
       case 'Lowest Energy':
         sortedList.sort((a, b) {
-          final aKwh = int.tryParse(a.kwh ?? '0') ?? 0;
-          final bKwh = int.tryParse(b.kwh ?? '0') ?? 0;
+          final aKwh = double.tryParse(a.kwh ?? '0') ?? 0.0;
+          final bKwh = double.tryParse(b.kwh ?? '0') ?? 0.0;
           return aKwh.compareTo(bKwh);
         });
         break;

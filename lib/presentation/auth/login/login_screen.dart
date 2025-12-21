@@ -20,12 +20,18 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class LoginScreenUI extends StatelessWidget {
+class LoginScreenUI extends StatefulWidget {
+  const LoginScreenUI({super.key});
+
+  @override
+  State<LoginScreenUI> createState() => _LoginScreenUIState();
+}
+
+class _LoginScreenUIState extends State<LoginScreenUI> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-
-  LoginScreenUI({super.key});
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +131,7 @@ class LoginScreenUI extends StatelessWidget {
 
                   TextFormField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       hintText: 'xxxxxxxxxxx',
                       border: OutlineInputBorder(
@@ -134,6 +140,19 @@ class LoginScreenUI extends StatelessWidget {
                       ),
                       fillColor: Color(0xffFBFBFB),
                       filled: true,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                     ),
                     validator: (value) {
                       final text = value ?? '';
@@ -301,55 +320,7 @@ class LoginScreenUI extends StatelessWidget {
                     ],
                   ),
 
-                  Container(
-                    width: context.width(),
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Color(0xffEFF0F6)),
-                    ),
-
-                    child: Row(
-                      spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset("assets/icons/google.svg"),
-                        Text(
-                          "Continue with Google",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xff121212),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Container(
-                    width: context.width(),
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Color(0xffEFF0F6)),
-                    ),
-
-                    child: Row(
-                      spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset("assets/icons/facebook.svg"),
-                        Text(
-                          "Continue with Facebook",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xff121212),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  
 
                   Center(
                     child: TextButton(

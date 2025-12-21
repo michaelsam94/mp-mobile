@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
-import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
@@ -132,19 +131,6 @@ class _MapScreenState extends State<MapScreen> {
                     Future.microtask(() {
                       StationDetailsCubit.get(context).getStationDetails(state.stationId);
                     });
-                  } else if (state is LoadedMapState) {
-                    // Zoom to current location when map is loaded (only once)
-                    final cubit = MapCubit.get(context);
-                    if (cubit.userLatLng != null && 
-                        cubit.mapController != null && 
-                        !cubit.hasZoomedToLocation) {
-                      // Small delay to ensure map is fully initialized
-                      Future.delayed(Duration(milliseconds: 300), () {
-                        if (!cubit.hasZoomedToLocation) {
-                          cubit.zoomToCurrentLocation();
-                        }
-                      });
-                    }
                   }
                 },
                 builder: (context, state) {
@@ -203,7 +189,7 @@ class _MapScreenState extends State<MapScreen> {
                         padding: EdgeInsets.only(top: 120),
                         initialCameraPosition: CameraPosition(
                           target: cubit.userLatLng ?? LatLng(30.0444, 31.2357),
-                          zoom: 13.5, // 5km radius zoom level
+                          zoom: cubit.userLatLng != null ? 14.0 : 3.0,
                         ),
                         markers: cubit.markers,
                         onMapCreated: cubit.onMapCreated,
@@ -214,35 +200,6 @@ class _MapScreenState extends State<MapScreen> {
                         zoomControlsEnabled: false,
                         buildingsEnabled: false,
                         compassEnabled: false,
-                      ),
-
-                      // Location button (bottom right)
-                      Positioned(
-                        bottom: 16,
-                        right: 16,
-                        child: Material(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          elevation: 4,
-                          child: InkWell(
-                            onTap: () {
-                              cubit.zoomToCurrentLocation();
-                            },
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.my_location,
-                                color: AppColors.primary,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
 
                       // Status Container
@@ -387,6 +344,23 @@ class _MapScreenState extends State<MapScreen> {
                                     ),
                                   ],
                                 ),
+                        ),
+                      ),
+
+                      // Locate Me Button
+                      Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: FloatingActionButton(
+                          mini: true,
+                          backgroundColor: Colors.white,
+                          onPressed: () {
+                            cubit.zoomToUserLocation();
+                          },
+                          child: Icon(
+                            Icons.my_location,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                     ],
