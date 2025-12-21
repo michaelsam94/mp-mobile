@@ -92,4 +92,25 @@ class CacheHelper {
       jsonEncode(loginData.toJson()),
     );
   }
+
+  static Future<void> updateUserData(Map<String, dynamic> userDataJson) async {
+    var login = _preferences!.getString(CacheKeys.login.name);
+    if (login == null) return;
+
+    var loginData = UserCacheModel.fromJson(jsonDecode(login));
+    
+    // Update user data - merge with existing data to preserve fields not in response
+    if (loginData.user != null) {
+      // Create new UserData from JSON, which will include all fields from response
+      loginData.user = UserData.fromJson(userDataJson);
+    } else {
+      // If user is null, create new user data
+      loginData.user = UserData.fromJson(userDataJson);
+    }
+
+    await _preferences!.setString(
+      CacheKeys.login.name,
+      jsonEncode(loginData.toJson()),
+    );
+  }
 }

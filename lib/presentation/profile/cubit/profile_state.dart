@@ -50,3 +50,14 @@ class ErrorGetTermsState extends ProfileState {
   final String message;
   ErrorGetTermsState({this.message = 'Failed to load terms'});
 }
+
+class LoadingUpdateProfileState extends ProfileState {}
+
+class SuccessUpdateProfileState extends ProfileState {}
+
+class ErrorUpdateProfileState extends ProfileState {
+  final String message;
+  ErrorUpdateProfileState({this.message = 'Failed to update profile'});
+}
+
+class ProfileReloadedState extends ProfileState {}

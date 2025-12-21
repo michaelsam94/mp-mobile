@@ -4,17 +4,33 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/profile/edit_profile_screen.dart';
 import 'package:mega_plus/presentation/profile/rfid_cards_screen.dart';
 import 'package:mega_plus/presentation/profile/settings_screen.dart';
 import 'package:mega_plus/presentation/profile/support_screen.dart';
 import 'package:mega_plus/presentation/profile/terms_conditions_screen.dart';
 import 'package:mega_plus/presentation/start/splash_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
 
   final Color green = Color(0xFF19C37D);
   final Color bgGreen = Color(0xFFECFDF3);
+
+  @override
+  void initState() {
+    super.initState();
+    // Load profile data when screen is first opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ProfileCubit.get(context).getProfile();
+    });
+  }
 
   Widget infoCard({
     required String title,
@@ -100,6 +116,10 @@ class ProfileScreen extends StatelessWidget {
                   context.goOffAll(SplashScreen());
                 }
               });
+            }
+            if (state is ProfileReloadedState || state is SuccessUpdateProfileState) {
+              // Reload the screen to show updated data
+              setState(() {});
             }
           },
           builder: (context, state) {
@@ -187,35 +207,36 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 5),
-                            //Todo Get Back
-                            // ElevatedButton.icon(
-                            //   onPressed: () {},
-                            //   icon: Icon(
-                            //     Icons.mode_edit_outlined,
-                            //     color: green,
-                            //     size: 18,
-                            //   ),
-                            //   label: Text(
-                            //     'Edit',
-                            //     style: TextStyle(
-                            //       color: green,
-                            //       fontWeight: FontWeight.bold,
-                            //       fontSize: 14,
-                            //     ),
-                            //   ),
-                            //   style: ElevatedButton.styleFrom(
-                            //     backgroundColor: Color(0xffB2ECCA),
-                            //     elevation: 0,
-                            //     padding: EdgeInsets.symmetric(
-                            //       horizontal: 13,
-                            //       vertical: 8,
-                            //     ),
-                            //     shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(50),
-                            //       side: BorderSide(color: bgGreen, width: 2),
-                            //     ),
-                            //   ),
-                            // ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                context.goTo(EditProfileScreen());
+                              },
+                              icon: Icon(
+                                Icons.mode_edit_outlined,
+                                color: green,
+                                size: 18,
+                              ),
+                              label: Text(
+                                'Edit',
+                                style: TextStyle(
+                                  color: green,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xffB2ECCA),
+                                elevation: 0,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 13,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                  side: BorderSide(color: bgGreen, width: 2),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 17),

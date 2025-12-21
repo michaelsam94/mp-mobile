@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
@@ -392,11 +393,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   _statusBadge(stationStatus ?? ""),
-                                  Icon(
-                                    Icons.star_border,
-                                    color: AppColors.primary,
-                                    size: 24,
-                                  ),
+                                  if (CacheHelper.checkLogin() == 3)
+                                    Icon(
+                                      Icons.star_border,
+                                      color: AppColors.primary,
+                                      size: 24,
+                                    ),
                                 ],
                               ), // main badge at top
                               SizedBox(height: 16),
@@ -829,27 +831,29 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ),
                   SizedBox(height: 24),
 
-                  // Favourite Stations
-                  Text(
-                    'Favourite Stations',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF212121),
+                  // Favourite Stations (only show if logged in)
+                  if (CacheHelper.checkLogin() == 3) ...[
+                    Text(
+                      'Favourite Stations',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF212121),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 12),
-                  _filterButton(
-                    label: 'Favourite Only',
-                    icon: Icons.star_border,
-                    isSelected: favouriteOnly,
-                    onTap: () {
-                      setState(() {
-                        favouriteOnly = !favouriteOnly;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 24),
+                    SizedBox(height: 12),
+                    _filterButton(
+                      label: 'Favourite Only',
+                      icon: Icons.star_border,
+                      isSelected: favouriteOnly,
+                      onTap: () {
+                        setState(() {
+                          favouriteOnly = !favouriteOnly;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 24),
+                  ],
 
                   // Minimum Power
                   Text(

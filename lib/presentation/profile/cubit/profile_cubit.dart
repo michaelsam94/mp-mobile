@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
@@ -232,6 +233,72 @@ class ProfileCubit extends Cubit<ProfileState> {
         print(e.toString());
       }
       emit(ErrorGetTermsState(message: e.toString()));
+    }
+  }
+
+  void updateProfile({
+    required String fullName,
+    required String email,
+    required String birthday,
+    required String gender,
+  }) async {
+    emit(LoadingUpdateProfileState());
+
+    try {
+      var response = await DioHelper.patchData(
+        url: EndPoints.updateProfile,
+        data: {
+          "full_name": fullName,
+          "email": email,
+          "birthday": birthday,
+          "gender": gender,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        // Update cache with new user data
+        if (response.data["data"] != null) {
+          await CacheHelper.updateUserData(response.data["data"]);
+        }
+        // Reload profile data
+        getProfile();
+        emit(SuccessUpdateProfileState());
+      } else {
+        emit(
+          ErrorUpdateProfileState(
+            message: response.data["message"] ?? "Failed to update profile",
+          ),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      emit(
+        ErrorUpdateProfileState(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  void getProfile() async {
+    try {
+      var response = await DioHelper.getData(
+        url: EndPoints.updateProfile,
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        // Update cache with fresh user data
+        if (response.data["data"] != null) {
+          await CacheHelper.updateUserData(response.data["data"]);
+        }
+        emit(ProfileReloadedState());
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 }
