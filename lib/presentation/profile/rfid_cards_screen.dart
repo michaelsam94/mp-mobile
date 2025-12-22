@@ -5,6 +5,7 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
+import 'package:mega_plus/presentation/profile/rfid_qr_scanner_screen.dart';
 
 class RFIDCardsScreen extends StatelessWidget {
   RFIDCardsScreen({super.key});
@@ -237,50 +238,65 @@ class RFIDCardsScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) {
-        final mediaQuery = MediaQuery.of(context);
+      builder: (bottomSheetContext) {
+        final mediaQuery = MediaQuery.of(bottomSheetContext);
         final bottomInset = mediaQuery.viewInsets.bottom;
 
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            bottom: bottomInset, // عشان الكيبورد
-            top: 12,
-          ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Indicator bar فوق
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffE0E0E0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Add RFID Card',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xff121212),
-                  ),
-                ),
-                const SizedBox(height: 20),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: bottomInset, // عشان الكيبورد
+                top: 12,
+              ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Indicator bar فوق
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffE0E0E0),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Add RFID Card',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xff121212),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
-                // زر Scan QR Code
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: استدعاء مسح الـ QR
-                    },
+                    // زر Scan QR Code
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Open QR scanner and get result
+                          final scannedCode = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RFIDQrScannerScreen(),
+                            ),
+                          );
+                          
+                          // If QR code was scanned, populate the text field
+                          if (scannedCode != null && scannedCode.isNotEmpty) {
+                            setState(() {
+                              rfidController.text = scannedCode;
+                            });
+                          }
+                        },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
@@ -396,9 +412,7 @@ class RFIDCardsScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState?.validate() ?? false) {
-                        // هنا متغيّرش اللوجيك بتاعك
-                        // ابعت rfidController.text للـ cubit / API
-                        Navigator.pop(context, rfidController.text.trim());
+                        Navigator.pop(bottomSheetContext, rfidController.text.trim());
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -420,9 +434,11 @@ class RFIDCardsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 12),
-              ],
-            ),
-          ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

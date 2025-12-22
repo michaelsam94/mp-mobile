@@ -24,6 +24,10 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"]["tips"] as List;
         tips = data.map((e) => TipResponseModel.fromJson(e)).toList();
+        // Sort tips by sort field
+        tips.sort((a, b) => (a.sort ?? 0).compareTo(b.sort ?? 0));
+        // Reset to first tip
+        currentIndex = 0;
         emit(SuccessOnBoardingState());
       } else {
         emit(ErrorOnBoardingState());

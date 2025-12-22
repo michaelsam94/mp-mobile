@@ -61,3 +61,12 @@ class ErrorUpdateProfileState extends ProfileState {
 }
 
 class ProfileReloadedState extends ProfileState {}
+
+class LoadingGetSettingsState extends ProfileState {}
+
+class SuccessGetSettingsState extends ProfileState {}
+
+class ErrorGetSettingsState extends ProfileState {
+  final String message;
+  ErrorGetSettingsState({this.message = 'Failed to load settings'});
+}

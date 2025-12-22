@@ -6,6 +6,7 @@ import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
+import 'package:mega_plus/presentation/profile/models/settings_response_model.dart';
 import 'package:meta/meta.dart';
 
 import '../models/content_page_model.dart';
@@ -174,13 +175,18 @@ class ProfileCubit extends Cubit<ProfileState> {
   void changePassword({
     required String oldPassword,
     required String newPassword,
+    required String confirmationPassword,
   }) async {
     emit(LoadingChangePasswordState());
 
     try {
-      var response = await DioHelper.postData(
+      var response = await DioHelper.patchData(
         url: EndPoints.changePassword,
-        data: {'old_password': oldPassword, 'new_password': newPassword},
+        data: {
+          'old_password': oldPassword,
+          'new_password': newPassword,
+          'confirmation_password': confirmationPassword,
+        },
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
@@ -299,6 +305,46 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (kDebugMode) {
         print(e.toString());
       }
+    }
+  }
+
+  List<SettingsResponseModel> settings = [];
+
+  void getSettings() async {
+    emit(LoadingGetSettingsState());
+
+    try {
+      var response = await DioHelper.getData(
+        url: EndPoints.getSettings,
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        var data = response.data["data"] as List;
+        settings = data
+            .map((e) => SettingsResponseModel.fromJson(e))
+            .toList();
+        emit(SuccessGetSettingsState());
+      } else {
+        emit(
+          ErrorGetSettingsState(
+            message: response.data["message"] ?? "Failed to load settings",
+          ),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      emit(ErrorGetSettingsState(message: e.toString()));
+    }
+  }
+
+  // Helper method to get setting value by key
+  String? getSettingValue(String key) {
+    try {
+      return settings.firstWhere((setting) => setting.key == key).value;
+    } catch (e) {
+      return null;
     }
   }
 }

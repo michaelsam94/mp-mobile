@@ -271,7 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                         SizedBox(height: 2),
                                         Text(
-                                          '45',
+                                          '${CacheHelper.getUserData()?.user?.totalCharges ?? 0}',
                                           style: TextStyle(
                                             color: green,
                                             fontWeight: FontWeight.bold,

@@ -7,15 +7,10 @@ import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  final List<String> images = [
-    'assets/images/onboarding1.png',
-    'assets/images/onboarding2.png',
-    'assets/images/onboarding3.png',
-  ];
-
   OnboardingScreen({super.key});
-  void _goNext(BuildContext context, int currentIndex) {
-    if (currentIndex < 2) {
+  
+  void _goNext(BuildContext context, int currentIndex, int totalTips) {
+    if (currentIndex < totalTips - 1) {
       OnBoardingCubit.get(context).changeIndex(++currentIndex);
     } else {
       context.goTo(LoginScreen());
@@ -44,6 +39,17 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               );
             }
+            if (cubit.tips.isEmpty) {
+              return Center(
+                child: Text(
+                  'No onboarding data available',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              );
+            }
+
+            final currentTip = cubit.tips[cubit.currentIndex];
+            
             return SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,12 +57,51 @@ class OnboardingScreen extends StatelessWidget {
                   // Images
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Image.asset(
-                      images[cubit.currentIndex],
-                      width: context.width(),
-                      height: 260,
-                      fit: BoxFit.fitHeight,
-                    ),
+                    child: currentTip.imageUrl != null
+                        ? Image.network(
+                            currentTip.imageUrl!,
+                            width: context.width(),
+                            height: 260,
+                            fit: BoxFit.fitHeight,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: context.width(),
+                                height: 260,
+                                color: Colors.grey[200],
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 50,
+                                  color: Colors.grey[400],
+                                ),
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                width: context.width(),
+                                height: 260,
+                                color: Colors.grey[200],
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            width: context.width(),
+                            height: 260,
+                            color: Colors.grey[200],
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 50,
+                              color: Colors.grey[400],
+                            ),
+                          ),
                   ),
                   // Titles & Subtitles
                   SizedBox(height: 30),
@@ -65,7 +110,7 @@ class OnboardingScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          cubit.tips[cubit.currentIndex].title ?? "",
+                          currentTip.title ?? "",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 30,
@@ -75,7 +120,7 @@ class OnboardingScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 6),
                         Text(
-                          cubit.tips[cubit.currentIndex].description ?? "",
+                          currentTip.description ?? "",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -89,7 +134,7 @@ class OnboardingScreen extends StatelessWidget {
                   // Indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
+                    children: List.generate(cubit.tips.length, (index) {
                       return AnimatedContainer(
                         duration: Duration(milliseconds: 200),
                         margin: EdgeInsets.symmetric(horizontal: 4),
@@ -98,8 +143,7 @@ class OnboardingScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: index == cubit.currentIndex
-                              ? AppColors
-                                    .primary // Green indicator
+                              ? AppColors.primary // Green indicator
                               : Color(0xFFE2E7EF),
                         ),
                       );
@@ -117,7 +161,7 @@ class OnboardingScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          _goNext(context, cubit.currentIndex);
+                          _goNext(context, cubit.currentIndex, cubit.tips.length);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -127,7 +171,7 @@ class OnboardingScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Next',
+                          cubit.currentIndex < cubit.tips.length - 1 ? 'Next' : 'Get Started',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

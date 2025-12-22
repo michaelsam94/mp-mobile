@@ -24,6 +24,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
   void initState() {
     super.initState();
     ProfileCubit.get(context).getcomplaintsCategories();
+    ProfileCubit.get(context).getSettings();
   }
 
   Widget _buildTabBar() {
@@ -141,35 +142,112 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
   }
 
   Widget _buildSupportTab() {
-    return Column(
-      children: [
-        _buildSupportCard(
-          "Phone Support",
-          "+20 123 456 7890",
-          Icons.phone_outlined,
-        ),
-        _buildSupportCard(
-          "Email Support",
-          "support@megaplug.com",
-          Icons.email_outlined,
-        ),
-        _buildSupportCard("Live Chat", "Available 24/7", Icons.chat_outlined),
-        _buildSupportCard(
-          "FAQ Section",
-          "www.megaplug.com/faq",
-          Icons.phone_outlined,
-        ),
-        _buildSupportCard(
-          "Social Media Support",
-          "@megaplug on Twitter",
-          Icons.email_outlined,
-        ),
-        _buildSupportCard(
-          "Community Forum",
-          "forum.megaplug.com",
-          Icons.phone_outlined,
-        ),
-      ],
+    final cubit = ProfileCubit.get(context);
+    
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is LoadingGetSettingsState) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        if (state is ErrorGetSettingsState) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Failed to load settings',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
+        }
+        
+        // Build support cards from API data
+        List<Widget> supportCards = [];
+        
+        // Phone Support
+        final phone = cubit.getSettingValue('phone');
+        if (phone != null && phone.isNotEmpty) {
+          supportCards.add(
+            _buildSupportCard(
+              "Phone Support",
+              phone,
+              Icons.phone_outlined,
+            ),
+          );
+        }
+        
+        // Email Support
+        final email = cubit.getSettingValue('email');
+        if (email != null && email.isNotEmpty) {
+          supportCards.add(
+            _buildSupportCard(
+              "Email Support",
+              email,
+              Icons.email_outlined,
+            ),
+          );
+        }
+        
+        // Facebook
+        final facebook = cubit.getSettingValue('facebook');
+        if (facebook != null && facebook.isNotEmpty) {
+          supportCards.add(
+            _buildSupportCard(
+              "Facebook",
+              facebook,
+              Icons.link,
+            ),
+          );
+        }
+        
+        // TikTok
+        final tiktok = cubit.getSettingValue('tiktok');
+        if (tiktok != null && tiktok.isNotEmpty) {
+          supportCards.add(
+            _buildSupportCard(
+              "TikTok",
+              tiktok,
+              Icons.video_library_outlined,
+            ),
+          );
+        }
+        
+        // Twitter
+        final twitter = cubit.getSettingValue('twitter');
+        if (twitter != null && twitter.isNotEmpty) {
+          supportCards.add(
+            _buildSupportCard(
+              "Twitter",
+              twitter,
+              Icons.link,
+            ),
+          );
+        }
+        
+        if (supportCards.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'No support information available',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
+        }
+        
+        return SingleChildScrollView(
+          child: Column(
+            children: supportCards,
+          ),
+        );
+      },
     );
   }
 

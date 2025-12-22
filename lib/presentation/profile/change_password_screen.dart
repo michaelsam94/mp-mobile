@@ -204,6 +204,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               ProfileCubit.get(context).changePassword(
                                 oldPassword: oldPasswordController.text,
                                 newPassword: newPasswordController.text,
+                                confirmationPassword: confirmPasswordController.text,
                               );
                             },
                       style: ElevatedButton.styleFrom(
