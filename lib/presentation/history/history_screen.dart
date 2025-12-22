@@ -14,7 +14,8 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HistoryCubit(HistoryRepository())..getChargingHistory(),
+      create: (context) =>
+          HistoryCubit(HistoryRepository())..getChargingHistory(),
       child: const HistoryView(),
     );
   }
@@ -35,15 +36,17 @@ class HistoryView extends StatelessWidget {
               child: BlocBuilder<HistoryCubit, HistoryState>(
                 builder: (context, state) {
                   if (state is HistoryLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   } else if (state is HistoryError) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                          const Icon(
+                            Icons.error_outline,
+                            size: 60,
+                            color: Colors.red,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             state.message,
@@ -98,10 +101,7 @@ class HistoryView extends StatelessWidget {
           ),
           SvgPicture.asset(
             "assets/icons/search.svg",
-            colorFilter: const ColorFilter.mode(
-              Colors.black,
-              BlendMode.srcIn,
-            ),
+            colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
           ),
         ],
       ),
@@ -134,17 +134,17 @@ class HistoryView extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: 0,
       crossAxisSpacing: 0,
-      childAspectRatio: 1.2,
+      childAspectRatio: 1.1,
       children: [
         _buildCard(
           "assets/icons/total_energy.svg",
           'Total Energy',
-          summary.displayTotalKwh,
+          summary.totalKwh.toStringAsFixed(2),
         ),
         _buildCard(
           "assets/icons/total_cost.svg",
           'Total Cost',
-          summary.displayTotalCost,
+          summary.totalCost.toStringAsFixed(2),
         ),
         _buildCard(
           "assets/icons/total_time.svg",
@@ -276,27 +276,21 @@ class HistoryView extends StatelessWidget {
             children: [
               const Text(
                 'Sort By',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...[
-                'Newest',
-                'Oldest',
-                'Highest Energy',
-                'Lowest Energy',
-              ].map((sortType) => ListTile(
-                    title: Text(sortType),
-                    trailing: currentSort == sortType
-                        ? const Icon(Icons.check, color: AppColors.primary)
-                        : null,
-                    onTap: () {
-                      context.read<HistoryCubit>().applySort(sortType);
-                      Navigator.pop(sheetContext);
-                    },
-                  )),
+              ...['Newest', 'Oldest', 'Highest Energy', 'Lowest Energy'].map(
+                (sortType) => ListTile(
+                  title: Text(sortType),
+                  trailing: currentSort == sortType
+                      ? const Icon(Icons.check, color: AppColors.primary)
+                      : null,
+                  onTap: () {
+                    context.read<HistoryCubit>().applySort(sortType);
+                    Navigator.pop(sheetContext);
+                  },
+                ),
+              ),
             ],
           ),
         );
@@ -315,10 +309,7 @@ class HistoryView extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'No sessions found',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -378,10 +369,13 @@ class HistoryView extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
-                  color: session.isActive 
-                      ? const Color(0xffFFF4E6) 
+                  color: session.isActive
+                      ? const Color(0xffFFF4E6)
                       : const Color(0xffE6F9EE),
                   borderRadius: BorderRadius.circular(50),
                 ),
@@ -390,16 +384,16 @@ class HistoryView extends StatelessWidget {
                     Icon(
                       session.isActive ? Icons.sync : Icons.flash_on,
                       size: 17,
-                      color: session.isActive 
-                          ? Colors.orange 
+                      color: session.isActive
+                          ? Colors.orange
                           : AppColors.primary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       session.isActive ? 'Active' : 'DC Fast',
                       style: TextStyle(
-                        color: session.isActive 
-                            ? Colors.orange 
+                        color: session.isActive
+                            ? Colors.orange
                             : AppColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,

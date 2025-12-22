@@ -17,10 +17,9 @@ class HistoryCubit extends Cubit<HistoryState> {
       final response = await repository.getChargingHistory();
       if (response.success) {
         final validSessions = _getValidSessions(response.data.sessions);
-        emit(HistorySuccess(
-          data: response.data,
-          displayedSessions: validSessions,
-        ));
+        emit(
+          HistorySuccess(data: response.data, displayedSessions: validSessions),
+        );
       } else {
         emit(HistoryError(response.message));
       }
@@ -30,9 +29,11 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   List<ChargingSession> _getValidSessions(List<ChargingSession> sessions) {
-    return sessions.where((s) => 
-      s.startTime != null && s.duration != null && s.kwh != null
-    ).toList();
+    return sessions
+        .where(
+          (s) => s.startTime != null && s.duration != null && s.kwh != null,
+        )
+        .toList();
   }
 
   void applyFilter(String filter) {
@@ -43,22 +44,31 @@ class HistoryCubit extends Cubit<HistoryState> {
 
       switch (filter) {
         case 'Active':
-          filteredSessions = validSessions.where((s) => s.status == 'on').toList();
+          filteredSessions = validSessions
+              .where((s) => s.status == 'on')
+              .toList();
           break;
         case 'Completed':
-          filteredSessions = validSessions.where((s) => s.status == 'off').toList();
+          filteredSessions = validSessions
+              .where((s) => s.status == 'off')
+              .toList();
           break;
         default: // All
           filteredSessions = validSessions;
       }
 
       // Re-apply current sort
-      filteredSessions = _applySorting(filteredSessions, currentState.selectedSort);
+      filteredSessions = _applySorting(
+        filteredSessions,
+        currentState.selectedSort,
+      );
 
-      emit(currentState.copyWith(
-        displayedSessions: filteredSessions,
-        selectedFilter: filter,
-      ));
+      emit(
+        currentState.copyWith(
+          displayedSessions: filteredSessions,
+          selectedFilter: filter,
+        ),
+      );
     }
   }
 
@@ -70,29 +80,36 @@ class HistoryCubit extends Cubit<HistoryState> {
         sortType,
       );
 
-      emit(currentState.copyWith(
-        displayedSessions: sortedSessions,
-        selectedSort: sortType,
-      ));
+      emit(
+        currentState.copyWith(
+          displayedSessions: sortedSessions,
+          selectedSort: sortType,
+        ),
+      );
     }
   }
 
-  List<ChargingSession> _applySorting(List<ChargingSession> sessions, String sortType) {
+  List<ChargingSession> _applySorting(
+    List<ChargingSession> sessions,
+    String sortType,
+  ) {
     final sortedList = List<ChargingSession>.from(sessions);
 
     switch (sortType) {
       case 'Newest':
         sortedList.sort((a, b) {
           if (a.startTime == null || b.startTime == null) return 0;
-          return DateTime.parse(b.startTime!)
-              .compareTo(DateTime.parse(a.startTime!));
+          return DateTime.parse(
+            b.startTime!,
+          ).compareTo(DateTime.parse(a.startTime!));
         });
         break;
       case 'Oldest':
         sortedList.sort((a, b) {
           if (a.startTime == null || b.startTime == null) return 0;
-          return DateTime.parse(a.startTime!)
-              .compareTo(DateTime.parse(b.startTime!));
+          return DateTime.parse(
+            a.startTime!,
+          ).compareTo(DateTime.parse(b.startTime!));
         });
         break;
       case 'Highest Energy':

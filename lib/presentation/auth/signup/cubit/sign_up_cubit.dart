@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
@@ -110,8 +113,9 @@ class SignUpCubit extends Cubit<SignUpState> {
           "mobile_number": phone,
         }),
       );
+      print(response.data);
       if (response.statusCode == 200 && response.data["success"] == true) {
-        resendSeconds = response.data["data"]["resend_available_in"];
+        resendSeconds = response.data["data"]["resend_available_in"] ?? 60;
         codeSent = response.data["data"]["code"];
         print(codeSent);
         print(resendSeconds);
@@ -147,10 +151,17 @@ class SignUpCubit extends Cubit<SignUpState> {
     }
   }
 
-  void createAccount(String email, String name, String pass) async {
+  void createAccount(
+    String email,
+    String name,
+    String pass,
+    File? image,
+  ) async {
     emit(LoadingCreateAccountState());
 
     try {
+      String? token = await FirebaseMessaging.instance.getToken();
+
       var response = await DioHelper.postData(
         url: EndPoints.register,
         data: FormData.fromMap({
@@ -159,6 +170,10 @@ class SignUpCubit extends Cubit<SignUpState> {
           "mobile_number": phone,
           "country_code": countryCode,
           "full_name": name,
+          "device_token": token,
+          "image": image == null
+              ? null
+              : await MultipartFile.fromFile(image.path),
         }),
         auth: false,
       );

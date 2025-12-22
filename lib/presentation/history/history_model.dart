@@ -115,7 +115,7 @@ class ChargingSession {
   // Helper getters
   String get displayCost => cost ?? '0';
   String get displayKwh => kwh != null
-      ? '${(int.parse(kwh!) / 1000).toStringAsFixed(1)} kWh'
+      ? '${(num.parse(kwh!) / 1000).toStringAsFixed(1)} kWh'
       : '0 kWh';
   String get displayDuration => duration ?? '0 hr 0 min';
   bool get isActive => status == 'on';
@@ -182,6 +182,6 @@ class HistorySummary {
   }
 
   // Helper getters
-  String get displayTotalKwh => '${(totalKwh / 1000).toStringAsFixed(1)} kWh';
-  String get displayTotalCost => '$totalCost EGP';
+  // String get displayTotalKwh => '${(totalKwh / 1000).toStringAsFixed(1)} kWh';
+  // String get displayTotalCost => '$totalCost EGP';
 }

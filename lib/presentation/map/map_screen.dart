@@ -156,8 +156,8 @@ class _MapScreenState extends State<MapScreen> {
                       GoogleMap(
                         padding: EdgeInsets.only(top: 120),
                         initialCameraPosition: CameraPosition(
-                          target: LatLng(30.0, 0.0),
-                          zoom: 3,
+                          target: LatLng(30.0444, 31.2357),
+                          zoom: 14,
                         ),
                         markers: cubit.markers,
                         onMapCreated: cubit.onMapCreated,
@@ -167,6 +167,33 @@ class _MapScreenState extends State<MapScreen> {
                         myLocationButtonEnabled: false,
                         buildingsEnabled: false,
                         compassEnabled: false,
+                        zoomControlsEnabled: false,
+                      ),
+                      if (state is RefreshingMapState)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withOpacity(0.15),
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                        ),
+                      Positioned(
+                        bottom: 25,
+                        right: 16,
+                        child: InkWell(
+                          onTap: () {
+                            MapCubit.get(
+                              context,
+                            ).refreshStationsByCurrentLocation();
+                          },
+
+                          child: CircleAvatar(
+                            radius: 28,
+                            backgroundColor: Colors.white,
+                            child: SvgPicture.asset(
+                              "assets/icons/location.svg",
+                            ),
+                          ),
+                        ),
                       ),
 
                       // Status Container

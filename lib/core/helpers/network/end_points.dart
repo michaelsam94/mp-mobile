@@ -36,4 +36,5 @@ class EndPoints {
   static const String startCharging = "/api/charging/start";
   static const String stopCharging = "/api/charging/stop";
   static const String chargingHistory = '/api/charging/history';
+  static const String changePasswordProfile = '/api/profile/password/change';
 }

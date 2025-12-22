@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -92,84 +93,124 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     );
   }
 
-  Widget _buildSupportCard(String label, String value, IconData icon) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
-      decoration: BoxDecoration(
-        color: Color(0xffF6F6F6),
-        borderRadius: BorderRadius.circular(19),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: Colors.white, size: 27),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
+  Future<void> _launchUrlSafely(String label, String value) async {
+    try {
+      Uri uri;
+
+      if (label.toLowerCase().contains('email')) {
+        // 📧 Email
+        uri = Uri(
+          scheme: 'mailto',
+          path: value,
+          queryParameters: {
+            'subject': 'Support Request - Mega Plug',
+            'body': 'Hi,\n\nI need support with:\n\n',
+          },
+        );
+      } else if (label.toLowerCase().contains('phone') ||
+          label.toLowerCase().contains('تليفون')) {
+        uri = Uri(
+          scheme: 'tel',
+          path: value.replaceAll(RegExp(r'[^\d+]'), ''), // ينضف الأرقام
+        );
+      } else if (label.toLowerCase().contains('whatsapp')) {
+        // 💬 WhatsApp
+        uri = Uri.parse('https://wa.me/$value');
+      } else {
+        // 🌐 أي لينك تاني (http/https)
+        uri = Uri.parse(value);
+      }
+
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot open $label: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Widget _buildSupportCard(String label, String value) {
+    return InkWell(
+      onTap: () => _launchUrlSafely(label, value), // ✅ واحدة function لكل حاجة
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
+        decoration: BoxDecoration(
+          color: Color(0xffF6F6F6),
+          borderRadius: BorderRadius.circular(19),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                    color: AppColors.primary,
+                  SizedBox(height: 5),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      color: AppColors.primary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSupportTab() {
-    return Column(
-      children: [
-        _buildSupportCard(
-          "Phone Support",
-          "+20 123 456 7890",
-          Icons.phone_outlined,
-        ),
-        _buildSupportCard(
-          "Email Support",
-          "support@megaplug.com",
-          Icons.email_outlined,
-        ),
-        _buildSupportCard("Live Chat", "Available 24/7", Icons.chat_outlined),
-        _buildSupportCard(
-          "FAQ Section",
-          "www.megaplug.com/faq",
-          Icons.phone_outlined,
-        ),
-        _buildSupportCard(
-          "Social Media Support",
-          "@megaplug on Twitter",
-          Icons.email_outlined,
-        ),
-        _buildSupportCard(
-          "Community Forum",
-          "forum.megaplug.com",
-          Icons.phone_outlined,
-        ),
-      ],
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: ProfileCubit.get(context).contacts.length,
+      itemBuilder: (context, index) {
+        final item = ProfileCubit.get(context).contacts[index];
+        return _buildSupportCard(item.key ?? "", item.value ?? "");
+      },
+      // children: [
+      // _buildSupportCard(
+      //   "Phone Support",
+      //   "+20 123 456 7890",
+      //   Icons.phone_outlined,
+      // ),
+      //   _buildSupportCard(
+      //     "Email Support",
+      //     "support@megaplug.com",
+      //     Icons.email_outlined,
+      //   ),
+      //   _buildSupportCard("Live Chat", "Available 24/7", Icons.chat_outlined),
+      //   _buildSupportCard(
+      //     "FAQ Section",
+      //     "www.megaplug.com/faq",
+      //     Icons.phone_outlined,
+      //   ),
+      //   _buildSupportCard(
+      //     "Social Media Support",
+      //     "@megaplug on Twitter",
+      //     Icons.email_outlined,
+      //   ),
+      //   _buildSupportCard(
+      //     "Community Forum",
+      //     "forum.megaplug.com",
+      //     Icons.phone_outlined,
+      //   ),
+      // ],
     );
   }
 
@@ -181,6 +222,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
   }) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
+        labelText: "Please select $label",
         filled: true,
         fillColor: Color(0xFFF7F7F7),
         border: OutlineInputBorder(
@@ -198,7 +240,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           )
           .toList(),
       onChanged: onChanged,
-      value: value ?? items.first,
+      value: value,
     );
   }
 
@@ -425,6 +467,8 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ProfileCubit.get(context).selectedCategory = null;
+    ProfileCubit.get(context).getContacts();
     return Scaffold(
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {

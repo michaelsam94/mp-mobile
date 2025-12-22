@@ -89,6 +89,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileCubit.get(context).getProfile();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -264,7 +265,9 @@ class ProfileScreen extends StatelessWidget {
                                         ),
                                         SizedBox(height: 2),
                                         Text(
-                                          '45',
+                                          ProfileCubit.get(
+                                            context,
+                                          ).totalCharges.toString(),
                                           style: TextStyle(
                                             color: green,
                                             fontWeight: FontWeight.bold,
@@ -279,47 +282,47 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             SizedBox(width: 12),
                             // Points
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(13),
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 14),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(width: 12),
-                                    SvgPicture.asset(
-                                      "assets/icons/points_profile.svg",
-                                    ),
-                                    SizedBox(width: 12),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Points',
-                                          style: TextStyle(
-                                            color: Colors.grey[700],
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          '850',
-                                          style: TextStyle(
-                                            color: green,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 21,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            // Expanded(
+                            //   child: Container(
+                            //     decoration: BoxDecoration(
+                            //       color: Colors.white,
+                            //       borderRadius: BorderRadius.circular(13),
+                            //     ),
+                            //     padding: EdgeInsets.symmetric(vertical: 14),
+                            //     child: Row(
+                            //       mainAxisAlignment: MainAxisAlignment.start,
+                            //       children: [
+                            //         SizedBox(width: 12),
+                            //         SvgPicture.asset(
+                            //           "assets/icons/points_profile.svg",
+                            //         ),
+                            //         SizedBox(width: 12),
+                            //         Column(
+                            //           crossAxisAlignment:
+                            //               CrossAxisAlignment.start,
+                            //           children: [
+                            //             Text(
+                            //               'Points',
+                            //               style: TextStyle(
+                            //                 color: Colors.grey[700],
+                            //                 fontSize: 13,
+                            //               ),
+                            //             ),
+                            //             SizedBox(height: 2),
+                            //             Text(
+                            //               '850',
+                            //               style: TextStyle(
+                            //                 color: green,
+                            //                 fontWeight: FontWeight.bold,
+                            //                 fontSize: 21,
+                            //               ),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],

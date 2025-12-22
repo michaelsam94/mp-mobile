@@ -17,7 +17,6 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     WalletCubit.get(context).getWallet();
 
     return Scaffold(
@@ -86,8 +85,6 @@ class WalletScreen extends StatelessWidget {
                                 color: Colors.black,
                               ),
                             ),
-                            SizedBox(width: 4),
-                            Text("👋", style: TextStyle(fontSize: 21)),
                           ],
                         ),
                         SizedBox(height: 19),

@@ -13,7 +13,6 @@ part 'websocket_state.dart';
 class WebSocketCubit extends Cubit<WebSocketState> {
   final WebSocketService service;
 
-  // حفظ آخر session data
   MeterValueData? _currentMeterData;
 
   MeterValueData? get currentMeterData => _currentMeterData;
@@ -26,7 +25,9 @@ class WebSocketCubit extends Cubit<WebSocketState> {
   }
 
   void connect() {
-    service.connect();
+    if (!service.isConnected) {
+      service.connect();
+    }
   }
 
   void disconnect() {
@@ -44,11 +45,9 @@ class WebSocketCubit extends Cubit<WebSocketState> {
         return;
       }
 
-      // Emit specific states based on message type
       if (parsedMessage is NotificationUpdateModel) {
         emit(NotificationUpdate(parsedMessage));
       } else if (parsedMessage is SessionUpdateModel) {
-        // حفظ الـ meter data
         if (parsedMessage.isMeterValue) {
           _currentMeterData = parsedMessage.meterData;
         }

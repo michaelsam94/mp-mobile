@@ -13,3 +13,4 @@ class ErrorMapState extends MapState {
   final String message;
   ErrorMapState(this.message);
 }
+class RefreshingMapState extends MapState {}

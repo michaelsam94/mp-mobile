@@ -18,6 +18,44 @@ class MapCubit extends Cubit<MapState> {
   MapCubit() : super(MapInitial());
 
   static MapCubit get(context) => BlocProvider.of(context);
+  @override
+  Future<void> close() {
+    clusterIconCache.clear();
+    iconCache.clear();
+    mapController?.dispose();
+    return super.close();
+  }
+
+  Future<void> refreshStationsByCurrentLocation() async {
+    if (state is LoadingMapState) return;
+
+    emit(RefreshingMapState());
+
+    try {
+      await initLocationAndRoute();
+
+      if (userLatLng == null || mapController == null) {
+        emit(LoadedMapState());
+        return;
+      }
+      if (mapController != null) {
+        await mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(userLatLng!, max(currentZoom, 14)),
+        );
+      }
+
+      mapStations.clear();
+      markers.clear();
+
+      await _fetchStations();
+
+      emit(LoadedMapState());
+    } catch (e) {
+      emit(ErrorMapState(e.toString()));
+    }
+  }
+
+  double _lastClusterZoom = -1;
 
   GoogleMapController? mapController;
   List<MapStationResponseModel> mapStations = [];
@@ -27,6 +65,16 @@ class MapCubit extends Cubit<MapState> {
 
   Map<String, BitmapDescriptor> iconCache = {};
   bool isIconsLoaded = false;
+  Map<int, BitmapDescriptor> clusterIconCache = {};
+  Future<BitmapDescriptor> _getClusterIcon(int count) async {
+    if (clusterIconCache.containsKey(count)) {
+      return clusterIconCache[count]!;
+    }
+
+    final icon = await _createClusterIcon(count);
+    clusterIconCache[count] = icon;
+    return icon;
+  }
 
   Future<void> initData() async {
     if (state is LoadingMapState) return;
@@ -34,7 +82,7 @@ class MapCubit extends Cubit<MapState> {
     emit(LoadingMapState());
 
     try {
-      await _initLocationAndRoute();
+      await initLocationAndRoute();
 
       if (!isIconsLoaded) {
         await _loadIcons();
@@ -50,7 +98,7 @@ class MapCubit extends Cubit<MapState> {
     }
   }
 
-  Future<void> _initLocationAndRoute() async {
+  Future<void> initLocationAndRoute() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       userLatLng = LatLng(30.0444, 31.2357);
@@ -120,7 +168,6 @@ class MapCubit extends Cubit<MapState> {
         url: EndPoints.getMapStations(
           userLatLng!.latitude,
           userLatLng!.longitude,
-         
         ),
       ).timeout(Duration(seconds: 10));
 
@@ -141,44 +188,56 @@ class MapCubit extends Cubit<MapState> {
     }
   }
 
+  bool _didSetInitialCamera = false;
+
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
 
-    if (mapStations.isNotEmpty && state is LoadedMapState) {
-      // احسب الـ bounds لكل الـ stations
-      _fitBoundsToStations();
-    }
-  }
+    if (!_didSetInitialCamera && userLatLng != null) {
+      _didSetInitialCamera = true;
 
-  void _fitBoundsToStations() {
-    if (mapStations.isEmpty || mapController == null) return;
-
-    double minLat = double.parse(mapStations.first.latitude!);
-    double maxLat = double.parse(mapStations.first.latitude!);
-    double minLng = double.parse(mapStations.first.longitude!);
-    double maxLng = double.parse(mapStations.first.longitude!);
-
-    for (var station in mapStations) {
-      if (double.parse(station.latitude!) < minLat)
-        minLat = double.parse(station.latitude!);
-      if (double.parse(station.latitude!) > maxLat)
-        maxLat = double.parse(station.latitude!);
-      if (double.parse(station.longitude!) < minLng)
-        minLng = double.parse(station.longitude!);
-      if (double.parse(station.longitude!) > maxLng)
-        maxLng = double.parse(station.longitude!);
-    }
-
-    mapController!.animateCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLng),
-          northeast: LatLng(maxLat, maxLng),
+      mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          userLatLng!,
+          14, // الزوم اللي انت عاوزه
         ),
-        50, // padding
-      ),
-    );
+      );
+    }
   }
+
+  // void _fitBoundsToStations() {
+  //   if (mapStations.isEmpty || mapController == null) return;
+
+  //   double minLat = double.parse(mapStations.first.latitude!);
+  //   double maxLat = userLatLng!.latitude;
+  //   double minLng = double.parse(mapStations.first.longitude!);
+  //   double maxLng = userLatLng!.longitude;
+
+  //   // for (var station in mapStations) {
+  //   //   if (double.parse(station.latitude!) < minLat)
+  //   //     minLat = double.parse(station.latitude!);
+  //   //   if (double.parse(station.latitude!) > maxLat)
+  //   //     maxLat = double.parse(station.latitude!);
+  //   //   if (double.parse(station.longitude!) < minLng)
+  //   //     minLng = double.parse(station.longitude!);
+  //   //   if (double.parse(station.longitude!) > maxLng)
+  //   //     maxLng = double.parse(station.longitude!);
+  //   // }
+
+  //   mapController!
+  //       .animateCamera(
+  //         CameraUpdate.newLatLngBounds(
+  //           LatLngBounds(
+  //             southwest: LatLng(minLat, minLng),
+  //             northeast: LatLng(maxLat, maxLng),
+  //           ),
+  //           50, // padding
+  //         ),
+  //       )
+  //       .then((_) {
+  //         mapController!.animateCamera(CameraUpdate.zoomBy(12));
+  //       });
+  // }
 
   // -------------------------------------------------------
   // CLUSTERING
@@ -189,6 +248,9 @@ class MapCubit extends Cubit<MapState> {
   }
 
   void onCameraIdle() async {
+    if ((currentZoom - _lastClusterZoom).abs() < 0.3) return;
+
+    _lastClusterZoom = currentZoom;
     await _updateClusters();
     emit(LoadedMapState());
   }
@@ -269,7 +331,7 @@ class MapCubit extends Cubit<MapState> {
           Marker(
             markerId: MarkerId('cluster_$i'),
             position: LatLng(cluster.centerLat, cluster.centerLon),
-            icon: await _createClusterIcon(cluster.stations.length),
+            icon: await _getClusterIcon(cluster.stations.length),
             infoWindow: InfoWindow(
               title: '${cluster.stations.length} Stations',
               snippet: 'Tap to zoom in',
@@ -365,7 +427,7 @@ class MapCubit extends Cubit<MapState> {
   Future<BitmapDescriptor> _createClusterIcon(int count) async {
     final PictureRecorder pictureRecorder = PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
-    final double size = 140.0;
+    final double size = 90.0;
 
     // رسم الدائرة
     final Paint circlePaint = Paint()
