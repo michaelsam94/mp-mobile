@@ -407,7 +407,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                 children: [
                                   SizedBox(width: 8),
                                   Image.asset(
-                                    "assets/icons/ac.png",
+                                    fullStation != null
+                                        ? SearchCubit.get(context).getStationIconPath(fullStation)
+                                        : "assets/icons/ac.png", // Default for nearby stations
                                     height: 48,
                                     width: 39,
                                   ),

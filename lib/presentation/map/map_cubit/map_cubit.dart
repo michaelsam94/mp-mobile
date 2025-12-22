@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -44,8 +47,14 @@ class MapCubit extends Cubit<MapState> {
       }
 
       if (!isIconsLoaded) {
+        print("initData: Loading icons (isIconsLoaded = false)");
         await _loadIcons();
         isIconsLoaded = true;
+        print("initData: Icons loaded, isIconsLoaded = true");
+      } else {
+        print("initData: Icons already loaded, but forcing reload for DC icons");
+        // Force reload to ensure DC icons are loaded with new code
+        await _loadIcons();
       }
 
       await _fetchStations();
@@ -89,24 +98,31 @@ class MapCubit extends Cubit<MapState> {
   }
 
   Future<void> _loadIcons() async {
+    print("_loadIcons: Starting to load icons");
     try {
+      // Load base icons first
+      print("_loadIcons: Loading available icon");
       iconCache['available'] = await getResizedMarker(
         'assets/icons/ac.png',
         110,
         128,
       );
+      print("_loadIcons: Loading unavailable icon");
       iconCache['unavailable'] = await getResizedMarker(
         'assets/icons/unavailable.png',
         110,
         128,
       );
+      print("_loadIcons: Loading inUse icon");
       iconCache['inUse'] = await getResizedMarker(
         'assets/icons/use.png',
         110,
         128,
       );
-    } catch (e) {
-      print("Error loading icons: $e");
+      print("_loadIcons: Base icons loaded successfully");
+    } catch (e, stackTrace) {
+      print("Error loading base icons: $e");
+      print("Stack trace: $stackTrace");
       iconCache['available'] = BitmapDescriptor.defaultMarkerWithHue(
         BitmapDescriptor.hueGreen,
       );
@@ -116,6 +132,90 @@ class MapCubit extends Cubit<MapState> {
       iconCache['inUse'] = BitmapDescriptor.defaultMarkerWithHue(
         BitmapDescriptor.hueBlue,
       );
+    }
+    
+    // Load DC icons separately so they don't fail if base icons fail
+    try {
+      print("_loadIcons: Loading DC icons");
+      iconCache['available_dc'] = await _createDCMarkerIcon('available');
+      print("_loadIcons: Available DC icon loaded");
+      iconCache['unavailable_dc'] = await _createDCMarkerIcon('unavailable');
+      print("_loadIcons: Unavailable DC icon loaded");
+      iconCache['inUse_dc'] = await _createDCMarkerIcon('inUse');
+      print("_loadIcons: InUse DC icon loaded");
+      print("_loadIcons: All DC icons loaded successfully");
+    } catch (e, stackTrace) {
+      print("Error loading DC icons: $e");
+      print("Stack trace: $stackTrace");
+      // Fallback for DC icons - use same as regular icons if creation fails
+      iconCache['available_dc'] = iconCache['available'] ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+      iconCache['unavailable_dc'] = iconCache['unavailable'] ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+      iconCache['inUse_dc'] = iconCache['inUse'] ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue);
+    }
+    print("_loadIcons: Finished loading all icons");
+  }
+
+  // Check if station has at least one DC connector
+  // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
+  bool _hasDCConnector(StationResponseModel station) {
+    if (station.guns == null || station.guns!.isEmpty) return false;
+    return station.guns!.any((gun) {
+      final type = gun.type?.toUpperCase() ?? '';
+      return type.contains('CCS2') || 
+             type.contains('TESLA') || 
+             type.contains('CHADEMO') ||
+             type.contains('GB-T');
+    });
+  }
+
+  // Create DC marker icon using PNG files based on status
+  Future<BitmapDescriptor> _createDCMarkerIcon(String status) async {
+    try {
+      print("Creating DC marker icon for status: $status");
+      
+      // Determine which PNG file to load based on status
+      String imagePath;
+      switch (status) {
+        case 'available':
+          imagePath = 'assets/icons/dc_available.png';
+          break;
+        case 'unavailable':
+          imagePath = 'assets/icons/dc_unavailable.png';
+          break;
+        case 'inUse':
+          imagePath = 'assets/icons/dc_inuse.png';
+          break;
+        default:
+          imagePath = 'assets/icons/dc_available.png'; // Default to available
+      }
+      
+      // Load the PNG file
+      final ByteData imageData = await rootBundle.load(imagePath);
+      print("DC PNG loaded from: $imagePath");
+      
+      // Decode and resize the image
+      final ui.Codec codec = await ui.instantiateImageCodec(
+        imageData.buffer.asUint8List(),
+        targetWidth: 110,
+        targetHeight: 128,
+      );
+      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      final ui.Image image = frameInfo.image;
+      
+      // Convert to bytes
+      final ByteData? data = await image.toByteData(format: ui.ImageByteFormat.png);
+      
+      if (data != null) {
+        print("DC marker icon created successfully for status: $status");
+        return BitmapDescriptor.fromBytes(data.buffer.asUint8List());
+      } else {
+        throw Exception('Failed to convert image to bytes');
+      }
+    } catch (e, stackTrace) {
+      print("Error creating DC marker icon: $e");
+      print("Stack trace: $stackTrace");
+      // Fallback to regular icon
+      return iconCache[status] ?? BitmapDescriptor.defaultMarker;
     }
   }
 
@@ -264,6 +364,14 @@ class MapCubit extends Cubit<MapState> {
         // Single marker
         var station = cluster.stations.first;
         if (station.latitude == null || station.longitude == null) continue;
+        
+        // Determine icon based on status and DC connector presence
+        String status = station.status ?? 'available';
+        String iconKey = status;
+        if (_hasDCConnector(station)) {
+          iconKey = '${status}_dc';
+        }
+        
         newMarkers.add(
           Marker(
             markerId: MarkerId('station_${station.id}'),
@@ -271,7 +379,7 @@ class MapCubit extends Cubit<MapState> {
               station.latitude!,
               station.longitude!,
             ),
-            icon: iconCache[station.status ?? 'available'] ?? BitmapDescriptor.defaultMarker,
+            icon: iconCache[iconKey] ?? iconCache[status] ?? BitmapDescriptor.defaultMarker,
             infoWindow: InfoWindow(
               title: station.name ?? 'Unknown Station',
               snippet: station.address ?? station.city ?? '',
