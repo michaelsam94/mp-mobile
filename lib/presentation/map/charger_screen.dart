@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/models/session_update_model.dart';
@@ -94,6 +95,11 @@ class _ChargerScreenState extends State<ChargerScreen> {
             meterData = context.read<WebSocketCubit>().currentMeterData;
           }
 
+          // Show shimmer if no meter data yet (initial loading state)
+          if (meterData == null) {
+            return _buildShimmerLoading();
+          }
+
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(18),
@@ -116,6 +122,248 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          children: [
+            // Station info shimmer
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerWidget(
+                    width: 32,
+                    height: 40,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ShimmerWidget(
+                          width: double.infinity,
+                          height: 18,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        SizedBox(height: 8),
+                        ShimmerWidget(
+                          width: 150,
+                          height: 14,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  ShimmerWidget(
+                    width: 80,
+                    height: 28,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
+            // Charge progress shimmer (circular)
+            Center(
+              child: ShimmerWidget(
+                width: 280,
+                height: 280,
+                borderRadius: BorderRadius.circular(140),
+              ),
+            ),
+            SizedBox(height: 28),
+            // Info tiles shimmer
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ShimmerWidget(
+                              width: double.infinity,
+                              height: 12,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                ShimmerWidget(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 18,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ShimmerWidget(
+                              width: double.infinity,
+                              height: 12,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                ShimmerWidget(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 18,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ShimmerWidget(
+                              width: double.infinity,
+                              height: 12,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                ShimmerWidget(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 18,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ShimmerWidget(
+                              width: double.infinity,
+                              height: 12,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              children: [
+                                ShimmerWidget(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    width: double.infinity,
+                                    height: 18,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 24),
+            // Button shimmer
+            ShimmerWidget(
+              width: double.infinity,
+              height: 56,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ],
+        ),
       ),
     );
   }

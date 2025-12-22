@@ -24,29 +24,19 @@ class StartSessionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<WebSocketCubit, WebSocketState>(
       listener: (context, state) {
+        // Show success message when notification arrives (in ChargerScreen)
         if (state is NotificationUpdate) {
           context.showSuccessMessage(state.data.title);
-          Future.delayed(Duration(seconds: 1), () {
-            if (context.mounted) {
-              context.goOff(ChargerScreen());
-            }
-          });
         }
       },
       child: Scaffold(
         body: BlocConsumer<ChargingCubit, ChargingState>(
           listener: (context, state) {
-            // if (state is ChargingSuccess) {
-            //   if (state.data) {
-            //     context.goTo(ChargerScreen());
-            //   }
-            // } else
-            if (state is ChargingError) {
-              context.showErrorMessage(state.message);
-            }
+            // Note: Error handling is done in ChargerScreen since we navigate immediately
+            // If there's an error, it will be shown in ChargerScreen
           },
           builder: (context, state) {
-            if (state is ChargingLoading || state is ChargingSuccess) {
+            if (state is ChargingLoading) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -90,11 +80,17 @@ class StartSessionScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
+                        // Start charging
                         ChargingCubit.get(context).startCharging(
                           chargerId,
                           int.parse(connectorId),
                           rfidCode,
                         );
+                        // Navigate immediately to ChargerScreen to show shimmer
+                        // The shimmer will disappear when WebSocket receives meter data
+                        if (context.mounted) {
+                          context.goOff(ChargerScreen());
+                        }
                       },
                       child: Text(
                         "Start Session",
