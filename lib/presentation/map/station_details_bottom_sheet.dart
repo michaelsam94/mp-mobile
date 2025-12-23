@@ -243,10 +243,10 @@ class StationDetailsSheet extends StatelessWidget {
                   SizedBox(height: 12),
                   Row(
                     children: [
-                      SvgPicture.asset(
-                        "assets/icons/charger.svg",
+                      Image.asset(
+                        _getStationIconPath(station),
                         width: 32,
-                        color: AppColors.primary,
+                        height: 32,
                       ),
                       SizedBox(width: 6),
                       Expanded(
@@ -365,6 +365,36 @@ class StationDetailsSheet extends StatelessWidget {
     }
   }
 
+  /// Checks if station has at least one DC gun
+  bool _hasDCGun(StationResponseModel station) {
+    if (station.guns == null || station.guns!.isEmpty) return false;
+    return station.guns!.any((gun) {
+      final type = gun.type?.toUpperCase() ?? '';
+      return type.contains('CCS2') ||
+          type.contains('CHADEMO') ||
+          type.contains('TESLA') ||
+          type.contains('GB-T');
+    });
+  }
+
+  /// Gets the appropriate station icon path based on DC/AC and status
+  String _getStationIconPath(StationResponseModel station) {
+    final hasDC = _hasDCGun(station);
+    final status = station.status?.toLowerCase() ?? 'available';
+    
+    String statusKey;
+    if (status == 'inuse' || status == 'in_use') {
+      statusKey = 'inuse';
+    } else if (status == 'unavailable') {
+      statusKey = hasDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
+    } else {
+      statusKey = 'available';
+    }
+    
+    final prefix = hasDC ? 'dc' : 'ac';
+    return 'assets/images/${prefix}_$statusKey.png';
+  }
+
   String _formatStatus(String? status) {
     if (status == null) return 'Available';
     // Convert API status format to display format
@@ -424,6 +454,34 @@ class ConnectorCard extends StatelessWidget {
 
   const ConnectorCard({required this.gun, super.key});
 
+  /// Determines if the gun type is DC or AC
+  bool _isDCType(String? type) {
+    if (type == null) return false;
+    final upperType = type.toUpperCase();
+    return upperType.contains('CCS2') ||
+        upperType.contains('CHADEMO') ||
+        upperType.contains('TESLA') ||
+        upperType.contains('GB-T');
+  }
+
+  /// Gets the appropriate icon path based on gun type and status
+  String _getGunIconPath() {
+    final isDC = _isDCType(gun.type);
+    final status = gun.status?.toLowerCase() ?? 'available';
+    
+    String statusKey;
+    if (status == 'inuse' || status == 'in_use') {
+      statusKey = 'inuse';
+    } else if (status == 'unavailable') {
+      statusKey = isDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
+    } else {
+      statusKey = 'available';
+    }
+    
+    final prefix = isDC ? 'dc' : 'ac';
+    return 'assets/images/${prefix}_$statusKey.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -432,7 +490,11 @@ class ConnectorCard extends StatelessWidget {
         children: [
           Column(
             children: [
-              SvgPicture.asset("assets/icons/charger.svg"),
+              Image.asset(
+                _getGunIconPath(),
+                width: 40,
+                height: 40,
+              ),
               SizedBox(height: 2),
               Text(
                 gun.maxPower != null ? '${gun.maxPower} kW' : 'N/A',

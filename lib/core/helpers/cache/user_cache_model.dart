@@ -40,6 +40,7 @@ class UserData {
   String? birthday;
   String? gender;
   int? totalCharges;
+  List<String>? media;
 
   UserData({
     this.id,
@@ -51,6 +52,7 @@ class UserData {
     this.birthday,
     this.gender,
     this.totalCharges,
+    this.media,
   });
 
   UserData.fromJson(Map<String, dynamic> json) {
@@ -63,6 +65,9 @@ class UserData {
     birthday = json['birthday'];
     gender = json['gender'];
     totalCharges = json['total_charges'];
+    if (json['media'] != null) {
+      media = List<String>.from(json['media']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -76,6 +81,7 @@ class UserData {
     data['birthday'] = this.birthday;
     data['gender'] = this.gender;
     data['total_charges'] = this.totalCharges;
+    data['media'] = this.media;
     return data;
   }
 }

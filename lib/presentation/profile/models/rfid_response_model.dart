@@ -3,14 +3,16 @@ class RFIDResponseModel {
   int? customerId;
   String? code;
   int? status;
+  int? isDefault;
 
-  RFIDResponseModel({this.id, this.customerId, this.code, this.status});
+  RFIDResponseModel({this.id, this.customerId, this.code, this.status, this.isDefault});
 
   RFIDResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     customerId = json['customer_id'];
     code = json['code'];
     status = json['status'];
+    isDefault = json['is_default'];
   }
 
   Map<String, dynamic> toJson() {
@@ -19,6 +21,7 @@ class RFIDResponseModel {
     data['customer_id'] = this.customerId;
     data['code'] = this.code;
     data['status'] = this.status;
+    data['is_default'] = this.isDefault;
     return data;
   }
 }

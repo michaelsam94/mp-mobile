@@ -21,6 +21,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   File? _imageFile;
+  String? _cachedImageUrl;
   final _picker = ImagePicker();
 
   final _nameController = TextEditingController();
@@ -45,7 +46,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _emailController.text = userData.email ?? '';
       _birthdayController.text = userData.birthday ?? '';
       _selectedGender = userData.gender;
+      // Load image from cache if available
+      if (userData.media != null && userData.media!.isNotEmpty) {
+        _cachedImageUrl = userData.media!.first;
+      }
     }
+  }
+
+  ImageProvider _getProfileImage() {
+    if (_imageFile != null) {
+      return FileImage(_imageFile!);
+    } else if (_cachedImageUrl != null && _cachedImageUrl!.isNotEmpty) {
+      return NetworkImage(_cachedImageUrl!);
+    }
+    return AssetImage("assets/images/user.png");
   }
 
   Future<void> _pickImage() async {
@@ -86,6 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         email: _emailController.text.trim(),
         birthday: _birthdayController.text,
         gender: _selectedGender!,
+        imageFile: _imageFile,
       );
     }
   }
@@ -113,7 +128,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           } else if (state is ProfileReloadedState) {
             // Reload user data from cache after profile is fetched
             _loadUserData();
-            setState(() {});
+            setState(() {
+              // Update cached image URL if profile was reloaded
+              final userData = CacheHelper.getUserData()?.user;
+              if (userData?.media != null && userData!.media!.isNotEmpty) {
+                _cachedImageUrl = userData.media!.first;
+              }
+            });
           }
         },
         builder: (context, state) {
@@ -164,9 +185,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         CircleAvatar(
                           radius: 54,
                           backgroundColor: Colors.grey[200],
-                          backgroundImage: _imageFile != null
-                              ? FileImage(_imageFile!)
-                              : AssetImage("assets/images/user.png"),
+                          backgroundImage: _getProfileImage(),
                         ),
                         Positioned(
                           bottom: 10,

@@ -32,6 +32,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  ImageProvider _getProfileImage() {
+    final userData = CacheHelper.getUserData()?.user;
+    if (userData?.media != null && userData!.media!.isNotEmpty) {
+      return NetworkImage(userData.media!.first);
+    }
+    return AssetImage('assets/images/user.png');
+  }
+
   Widget infoCard({
     required String title,
     required String value,
@@ -167,9 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundImage: AssetImage(
-                                'assets/images/user.png',
-                              ),
+                              backgroundImage: _getProfileImage(),
                             ),
                             SizedBox(width: 10),
                             Expanded(

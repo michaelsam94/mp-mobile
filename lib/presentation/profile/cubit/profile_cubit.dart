@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -42,10 +44,19 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
         var rfidData = data[0]["rfids"] as List;
-        rfidCards = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
+        var allRfids = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
+        
+        // Set default RFID to the one with is_default = 1
+        try {
+          defaultRFID = allRfids.firstWhere((rfid) => rfid.isDefault == 1);
+        } catch (e) {
+          // If no default RFID found, set to null
+          defaultRFID = null;
+        }
+        
+        // Filter out RFID cards where is_default = 1 for UI display
+        rfidCards = allRfids.where((rfid) => rfid.isDefault != 1).toList();
 
-        // Todo Edit
-        defaultRFID = rfidCards[0];
         emit(SuccessGetRFIDState());
       } else {
         emit(ErrorGetRFIDState());
@@ -247,18 +258,22 @@ class ProfileCubit extends Cubit<ProfileState> {
     required String email,
     required String birthday,
     required String gender,
+    File? imageFile,
   }) async {
     emit(LoadingUpdateProfileState());
 
     try {
-      var response = await DioHelper.patchData(
+      var response = await DioHelper.postData(
         url: EndPoints.updateProfile,
-        data: {
+        data: FormData.fromMap({
           "full_name": fullName,
           "email": email,
           "birthday": birthday,
           "gender": gender,
-        },
+          "media": imageFile == null
+              ? null
+              : await MultipartFile.fromFile(imageFile.path),
+        }),
       );
 
       if (response.statusCode == 200 && response.data["success"] == true) {

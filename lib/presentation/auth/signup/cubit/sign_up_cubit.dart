@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -148,7 +150,7 @@ class SignUpCubit extends Cubit<SignUpState> {
     }
   }
 
-  void createAccount(String email, String name, String pass) async {
+  void createAccount(String email, String name, String pass, {File? imageFile}) async {
     emit(LoadingCreateAccountState());
 
     try {
@@ -161,6 +163,9 @@ class SignUpCubit extends Cubit<SignUpState> {
           "country_code": countryCode,
           "full_name": name,
           "device_token": "device_token",
+          "media": imageFile == null
+              ? null
+              : await MultipartFile.fromFile(imageFile.path),
         }),
         auth: false,
       );

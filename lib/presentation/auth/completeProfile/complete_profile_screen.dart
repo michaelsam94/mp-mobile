@@ -46,6 +46,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         _emailController.text,
         _nameController.text,
         _passwordController.text,
+        imageFile: _imageFile,
       );
     }
   }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/map/charger_screen.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 
 import '../../core/services/charging_cubit/charging_cubit.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
@@ -80,11 +81,18 @@ class StartSessionScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // Start charging
+                        // Get default RFID from ProfileCubit
+                        final defaultRFID = ProfileCubit.get(context).defaultRFID;
+                        if (defaultRFID?.code == null || defaultRFID!.code!.isEmpty) {
+                          context.showErrorMessage("No default RFID card found. Please add an RFID card.");
+                          return;
+                        }
+                        
+                        // Start charging with default RFID
                         ChargingCubit.get(context).startCharging(
                           chargerId,
                           int.parse(connectorId),
-                          rfidCode,
+                          defaultRFID.code!,
                         );
                         // Navigate immediately to ChargerScreen to show shimmer
                         // The shimmer will disappear when WebSocket receives meter data
