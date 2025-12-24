@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/services/models/session_update_model.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
@@ -35,13 +40,14 @@ class _ChargerScreenState extends State<ChargerScreen> {
       ),
       body: BlocConsumer<WebSocketCubit, WebSocketState>(
         listener: (context, state) {
-          if (state is SessionUpdate) {
-            final session = state.data;
+          try {
+            if (state is SessionUpdate) {
+              final session = state.data;
 
-            // إذا تم إيقاف الجلسة
-            if (session.isSessionStopped) {
-              isSessionStopped = true;
-              stoppedData = session.stoppedData!;
+              // إذا تم إيقاف الجلسة
+              if (session.isSessionStopped) {
+                isSessionStopped = true;
+                stoppedData = session.stoppedData!;
               // showDialog(
               //   context: context,
               //   barrierDismissible: false,
@@ -75,10 +81,28 @@ class _ChargerScreenState extends State<ChargerScreen> {
             }
           }
 
-          if (state is NotificationUpdate) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.data.message)));
+            if (state is NotificationUpdate) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.data.message)));
+            }
+          } catch (e, stackTrace) {
+            // Log exception
+            if (kDebugMode) {
+              print('Exception in WebSocket listener: $e');
+              print('Stack trace: $stackTrace');
+            }
+            // Show error toast
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error processing update: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.red.shade700,
+                  behavior: SnackBarBehavior.fixed,
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
           }
         },
         builder: (context, state) {
@@ -390,13 +414,184 @@ class _ChargerScreenState extends State<ChargerScreen> {
         ),
         onPressed: () async {
           String? url = ChargingCubit.get(context).pdfUrl;
-          if (url != null) {
-            try {
-              if (await canLaunchUrl(Uri.parse(url))) {
-                launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+          if (url == null || url.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("PDF URL not available", style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.red.shade700,
+                behavior: SnackBarBehavior.fixed,
+                duration: Duration(seconds: 3),
+              ),
+            );
+            return;
+          }
+
+          try {
+            // Show loading indicator
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+
+            // Get auth headers
+            final authHeaders = await DioHelper.getAuthHeaders();
+            
+            // Download PDF with authentication headers using Dio directly
+            // We need responseType.bytes for binary PDF data
+            final response = await DioHelper.dio.get(
+              url,
+              options: Options(
+                headers: authHeaders,
+                responseType: ResponseType.bytes,
+              ),
+            );
+
+            if (response.statusCode == 200 && response.data != null) {
+              // Get external storage directory (app's external files directory)
+              // This doesn't require special permissions and works with FileProvider
+              Directory? downloadsDir;
+              
+              try {
+                // Use external storage directory (app-specific, no permissions needed)
+                final externalDir = await getExternalStorageDirectory();
+                if (externalDir != null) {
+                  // Create Downloads subdirectory in app's external storage
+                  downloadsDir = Directory('${externalDir.path}/Downloads');
+                }
+              } catch (e, stackTrace) {
+                // Log exception
+                if (kDebugMode) {
+                  print('Exception getting external storage: $e');
+                  print('Stack trace: $stackTrace');
+                }
+                // If external storage fails, use application documents directory
+                try {
+                  final appDir = await getApplicationDocumentsDirectory();
+                  downloadsDir = Directory('${appDir.path}/Downloads');
+                } catch (e2, stackTrace2) {
+                  if (kDebugMode) {
+                    print('Exception getting application documents directory: $e2');
+                    print('Stack trace: $stackTrace2');
+                  }
+                  // Show error toast
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Error accessing storage: ${e2.toString()}", style: TextStyle(color: Colors.white)),
+                        backgroundColor: Colors.red.shade700,
+                        behavior: SnackBarBehavior.fixed,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                  return;
+                }
               }
-            } catch (e) {
-              context.showErrorMessage("This pdf link is not working");
+              
+              // Fallback to application documents if external storage is not available
+              if (downloadsDir == null) {
+                final appDir = await getApplicationDocumentsDirectory();
+                downloadsDir = Directory('${appDir.path}/Downloads');
+              }
+              
+              // Create directory if it doesn't exist
+              if (!await downloadsDir.exists()) {
+                await downloadsDir.create(recursive: true);
+              }
+              
+              // Generate unique filename
+              final fileName = 'charging_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+              final filePath = '${downloadsDir.path}/$fileName';
+              
+              // Save PDF to external storage
+              final file = File(filePath);
+              await file.writeAsBytes(response.data as List<int>);
+
+              // Close loading dialog
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("PDF downloaded successfully", style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.green.shade600,
+                    behavior: SnackBarBehavior.fixed,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+
+              // Open the PDF file after download completes using open_file
+              // This handles FileProvider automatically for Android
+              try {
+                final result = await OpenFile.open(filePath);
+                if (result.type != ResultType.done) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Unable to open PDF file. File saved at: $filePath", style: TextStyle(color: Colors.white)),
+                        backgroundColor: Colors.red.shade700,
+                        behavior: SnackBarBehavior.fixed,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
+              } catch (e, stackTrace) {
+                // Log exception
+                if (kDebugMode) {
+                  print('Exception opening PDF: $e');
+                  print('Stack trace: $stackTrace');
+                }
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error opening PDF: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.red.shade700,
+                      behavior: SnackBarBehavior.fixed,
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
+              }
+            } else {
+              // Close loading dialog
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Failed to download PDF", style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.red.shade700,
+                    behavior: SnackBarBehavior.fixed,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            }
+          } catch (e, stackTrace) {
+            // Log exception
+            if (kDebugMode) {
+              print('Exception downloading PDF: $e');
+              print('Stack trace: $stackTrace');
+            }
+            // Close loading dialog if still open
+            if (context.mounted) {
+              try {
+                Navigator.pop(context);
+              } catch (_) {
+                // Dialog might already be closed
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error downloading PDF: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.red.shade700,
+                  behavior: SnackBarBehavior.fixed,
+                  duration: Duration(seconds: 3),
+                ),
+              );
             }
           }
         },
@@ -544,8 +739,33 @@ class _ChargerScreenState extends State<ChargerScreen> {
   Widget _buildStopButton(MeterValueData? meterData, String? transactionId) {
     return BlocListener<ChargingCubit, ChargingState>(
       listener: (context, state) {
-        if (state is StopChargingSuccess) {
-          Navigator.pop(context);
+        try {
+          if (state is StopChargingSuccess) {
+            // Session stopped successfully - stay on page to show download PDF button
+            setState(() {
+              isSessionStopped = true;
+            });
+            context.showSuccessMessage("Charging stopped successfully");
+          } else if (state is ChargingError) {
+            context.showErrorMessage(state.message);
+          }
+        } catch (e, stackTrace) {
+          // Log exception
+          if (kDebugMode) {
+            print('Exception in ChargingCubit listener: $e');
+            print('Stack trace: $stackTrace');
+          }
+          // Show error toast
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Error: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                backgroundColor: Colors.red.shade700,
+                behavior: SnackBarBehavior.fixed,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
         }
       },
       child: SizedBox(
@@ -560,31 +780,50 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
           ),
           onPressed: () async {
-            final bool? confirmed = await showDialog<bool>(
-              context: context,
-              builder: (_) => AlertDialog(
-                title: Text('Stop Charging?'),
-                content: Text('Are you sure you want to stop charging?'),
-                actions: [
-                  TextButton(
-                    onPressed: () =>
-                        Navigator.pop(context, false), // Return false
-                    child: Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        Navigator.pop(context, true), // Return true
-                    child: Text('Stop', style: TextStyle(color: Colors.red)),
-                  ),
-                ],
-              ),
-            );
-
-            if (confirmed == true) {
-              context.read<ChargingCubit>().stopCharging(
-                meterData?.chargerId.toString() ?? "",
-                transactionId ?? "",
+            try {
+              final bool? confirmed = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text('Stop Charging?'),
+                  content: Text('Are you sure you want to stop charging?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(context, false), // Return false
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(context, true), // Return true
+                      child: Text('Stop', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
               );
+
+              if (confirmed == true) {
+                context.read<ChargingCubit>().stopCharging(
+                  meterData?.chargerId.toString() ?? "",
+                  transactionId ?? "",
+                );
+              }
+            } catch (e, stackTrace) {
+              // Log exception
+              if (kDebugMode) {
+                print('Exception in stop charging button: $e');
+                print('Stack trace: $stackTrace');
+              }
+              // Show error toast
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Error stopping charging: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.red.shade700,
+                    behavior: SnackBarBehavior.fixed,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
             }
           },
           child: Row(

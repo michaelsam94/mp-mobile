@@ -34,6 +34,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   ImageProvider _getProfileImage() {
     final userData = CacheHelper.getUserData()?.user;
+    // Use media_url if available (new API format)
+    if (userData?.mediaUrl != null && userData!.mediaUrl!.isNotEmpty) {
+      return NetworkImage(userData.mediaUrl!);
+    }
+    // Fallback to old media array format for backward compatibility
     if (userData?.media != null && userData!.media!.isNotEmpty) {
       return NetworkImage(userData.media!.first);
     }

@@ -6,20 +6,27 @@ class TipResponseModel {
   String? description;
   int? sort;
   List<TipMedia>? media;
+  String? mediaUrl;
 
-  TipResponseModel({this.id, this.title, this.description, this.sort, this.media});
+  TipResponseModel({this.id, this.title, this.description, this.sort, this.media, this.mediaUrl});
 
   TipResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];
     sort = json['sort'];
+    mediaUrl = json['media_url'];
     if (json['media'] != null) {
       media = (json['media'] as List).map((e) => TipMedia.fromJson(e)).toList();
     }
   }
 
   String? get imageUrl {
+    // Use media_url if available (new API format)
+    if (mediaUrl != null && mediaUrl!.isNotEmpty) {
+      return mediaUrl;
+    }
+    // Fallback to old format with media array
     if (media != null && media!.isNotEmpty) {
       return '${EndPoints.baseUrl}/storage/${media!.first.path}';
     }

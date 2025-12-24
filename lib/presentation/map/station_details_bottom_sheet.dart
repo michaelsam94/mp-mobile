@@ -217,15 +217,7 @@ class StationDetailsSheet extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 18),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      "assets/images/onboarding1.png",
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  _buildImageCarousel(station),
                   SizedBox(height: 18),
                   Row(
                     children: [
@@ -445,6 +437,170 @@ class StationDetailsSheet extends StatelessWidget {
           color: colorText,
         ),
       ),
+    );
+  }
+
+  Widget _buildImageCarousel(StationResponseModel station) {
+    final imageUrls = station.imageUrls;
+    
+    // If no images, show placeholder
+    if (imageUrls.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 120,
+          width: double.infinity,
+          color: Colors.grey[200],
+          child: Icon(
+            Icons.image_not_supported,
+            size: 50,
+            color: Colors.grey[400],
+          ),
+        ),
+      );
+    }
+
+    // If only one image, show it without carousel
+    if (imageUrls.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          imageUrls.first,
+          height: 120,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              height: 120,
+              width: double.infinity,
+              color: Colors.grey[200],
+              child: Icon(
+                Icons.image_not_supported,
+                size: 50,
+                color: Colors.grey[400],
+              ),
+            );
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              height: 120,
+              width: double.infinity,
+              color: Colors.grey[200],
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    // Multiple images - show carousel with indicators
+    return _ImageCarouselWidget(imageUrls: imageUrls);
+  }
+}
+
+class _ImageCarouselWidget extends StatefulWidget {
+  final List<String> imageUrls;
+
+  const _ImageCarouselWidget({required this.imageUrls});
+
+  @override
+  State<_ImageCarouselWidget> createState() => _ImageCarouselWidgetState();
+}
+
+class _ImageCarouselWidgetState extends State<_ImageCarouselWidget> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: 120,
+            width: double.infinity,
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              itemCount: widget.imageUrls.length,
+              itemBuilder: (context, index) {
+                return Image.network(
+                  widget.imageUrls[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.grey[400],
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        // Point indicators
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(widget.imageUrls.length, (index) {
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              width: index == _currentPage ? 24 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: index == _currentPage
+                    ? AppColors.primary
+                    : Colors.grey[300],
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

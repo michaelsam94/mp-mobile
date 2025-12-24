@@ -46,8 +46,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _emailController.text = userData.email ?? '';
       _birthdayController.text = userData.birthday ?? '';
       _selectedGender = userData.gender;
-      // Load image from cache if available
-      if (userData.media != null && userData.media!.isNotEmpty) {
+      // Load image from cache if available - use media_url (new format) or fallback to media array
+      if (userData.mediaUrl != null && userData.mediaUrl!.isNotEmpty) {
+        _cachedImageUrl = userData.mediaUrl;
+      } else if (userData.media != null && userData.media!.isNotEmpty) {
         _cachedImageUrl = userData.media!.first;
       }
     }
