@@ -82,7 +82,15 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void searchStations(String query, {List<StationResponseModel>? cachedStations}) {
-    searchQuery = query.toLowerCase();
+    searchQuery = query.trim().toLowerCase();
+    
+    // If search query is empty, don't switch to cached stations (keep nearby stations)
+    if (searchQuery.isEmpty) {
+      useCachedStations = false;
+      filteredStations = [];
+      emit(SearchUpdatedState());
+      return;
+    }
     
     // If user starts searching and we have cached stations, switch to them
     if (cachedStations != null && cachedStations.isNotEmpty && !useCachedStations) {
@@ -210,7 +218,24 @@ class SearchCubit extends Cubit<SearchState> {
 
   void clearSearch() {
     searchQuery = '';
-    applyFiltersAndSearch();
+    // Reset to nearby stations when search is cleared
+    useCachedStations = false;
+    filteredStations = [];
+    getStations(); // Reload nearby stations
+  }
+
+  void resetSearchState() {
+    // Reset all search and filter state
+    searchQuery = '';
+    useCachedStations = false;
+    filteredStations = [];
+    stations = [];
+    nearbyStations = [];
+    filterStatus = null;
+    filterConnectorType = null;
+    filterFavouriteOnly = false;
+    filterMinimumPower = null;
+    emit(SearchInitial());
   }
 
   void clearFilters() {

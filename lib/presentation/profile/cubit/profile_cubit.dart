@@ -54,8 +54,8 @@ class ProfileCubit extends Cubit<ProfileState> {
           if (allRfids.isNotEmpty) {
             defaultRFID = allRfids.first;
           } else {
-            defaultRFID = null;
-          }
+          defaultRFID = null;
+        }
         }
         
         // Filter out the default RFID for UI display

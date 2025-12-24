@@ -27,7 +27,13 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      SearchCubit.get(context).getStations(); // استدعِ بعد بناء الـ widget
+      final searchCubit = SearchCubit.get(context);
+      // Reset search state when screen opens
+      searchCubit.resetSearchState();
+      // Clear search text field
+      _searchController.clear();
+      // Load nearby stations
+      searchCubit.getStations();
     });
   }
 
@@ -41,6 +47,12 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onSearchChanged(String value) {
     // Cancel previous timer if it exists
     _debounceTimer?.cancel();
+    
+    // If search field is empty, reload nearby stations
+    if (value.trim().isEmpty) {
+      SearchCubit.get(context).getStations();
+      return;
+    }
     
     // Create a new timer with debounce duration (e.g., 500ms)
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
