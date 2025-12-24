@@ -58,7 +58,8 @@ class _SearchScreenState extends State<SearchScreen> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       // This callback will be called after the debounce duration
       if (mounted) {
-        // Get cached stations from MapCubit
+        // Always get all cached stations from MapCubit (not filtered results)
+        // This ensures search works on the full dataset, then filters are applied
         final mapCubit = MapCubit.get(context);
         final cachedStations = mapCubit.mapStations;
         SearchCubit.get(context).searchStations(value, cachedStations: cachedStations);
@@ -158,11 +159,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                   favouriteOnly,
                                   minimumPower,
                                 }) {
+                                  // Clear search field when filters are applied
+                                  _searchController.clear();
+                                  // Get cached stations from MapCubit
+                                  final mapCubit = MapCubit.get(context);
+                                  final cachedStations = mapCubit.mapStations;
                                   SearchCubit.get(context).applyFilters(
                                     status: status,
                                     connectorType: connectorType,
                                     favouriteOnly: favouriteOnly,
                                     minimumPower: minimumPower,
+                                    cachedStations: cachedStations,
                                   );
                                 },
                           ),
