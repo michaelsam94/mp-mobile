@@ -85,16 +85,34 @@ class ProfileCubit extends Cubit<ProfileState> {
         url: EndPoints.rfidCards,
         data: FormData.fromMap({"code": code, "status": "1"}),
       );
-      if (response.statusCode == 200 && response.data["success"] == true) {
+      if (response.statusCode == 200 && (response.data["success"] == true || response.data["status"] == true)) {
+        emit(SuccessAddRFIDState());
         getRFID();
       } else {
-        emit(ErrorGetRFIDState());
+        // Extract error message from response
+        String errorMessage = 'Failed to add RFID card';
+        if (response.data["message"] != null) {
+          errorMessage = response.data["message"];
+        } else if (response.data["errors"] != null) {
+          // Check for specific field errors
+          final errors = response.data["errors"];
+          if (errors is Map) {
+            // Get first error message from errors map
+            final firstErrorKey = errors.keys.first;
+            if (errors[firstErrorKey] is List && (errors[firstErrorKey] as List).isNotEmpty) {
+              errorMessage = errors[firstErrorKey][0];
+            } else if (errors[firstErrorKey] is String) {
+              errorMessage = errors[firstErrorKey];
+            }
+          }
+        }
+        emit(ErrorGetRFIDState(message: errorMessage));
       }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
-      emit(ErrorGetRFIDState());
+      emit(ErrorGetRFIDState(message: e.toString()));
     }
   }
 

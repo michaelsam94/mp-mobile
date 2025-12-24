@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
@@ -136,7 +137,14 @@ class RFIDCardsScreen extends StatelessWidget {
     ProfileCubit.get(context).getRFID();
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
-      body: BlocBuilder<ProfileCubit, ProfileState>(
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is ErrorGetRFIDState) {
+            context.showErrorMessage(state.message);
+          } else if (state is SuccessAddRFIDState) {
+            context.showSuccessMessage('RFID card added successfully');
+          }
+        },
         builder: (context, state) {
           return SafeArea(
             child: ListView(

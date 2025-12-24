@@ -11,9 +11,14 @@ class SuccessLogoutProfileState extends ProfileState {}
 
 class LoadingGetRFIDState extends ProfileState {}
 
-class ErrorGetRFIDState extends ProfileState {}
+class ErrorGetRFIDState extends ProfileState {
+  final String message;
+  ErrorGetRFIDState({this.message = 'Failed to process RFID card'});
+}
 
 class SuccessGetRFIDState extends ProfileState {}
+
+class SuccessAddRFIDState extends ProfileState {}
 
 class ChangeAgreePrivacyState extends ProfileState {
   final bool agree;
