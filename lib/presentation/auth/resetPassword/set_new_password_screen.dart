@@ -18,6 +18,8 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
   final confirmController = TextEditingController();
 
   final _globalKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,8 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
 
                     TextFormField(
                       controller: controller,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.text,
+                      obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         hintText: 'Password',
                         border: OutlineInputBorder(
@@ -85,6 +88,19 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                         fillColor: Color(0xffFBFBFB),
                         filled: true,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                       ),
                       validator: (val) {
                         if (val == null || val.trim().isEmpty) {
@@ -111,7 +127,8 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
 
                     TextFormField(
                       controller: confirmController,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.text,
+                      obscureText: _obscureConfirmPassword,
                       decoration: InputDecoration(
                         hintText: 'Confirm Password',
                         border: OutlineInputBorder(
@@ -120,6 +137,19 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                         fillColor: Color(0xffFBFBFB),
                         filled: true,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {

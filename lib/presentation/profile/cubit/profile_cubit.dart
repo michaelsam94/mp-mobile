@@ -50,12 +50,20 @@ class ProfileCubit extends Cubit<ProfileState> {
         try {
           defaultRFID = allRfids.firstWhere((rfid) => rfid.isDefault == 1);
         } catch (e) {
-          // If no default RFID found, set to null
-          defaultRFID = null;
+          // If no default RFID found, fallback to first RFID in the list
+          if (allRfids.isNotEmpty) {
+            defaultRFID = allRfids.first;
+          } else {
+            defaultRFID = null;
+          }
         }
         
-        // Filter out RFID cards where is_default = 1 for UI display
-        rfidCards = allRfids.where((rfid) => rfid.isDefault != 1).toList();
+        // Filter out the default RFID for UI display
+        if (defaultRFID != null) {
+          rfidCards = allRfids.where((rfid) => rfid.id != defaultRFID!.id).toList();
+        } else {
+          rfidCards = allRfids;
+        }
 
         emit(SuccessGetRFIDState());
       } else {
