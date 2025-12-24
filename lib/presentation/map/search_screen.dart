@@ -514,47 +514,43 @@ class _SearchScreenState extends State<SearchScreen> {
                                           children: [
                                             Column(
                                               children: [
-                                                SvgPicture.asset(
-                                                  "assets/icons/charger.svg",
+                                                Image.asset(
+                                                  _getGunIconPath(connector.type, connector.status),
+                                                  width: 40,
+                                                  height: 40,
+                                                ),
+                                                SizedBox(height: 2),
+                                                Text(
+                                                  connector.maxPower != null ? '${connector.maxPower} kW' : 'N/A',
+                                                  style: TextStyle(fontSize: 13, color: Colors.grey),
                                                 ),
                                               ],
                                             ),
-                                            SizedBox(width: 16),
-                                            Container(
-                                              width: 1,
-                                              color: Color(0xffE6ECEF),
-                                              height: 30,
-                                            ),
-                                            SizedBox(width: 16),
-                                            SvgPicture.asset(
-                                              "assets/icons/comboccs.svg",
-                                            ),
-                                            SizedBox(width: 4),
+                                            SizedBox(width: 14),
                                             Expanded(
-                                              child: Row(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      connector.type ?? "",
-                                                      style: TextStyle(fontSize: 15),
-                                                      overflow: TextOverflow.ellipsis,
+                                                  Text(
+                                                    connector.type ?? 'Unknown Type',
+                                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Text(
+                                                    connector.name ?? "Connector no/name",
+                                                    style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                                                  ),
+                                                  Text(
+                                                    connector.price != null ? "${connector.price} EGP/KW" : "Price not available",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.green[700],
+                                                      fontWeight: FontWeight.w600,
                                                     ),
                                                   ),
-                                                  if (connector.maxPower != null) ...[
-                                                    SizedBox(width: 8),
-                                                    Text(
-                                                      '${connector.maxPower}kW',
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ],
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(width: 8),
-                                            _statusBadge(connector.status ?? ""),
                                           ],
                                         ),
                                       );
@@ -608,6 +604,34 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
     );
+  }
+
+  /// Determines if the gun type is DC or AC
+  bool _isDCType(String? type) {
+    if (type == null) return false;
+    final upperType = type.toUpperCase();
+    return upperType.contains('CCS2') ||
+        upperType.contains('CHADEMO') ||
+        upperType.contains('TESLA') ||
+        upperType.contains('GB-T');
+  }
+
+  /// Gets the appropriate icon path based on gun type and status
+  String _getGunIconPath(String? type, String? status) {
+    final isDC = _isDCType(type);
+    final statusLower = status?.toLowerCase() ?? 'available';
+    
+    String statusKey;
+    if (statusLower == 'inuse' || statusLower == 'in_use') {
+      statusKey = 'inuse';
+    } else if (statusLower == 'unavailable') {
+      statusKey = isDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
+    } else {
+      statusKey = 'available';
+    }
+    
+    final prefix = isDC ? 'dc' : 'ac';
+    return 'assets/images/${prefix}_$statusKey.png';
   }
 
   Widget _statusBadge(String status) {

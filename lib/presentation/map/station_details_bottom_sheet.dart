@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
-import 'package:mega_plus/presentation/map/qr_code_scanner_screen.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -681,28 +677,6 @@ class ConnectorCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF24C064),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 0,
-            ),
-            onPressed: () {
-              // Check if user is logged in (not in guest mode)
-              if (CacheHelper.checkLogin() != 3) {
-                GuestBottomSheet.show(context);
-                return;
-              }
-              context.goTo(QrCodeScannerScreen());
-            },
-            child: Text(
-              "Click to charge",
-              style: TextStyle(fontSize: 13, color: Colors.white),
             ),
           ),
         ],
