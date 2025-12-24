@@ -162,8 +162,8 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundImage: AssetImage(
-                                'assets/images/user.png',
+                              backgroundImage: NetworkImage(
+                                ProfileCubit.get(context).image ?? "",
                               ),
                             ),
                             SizedBox(width: 10),
@@ -282,47 +282,47 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             SizedBox(width: 12),
                             // Points
-                            // Expanded(
-                            //   child: Container(
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.white,
-                            //       borderRadius: BorderRadius.circular(13),
-                            //     ),
-                            //     padding: EdgeInsets.symmetric(vertical: 14),
-                            //     child: Row(
-                            //       mainAxisAlignment: MainAxisAlignment.start,
-                            //       children: [
-                            //         SizedBox(width: 12),
-                            //         SvgPicture.asset(
-                            //           "assets/icons/points_profile.svg",
-                            //         ),
-                            //         SizedBox(width: 12),
-                            //         Column(
-                            //           crossAxisAlignment:
-                            //               CrossAxisAlignment.start,
-                            //           children: [
-                            //             Text(
-                            //               'Points',
-                            //               style: TextStyle(
-                            //                 color: Colors.grey[700],
-                            //                 fontSize: 13,
-                            //               ),
-                            //             ),
-                            //             SizedBox(height: 2),
-                            //             Text(
-                            //               '850',
-                            //               style: TextStyle(
-                            //                 color: green,
-                            //                 fontWeight: FontWeight.bold,
-                            //                 fontSize: 21,
-                            //               ),
-                            //             ),
-                            //           ],
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 12),
+                                    SvgPicture.asset(
+                                      "assets/icons/points_profile.svg",
+                                    ),
+                                    SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Points',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          '0',
+                                          style: TextStyle(
+                                            color: green,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 21,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],

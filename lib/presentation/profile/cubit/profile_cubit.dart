@@ -241,6 +241,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   int totalCharges = 0;
+  String? image;
   void getProfile() async {
     emit(LoadingGetProfileState());
 
@@ -249,6 +250,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         totalCharges = response.data["data"]["total_charges"] ?? 0;
+        image = response.data["data"]["media"][0];
 
         emit(SuccessGetProfileState());
       } else {

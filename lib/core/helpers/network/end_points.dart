@@ -1,8 +1,8 @@
 class EndPoints {
   static const String baseUrl = "https://dev-megaplag.tadafuq.ae";
+  static const String imageBaseUrl = "https://dev-megaplag.tadafuq.ae";
 
   //! End Points
-  //! Auth End Points
   static const String login = "/api/login";
   static const String register = "/api/register";
   static const String forgetPassword = "/api/password/forget";

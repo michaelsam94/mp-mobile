@@ -191,21 +191,21 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
     );
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[month - 1];
-  }
+//   String _getMonthName(int month) {
+//     const months = [
+//       'January',
+//       'February',
+//       'March',
+//       'April',
+//       'May',
+//       'June',
+//       'July',
+//       'August',
+//       'September',
+//       'October',
+//       'November',
+//       'December',
+//     ];
+//     return months[month - 1];
+//   }
 }

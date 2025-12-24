@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
+import 'package:mega_plus/presentation/map/map_screen.dart';
 import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
 
 part 'map_state.dart';
@@ -26,7 +27,7 @@ class MapCubit extends Cubit<MapState> {
     return super.close();
   }
 
-  Future<void> refreshStationsByCurrentLocation() async {
+  Future<void> refreshStationsByCurrentLocation(BuildContext context) async {
     if (state is LoadingMapState) return;
 
     emit(RefreshingMapState());
@@ -47,7 +48,7 @@ class MapCubit extends Cubit<MapState> {
       mapStations.clear();
       markers.clear();
 
-      await _fetchStations();
+      await _fetchStations(context);
 
       emit(LoadedMapState());
     } catch (e) {
@@ -76,7 +77,7 @@ class MapCubit extends Cubit<MapState> {
     return icon;
   }
 
-  Future<void> initData() async {
+  Future<void> initData(BuildContext context) async {
     if (state is LoadingMapState) return;
 
     emit(LoadingMapState());
@@ -89,7 +90,7 @@ class MapCubit extends Cubit<MapState> {
         isIconsLoaded = true;
       }
 
-      await _fetchStations();
+      await _fetchStations(context);
 
       emit(LoadedMapState());
     } catch (e) {
@@ -160,7 +161,7 @@ class MapCubit extends Cubit<MapState> {
     }
   }
 
-  Future<void> _fetchStations() async {
+  Future<void> _fetchStations(BuildContext context) async {
     if (userLatLng == null) return;
 
     try {
@@ -181,7 +182,7 @@ class MapCubit extends Cubit<MapState> {
             .toList();
 
         // Create initial clustered markers
-        await _updateClusters();
+        await _updateClusters(context);
       }
     } catch (e) {
       print("Error fetching stations: $e");
@@ -247,15 +248,15 @@ class MapCubit extends Cubit<MapState> {
     currentZoom = position.zoom;
   }
 
-  void onCameraIdle() async {
+  void onCameraIdle(BuildContext context) async {
     if ((currentZoom - _lastClusterZoom).abs() < 0.3) return;
 
     _lastClusterZoom = currentZoom;
-    await _updateClusters();
+    await _updateClusters(context);
     emit(LoadedMapState());
   }
 
-  Future<void> _updateClusters() async {
+  Future<void> _updateClusters(BuildContext context) async {
     if (mapStations.isEmpty) return;
 
     // الـ clustering radius بناءً على الـ zoom
@@ -321,7 +322,7 @@ class MapCubit extends Cubit<MapState> {
                   '${station.totalGunsFormat} - ${double.parse(station.distance ?? "0").toStringAsFixed(0)} km',
             ),
             onTap: () {
-              print('Station: ${station.name}');
+              showStationBottomSheet(station,context);
             },
           ),
         );

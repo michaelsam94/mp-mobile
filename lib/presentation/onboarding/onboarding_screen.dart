@@ -39,11 +39,18 @@ class OnboardingScreen extends StatelessWidget {
                   // Images
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Image.asset(
-                      images[cubit.currentIndex],
+                    child: Image.network(
+                      cubit.tips[cubit.currentIndex].media?[0].path ?? "",
                       width: context.width(),
                       height: 260,
-                      fit: BoxFit.fitHeight,
+                      fit: BoxFit.fitHeight,                      
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: context.width(),
+                          height: 260,
+                          color: Colors.white,
+                        );
+                      },
                     ),
                   ),
                   // Titles & Subtitles

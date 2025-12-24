@@ -8,6 +8,8 @@ import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
 
+import 'models/map_station_response_model.dart';
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -22,7 +24,7 @@ class _MapScreenState extends State<MapScreen> {
     // ✅ Load data مرة واحدة بس في initState
     Future.microtask(() {
       //Todo Get Back
-      MapCubit.get(context).initData();
+      MapCubit.get(context).initData(context);
     });
   }
 
@@ -142,7 +144,7 @@ class _MapScreenState extends State<MapScreen> {
                           Text('Error: ${state.message}'),
                           SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => cubit.initData(),
+                            onPressed: () => cubit.initData(context),
                             child: Text('Retry'),
                           ),
                         ],
@@ -162,7 +164,9 @@ class _MapScreenState extends State<MapScreen> {
                         markers: cubit.markers,
                         onMapCreated: cubit.onMapCreated,
                         onCameraMove: cubit.onCameraMove,
-                        onCameraIdle: cubit.onCameraIdle,
+                        onCameraIdle: () {
+                          cubit.onCameraIdle(context);
+                        },
                         myLocationEnabled: true,
                         myLocationButtonEnabled: false,
                         buildingsEnabled: false,
@@ -183,7 +187,7 @@ class _MapScreenState extends State<MapScreen> {
                           onTap: () {
                             MapCubit.get(
                               context,
-                            ).refreshStationsByCurrentLocation();
+                            ).refreshStationsByCurrentLocation(context);
                           },
 
                           child: CircleAvatar(
@@ -286,6 +290,23 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+}
+
+void showStationBottomSheet(
+  MapStationResponseModel station,
+  BuildContext context,
+) {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return BottomSheet(
+        onClosing: () {},
+        builder: (context) {
+          return Container();
+        },
+      );
+    },
+  );
 }
 
 class _Dot extends StatelessWidget {
