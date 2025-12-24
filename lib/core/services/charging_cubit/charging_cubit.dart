@@ -28,10 +28,16 @@ class ChargingCubit extends Cubit<ChargingState> {
 
       print(response.data);
       print(response.statusCode);
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        emit(ChargingSuccess(response.data['data']));
+      // Check for both 'success' and 'status' fields in response
+      final isSuccess = response.data['success'] == true || 
+                       (response.data['status'] != null && response.data['status'] == true);
+      
+      if (response.statusCode == 200 && isSuccess) {
+        emit(ChargingSuccess(response.data['data'] ?? true));
       } else {
-        emit(ChargingError(response.data['message']));
+        final errorMessage = response.data['message'] ?? 
+                            'Unable to start charging. Please try again.';
+        emit(ChargingError(errorMessage));
       }
     } on DioException catch (e) {
       if (kDebugMode) {

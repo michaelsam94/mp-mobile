@@ -33,8 +33,15 @@ class StartSessionScreen extends StatelessWidget {
       child: Scaffold(
         body: BlocConsumer<ChargingCubit, ChargingState>(
           listener: (context, state) {
-            // Note: Error handling is done in ChargerScreen since we navigate immediately
-            // If there's an error, it will be shown in ChargerScreen
+            if (state is ChargingError) {
+              // Show error toast before navigating
+              context.showErrorMessage(state.message);
+            } else if (state is ChargingSuccess) {
+              // Navigate to ChargerScreen only on success
+              if (context.mounted) {
+                context.goOff(ChargerScreen());
+              }
+            }
           },
           builder: (context, state) {
             if (state is ChargingLoading) {
@@ -89,16 +96,12 @@ class StartSessionScreen extends StatelessWidget {
                         }
                         
                         // Start charging with default RFID
+                        // Navigation will happen in listener on success, error toast on failure
                         ChargingCubit.get(context).startCharging(
                           chargerId,
                           int.parse(connectorId),
                           defaultRFID.code!,
                         );
-                        // Navigate immediately to ChargerScreen to show shimmer
-                        // The shimmer will disappear when WebSocket receives meter data
-                        if (context.mounted) {
-                          context.goOff(ChargerScreen());
-                        }
                       },
                       child: Text(
                         "Start Session",
