@@ -24,3 +24,8 @@ final class ChargingError extends ChargingState {
   final String message;
   ChargingError(this.message);
 }
+
+final class InsufficientBalanceState extends ChargingState {
+  final String message;
+  InsufficientBalanceState(this.message);
+}

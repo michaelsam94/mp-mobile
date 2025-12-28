@@ -28,6 +28,15 @@ class ChargingCubit extends Cubit<ChargingState> {
 
       print(response.data);
       print(response.statusCode);
+      
+      // Handle 402 status code - insufficient balance
+      if (response.statusCode == 402) {
+        final errorMessage = response.data['message'] ?? 
+                            'Insufficient balance. Please top up your account.';
+        emit(InsufficientBalanceState(errorMessage));
+        return;
+      }
+      
       // Check for both 'success' and 'status' fields in response
       final isSuccess = response.data['success'] == true || 
                        (response.data['status'] != null && response.data['status'] == true);
@@ -43,7 +52,14 @@ class ChargingCubit extends Cubit<ChargingState> {
       if (kDebugMode) {
         print(e.message);
       }
-      emit(ChargingError('Failed to start charging'));
+      // Handle 402 status code in DioException
+      if (e.response?.statusCode == 402) {
+        final errorMessage = e.response?.data['message'] ?? 
+                            'Insufficient balance. Please top up your account.';
+        emit(InsufficientBalanceState(errorMessage));
+      } else {
+        emit(ChargingError('Failed to start charging'));
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

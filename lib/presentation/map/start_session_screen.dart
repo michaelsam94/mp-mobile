@@ -4,6 +4,7 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/map/charger_screen.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/wallet/top_up_screen.dart';
 
 import '../../core/services/charging_cubit/charging_cubit.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
@@ -36,6 +37,12 @@ class StartSessionScreen extends StatelessWidget {
             if (state is ChargingError) {
               // Show error toast before navigating
               context.showErrorMessage(state.message);
+            } else if (state is InsufficientBalanceState) {
+              // Navigate to top-up screen when balance is insufficient
+              context.showErrorMessage(state.message);
+              if (context.mounted) {
+                context.goTo(TopUpScreen());
+              }
             } else if (state is ChargingSuccess) {
               // Navigate to ChargerScreen only on success
               if (context.mounted) {
