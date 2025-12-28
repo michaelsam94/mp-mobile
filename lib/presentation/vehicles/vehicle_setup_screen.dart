@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/main/main_screen.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/brand_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/models/connector_response_model.dart';
@@ -91,8 +92,9 @@ class VehicleAddedSheet extends StatelessWidget {
 
 class VehicleSetupScreen extends StatefulWidget {
   final VehicleResponseModel? vehicle;
-  
-  const VehicleSetupScreen({super.key, this.vehicle});
+  final bool isFromSignUp;
+
+  const VehicleSetupScreen({super.key, this.vehicle, this.isFromSignUp = false});
 
   @override
   State<VehicleSetupScreen> createState() => _VehicleSetupScreenState();
@@ -160,11 +162,21 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
         child: BlocConsumer<VehiclesCubit, VehiclesState>(
           listener: (context, state) {
             if (state is SuccessAddVehiclesState) {
-              showVehicleAddedBottomSheet(context);
-              Future.delayed(Duration(milliseconds: 500), () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              });
+              if (widget.isFromSignUp) {
+                // If from sign-up flow, navigate to home screen
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  (route) => false,
+                );
+              } else {
+                // Normal flow: show bottom sheet and pop
+                showVehicleAddedBottomSheet(context);
+                Future.delayed(Duration(milliseconds: 500), () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+              }
             } else if (state is SuccessUpdateVehiclesState) {
               context.showSuccessMessage("Vehicle updated successfully");
               Future.delayed(Duration(milliseconds: 500), () {

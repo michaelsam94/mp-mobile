@@ -87,7 +87,7 @@ class PersonalizeProfileScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         onPressed: () {
-                          context.goTo(VehicleSetupScreen());
+                          context.goTo(VehicleSetupScreen(isFromSignUp: true));
                         },
                         child: const Text(
                           'Add Vehicle',
