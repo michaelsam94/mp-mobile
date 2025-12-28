@@ -20,6 +20,7 @@ class SearchCubit extends Cubit<SearchState> {
   List<MapStationResponseModel> nearbyStations = [];
   bool useCachedStations = false;
   String searchQuery = '';
+  bool wasShowingAllResults = false; // Track if we were showing all results before search
 
   // Filter variables
   String? filterStatus;
@@ -83,15 +84,8 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void searchStations(String query, {List<StationResponseModel>? cachedStations}) {
+    final previousQuery = searchQuery;
     searchQuery = query.trim().toLowerCase();
-    
-    // If search query is empty, don't switch to cached stations (keep nearby stations)
-    if (searchQuery.isEmpty) {
-      useCachedStations = false;
-      filteredStations = [];
-      emit(SearchUpdatedState());
-      return;
-    }
     
     // Check if filters are applied
     bool hasFilters = filterStatus != null || 
@@ -99,10 +93,44 @@ class SearchCubit extends Cubit<SearchState> {
                      filterMinimumPower != null || 
                      filterFavouriteOnly;
     
+    // If search query is empty (user cleared the search)
+    if (searchQuery.isEmpty) {
+      // If we were showing all results before search, restore that state
+      if (wasShowingAllResults && allCachedStations.isNotEmpty) {
+        stations = allCachedStations;
+        useCachedStations = true;
+        // Show all results (no filters, no search)
+        filteredStations = allCachedStations;
+        emit(SearchUpdatedState());
+        return;
+      }
+      
+      // If filters are applied, return to filtered results
+      if (hasFilters && allCachedStations.isNotEmpty) {
+        stations = allCachedStations; // Use all cached stations as base
+        useCachedStations = true;
+        applyFiltersAndSearch(); // Apply filters only (no search)
+        return;
+      } else {
+        // No filters and wasn't showing all results, return to nearby stations
+        useCachedStations = false;
+        filteredStations = [];
+        emit(SearchUpdatedState());
+        return;
+      }
+    }
+    
+    // Search query is not empty - track if we're starting a new search
+    if (previousQuery.isEmpty && searchQuery.isNotEmpty) {
+      // Starting a new search - remember the current state
+      wasShowingAllResults = useCachedStations && !hasFilters && filteredStations.isNotEmpty;
+    }
+    
+    // Search query is not empty
     if (hasFilters && useCachedStations && allCachedStations.isNotEmpty) {
-      // Filters are applied, search within the filtered results
-      // Use the already filtered stations as the base for search
-      // Don't update stations list, keep using filtered results
+      // Filters are applied, ensure we have all cached stations as base
+      stations = allCachedStations;
+      useCachedStations = true;
     } else {
       // No filters applied, use all cached stations for searching
       if (cachedStations != null && cachedStations.isNotEmpty) {
@@ -130,11 +158,22 @@ class SearchCubit extends Cubit<SearchState> {
     // Clear search query when filters are applied
     searchQuery = '';
     
+    // Check if all filters are cleared (reset filter case)
+    bool allFiltersCleared = status == null && 
+                            connectorType == null && 
+                            !(favouriteOnly ?? false) && 
+                            minimumPower == null;
+    
     // Always use all cached stations when applying filters
     if (cachedStations != null && cachedStations.isNotEmpty) {
       stations = cachedStations; // Update with all cached stations
       allCachedStations = cachedStations; // Store all cached stations for later use
       useCachedStations = true;
+      
+      // If all filters are cleared, mark that we're showing all results
+      if (allFiltersCleared) {
+        wasShowingAllResults = true;
+      }
     }
     
     applyFiltersAndSearch();
@@ -257,6 +296,7 @@ class SearchCubit extends Cubit<SearchState> {
     filterConnectorType = null;
     filterFavouriteOnly = false;
     filterMinimumPower = null;
+    wasShowingAllResults = false;
     emit(SearchInitial());
   }
 
@@ -265,6 +305,8 @@ class SearchCubit extends Cubit<SearchState> {
     filterConnectorType = null;
     filterFavouriteOnly = false;
     filterMinimumPower = null;
+    // When filters are cleared, show all results
+    wasShowingAllResults = true;
     applyFiltersAndSearch();
   }
 

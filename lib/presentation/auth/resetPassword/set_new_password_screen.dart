@@ -24,6 +24,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is SuccessChangePasswordState) {
@@ -38,13 +39,14 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
             return Center(child: CircularProgressIndicator());
           }
           return SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Form(
-                key: _globalKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Form(
+                  key: _globalKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     SizedBox(height: 16),
                     IconButton(
                       icon: SvgPicture.asset("assets/icons/back.svg"),
@@ -179,7 +181,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                           if (_globalKey.currentState!.validate()) {
                             SignUpCubit.get(
                               context,
-                            ).changePassword(controller.text);
+                            ).resetPassword(controller.text);
                           }
                         },
                         child: Text(
@@ -192,11 +194,13 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
-          );
+          ),
+        );
         },
       ),
     );

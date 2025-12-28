@@ -48,14 +48,8 @@ class _SearchScreenState extends State<SearchScreen> {
     // Cancel previous timer if it exists
     _debounceTimer?.cancel();
     
-    // If search field is empty, reload nearby stations
-    if (value.trim().isEmpty) {
-      SearchCubit.get(context).getStations();
-      return;
-    }
-    
-    // Create a new timer with debounce duration (e.g., 500ms)
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+    // Create a new timer with debounce duration (e.g., 300ms)
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       // This callback will be called after the debounce duration
       if (mounted) {
         // Always get all cached stations from MapCubit (not filtered results)
@@ -428,7 +422,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Image.asset(
                                     fullStation != null
                                         ? SearchCubit.get(context).getStationIconPath(fullStation)
-                                        : "assets/icons/ac.png", // Default for nearby stations
+                                        : nearbyStation?.getStationIconPath() ?? "assets/images/ac_available.png",
                                     height: 48,
                                     width: 39,
                                   ),
@@ -550,9 +544,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    connector.type ?? 'Unknown Type',
-                                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          connector.type ?? 'Unknown Type',
+                                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 8),
+                                                      _statusBadge(_formatConnectorStatus(connector.status)),
+                                                    ],
                                                   ),
                                                   SizedBox(height: 2),
                                                   Text(
@@ -651,6 +653,15 @@ class _SearchScreenState extends State<SearchScreen> {
     
     final prefix = isDC ? 'dc' : 'ac';
     return 'assets/images/${prefix}_$statusKey.png';
+  }
+
+  String _formatConnectorStatus(String? status) {
+    if (status == null) return 'available';
+    final statusLower = status.toLowerCase();
+    if (statusLower == 'inuse' || statusLower == 'in_use') {
+      return 'inUse';
+    }
+    return statusLower;
   }
 
   Widget _statusBadge(String status) {

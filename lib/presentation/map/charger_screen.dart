@@ -15,6 +15,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/services/models/session_update_model.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
+import '../../core/helpers/network/end_points.dart';
+import '../../presentation/history/history_repository.dart';
 
 class ChargerScreen extends StatefulWidget {
   const ChargerScreen({super.key});
@@ -46,6 +48,10 @@ class _ChargerScreenState extends State<ChargerScreen> {
 
               // إذا تم إيقاف الجلسة
               if (session.isSessionStopped) {
+                if (isSessionStopped != true) {
+                  // Only refresh history when session is first stopped
+                  _refreshChargingHistory();
+                }
                 isSessionStopped = true;
                 stoppedData = session.stoppedData!;
               // showDialog(
@@ -117,6 +123,14 @@ class _ChargerScreenState extends State<ChargerScreen> {
             isSessionStopped = true;
             stoppedData = state.data.stoppedData!;
             meterData = context.read<WebSocketCubit>().currentMeterData;
+          } else {
+            // Check for current meter data from WebSocketCubit (e.g., when initialized from API)
+            final webSocketCubit = context.read<WebSocketCubit>();
+            final currentMeterData = webSocketCubit.currentMeterData;
+            if (currentMeterData != null) {
+              meterData = currentMeterData;
+              transactionId = webSocketCubit.currentTransactionId;
+            }
           }
 
           // Show shimmer if no meter data yet (initial loading state)
@@ -136,11 +150,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                   _buildInfoTiles(meterData),
                   SizedBox(height: 24),
 
-                  isSessionStopped ?? false
-                      ? _buildDownloadPDF()
-                      : state is SessionUpdate && state.data.isMeterValue
-                      ? _buildStopButton(meterData, transactionId)
-                      : SizedBox(),
+                  _buildActionButton(context, state, meterData, transactionId),
                 ],
               ),
             ),
@@ -392,7 +402,23 @@ class _ChargerScreenState extends State<ChargerScreen> {
     );
   }
 
-  Widget _buildDownloadPDF() {
+  Widget _buildActionButton(BuildContext context, WebSocketState state, MeterValueData? meterData, String? transactionId) {
+    final webSocketCubit = context.read<WebSocketCubit>();
+    
+    // Show download PDF for completed sessions or stopped sessions
+    if (webSocketCubit.isCompletedSession || (isSessionStopped ?? false)) {
+      return _buildDownloadPDF(webSocketCubit.completedSessionId);
+    }
+    
+    // Show stop button for active sessions
+    if (state is SessionUpdate && state.data.isMeterValue) {
+      return _buildStopButton(meterData, transactionId);
+    }
+    
+    return SizedBox();
+  }
+
+  Widget _buildDownloadPDF([int? sessionId]) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -413,7 +439,16 @@ class _ChargerScreenState extends State<ChargerScreen> {
           padding: EdgeInsets.symmetric(vertical: 17),
         ),
         onPressed: () async {
-          String? url = ChargingCubit.get(context).pdfUrl;
+          String? url;
+          
+          // Use session-specific PDF URL if available (for completed sessions from history)
+          if (sessionId != null) {
+            url = '${EndPoints.baseUrl}${EndPoints.chargingPdfBySessionId(sessionId)}';
+          } else {
+            // Use PDF URL from ChargingCubit (for stopped sessions)
+            url = ChargingCubit.get(context).pdfUrl;
+          }
+          
           if (url == null || url.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -746,6 +781,9 @@ class _ChargerScreenState extends State<ChargerScreen> {
               isSessionStopped = true;
             });
             context.showSuccessMessage("Charging stopped successfully");
+            
+            // Recall charging history API when session is closed
+            _refreshChargingHistory();
           } else if (state is ChargingError) {
             context.showErrorMessage(state.message);
           }
@@ -844,6 +882,21 @@ class _ChargerScreenState extends State<ChargerScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _refreshChargingHistory() async {
+    try {
+      final historyRepository = HistoryRepository();
+      await historyRepository.getChargingHistory();
+      if (kDebugMode) {
+        print('Charging history refreshed successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error refreshing charging history: $e');
+      }
+      // Silently fail - this is a background refresh
+    }
   }
 
   Widget _infoTile(String title, String value, String icon) {

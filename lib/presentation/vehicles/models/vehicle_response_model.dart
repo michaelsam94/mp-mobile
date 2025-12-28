@@ -5,6 +5,9 @@ class VehicleResponseModel {
   int? customerId;
   int? brandModelId;
   String? connectorType;
+  String? plateNumber;
+  int? year;
+  String? color;
   String? createdAt;
   ModelResponseModel? brandModel;
 
@@ -13,6 +16,9 @@ class VehicleResponseModel {
     this.customerId,
     this.brandModelId,
     this.connectorType,
+    this.plateNumber,
+    this.year,
+    this.color,
     this.createdAt,
     this.brandModel,
   });
@@ -22,6 +28,9 @@ class VehicleResponseModel {
     customerId = json['customer_id'];
     brandModelId = json['brand_model_id'];
     connectorType = json['connector_type'];
+    plateNumber = json['plate_number'];
+    year = json['year'];
+    color = json['color'];
     createdAt = json['created_at'];
     brandModel = json['brand_model'] != null
         ? new ModelResponseModel.fromJson(json['brand_model'])
@@ -34,6 +43,9 @@ class VehicleResponseModel {
     data['customer_id'] = this.customerId;
     data['brand_model_id'] = this.brandModelId;
     data['connector_type'] = this.connectorType;
+    data['plate_number'] = this.plateNumber;
+    data['year'] = this.year;
+    data['color'] = this.color;
     data['created_at'] = this.createdAt;
     if (this.brandModel != null) {
       data['brand_model'] = this.brandModel!.toJson();

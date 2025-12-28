@@ -233,8 +233,8 @@ class StationDetailsSheet extends StatelessWidget {
                     children: [
                       Image.asset(
                         _getStationIconPath(station),
-                        width: 32,
-                        height: 32,
+                        width: 50,
+                        height: 50,
                       ),
                       SizedBox(width: 6),
                       Expanded(
@@ -297,7 +297,19 @@ class StationDetailsSheet extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   if (station.guns != null && station.guns!.isNotEmpty)
-                    ...station.guns!.map((gun) => ConnectorCard(gun: gun)).toList()
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: station.guns!.length,
+                        itemBuilder: (context, index) {
+                          return ConnectorCard(gun: station.guns![index]);
+                        },
+                      ),
+                    )
                   else
                     Padding(
                       padding: const EdgeInsets.all(16),
@@ -365,22 +377,38 @@ class StationDetailsSheet extends StatelessWidget {
     });
   }
 
-  /// Gets the appropriate station icon path based on DC/AC and status
+  /// Gets the appropriate station marker icon path based on DC/AC and status
   String _getStationIconPath(StationResponseModel station) {
     final hasDC = _hasDCGun(station);
     final status = station.status?.toLowerCase() ?? 'available';
     
-    String statusKey;
-    if (status == 'inuse' || status == 'in_use') {
-      statusKey = 'inuse';
-    } else if (status == 'unavailable') {
-      statusKey = hasDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
+    if (hasDC) {
+      // DC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/dc_available.png';
+        case 'unavailable':
+          return 'assets/icons/dc_unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/dc_inuse.png';
+        default:
+          return 'assets/icons/dc_available.png';
+      }
     } else {
-      statusKey = 'available';
+      // AC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/ac.png'; // Use AC icon for in use
+        default:
+          return 'assets/icons/ac.png';
+      }
     }
-    
-    final prefix = hasDC ? 'dc' : 'ac';
-    return 'assets/images/${prefix}_$statusKey.png';
   }
 
   String _formatStatus(String? status) {
@@ -634,6 +662,57 @@ class ConnectorCard extends StatelessWidget {
     return 'assets/images/${prefix}_$statusKey.png';
   }
 
+  /// Formats connector status for display
+  String _formatConnectorStatus(String? status) {
+    if (status == null) return 'available';
+    final statusLower = status.toLowerCase();
+    if (statusLower == 'inuse' || statusLower == 'in_use') {
+      return 'inUse';
+    }
+    return statusLower;
+  }
+
+  /// Gets status badge widget for connector
+  Widget _getStatusBadge(String? status) {
+    final formattedStatus = _formatConnectorStatus(status);
+    Color colorBG;
+    Color colorText;
+    
+    switch (formattedStatus) {
+      case 'available':
+        colorText = Color(0xff058A3C);
+        colorBG = Color(0xffE6F9EE);
+        break;
+      case 'inUse':
+        colorText = Color(0xff1261FF);
+        colorBG = Color(0xffE8EFFF);
+        break;
+      case 'unavailable':
+        colorText = Color(0xffC31D07);
+        colorBG = Color(0xffFFEAE7);
+        break;
+      default:
+        colorText = Colors.grey.shade300;
+        colorBG = Colors.grey.shade300;
+    }
+    
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: colorBG,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        formattedStatus,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+          color: colorText,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -659,9 +738,17 @@ class ConnectorCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  gun.type ?? 'Unknown Type',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        gun.type ?? 'Unknown Type',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    _getStatusBadge(gun.status),
+                  ],
                 ),
                 SizedBox(height: 2),
                 Text(

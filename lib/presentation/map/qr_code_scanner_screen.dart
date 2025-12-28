@@ -98,6 +98,30 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
             ),
           ),
           
+          // Close button at top left
+          Positioned(
+            top: 50,
+            left: 20,
+            child: SafeArea(
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
           // Text at top
           Positioned(
             top: 80,

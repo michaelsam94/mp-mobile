@@ -20,6 +20,7 @@ class SettingsScreen extends StatelessWidget {
     Color? textColor,
     bool isDanger = false,
     VoidCallback? onTap,
+    bool showTrailing = true,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -61,7 +62,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
               )
             : null,
-        trailing: SvgPicture.asset("assets/icons/go_forward.svg"),
+        trailing: showTrailing ? SvgPicture.asset("assets/icons/go_forward.svg") : null,
       ),
     );
   }
@@ -141,8 +142,9 @@ class SettingsScreen extends StatelessWidget {
               icon:
                   Icons.military_tech, // Use medallion or gift icon for loyalty
               title: "Loyalty Points 🏅",
-              subtitle: "850 Points • Gold Member",
+              subtitle: "0 Points",
               iconColor: green,
+              showTrailing: false,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),

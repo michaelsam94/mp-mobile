@@ -41,3 +41,21 @@ class SuccessGetVehiclesState extends VehiclesState {}
 class ErrorGetVehiclesState extends VehiclesState {
   
 }
+
+class LoadingDeleteVehiclesState extends VehiclesState {}
+
+class SuccessDeleteVehiclesState extends VehiclesState {}
+
+class ErrorDeleteVehiclesState extends VehiclesState {
+  final String message;
+  ErrorDeleteVehiclesState(this.message);
+}
+
+class LoadingUpdateVehiclesState extends VehiclesState {}
+
+class SuccessUpdateVehiclesState extends VehiclesState {}
+
+class ErrorUpdateVehiclesState extends VehiclesState {
+  final String message;
+  ErrorUpdateVehiclesState(this.message);
+}

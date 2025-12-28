@@ -222,9 +222,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      SignUpCubit.get(
-                                        context,
-                                      ).sendOTP(widget.phone ?? "");
+                                      if (widget.resetPassword) {
+                                        SignUpCubit.get(
+                                          context,
+                                        ).forgetPassword(widget.phone ?? "");
+                                      } else {
+                                        SignUpCubit.get(
+                                          context,
+                                        ).sendOTP(widget.phone ?? "");
+                                      }
                                     },
                                     child: Text(
                                       "Resend",

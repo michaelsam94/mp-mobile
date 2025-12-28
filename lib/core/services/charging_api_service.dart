@@ -30,4 +30,18 @@ class ChargingApiService {
       data: {"charger_id": chargerId, "transaction_id": trasactionId},
     );
   }
+
+  static Future<Response> getCurrentCharging() async {
+    return DioHelper.getData(
+      url: EndPoints.currentCharging,
+      auth: true,
+    );
+  }
+
+  static Future<Response> getCurrentChargingBySession(int sessionId) async {
+    return DioHelper.getData(
+      url: EndPoints.currentChargingWithSession(sessionId),
+      auth: true,
+    );
+  }
 }

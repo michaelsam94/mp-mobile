@@ -8,6 +8,7 @@ import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/brand_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/models/connector_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/models/model_response_model.dart';
+import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
 
 Future<void> showVehicleAddedBottomSheet(BuildContext context) async {
   await showModalBottomSheet(
@@ -88,22 +89,70 @@ class VehicleAddedSheet extends StatelessWidget {
   }
 }
 
-class VehicleSetupScreen extends StatelessWidget {
-  VehicleSetupScreen({super.key});
+class VehicleSetupScreen extends StatefulWidget {
+  final VehicleResponseModel? vehicle;
+  
+  const VehicleSetupScreen({super.key, this.vehicle});
 
+  @override
+  State<VehicleSetupScreen> createState() => _VehicleSetupScreenState();
+}
+
+class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _plateNumberController = TextEditingController();
+  final _yearController = TextEditingController();
+  final _colorController = TextEditingController();
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = VehiclesCubit.get(context);
+    
+    // Initialize for edit mode
+    if (widget.vehicle != null) {
+      _plateNumberController.text = widget.vehicle!.plateNumber ?? '';
+      _yearController.text = widget.vehicle!.year?.toString() ?? '';
+      _colorController.text = widget.vehicle!.color ?? '';
+      
+      cubit.getBrands();
+      // Wait for brands and connectors to load, then initialize vehicle
+      // This will be handled in the BlocListener when brands are loaded
+    } else {
+      cubit.getBrands();
+      _isInitialized = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _plateNumberController.dispose();
+    _yearController.dispose();
+    _colorController.dispose();
+    super.dispose();
+  }
 
   void _submit(BuildContext context) {
     if (_formKey.currentState!.validate()) {
+      final cubit = VehiclesCubit.get(context);
+      // Update cubit with form values
+      cubit.plateNumber = _plateNumberController.text.trim();
+      cubit.year = int.tryParse(_yearController.text.trim());
+      cubit.color = _colorController.text.trim();
+      
       // All fields valid
-      VehiclesCubit.get(context).addVehicle();
+      if (widget.vehicle != null) {
+        cubit.editVehicle();
+      } else {
+        cubit.addVehicle();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final cubit = VehiclesCubit.get(context);
-    cubit.getBrands();
     const padding = 16.0;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -116,8 +165,24 @@ class VehicleSetupScreen extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.pop(context);
               });
+            } else if (state is SuccessUpdateVehiclesState) {
+              context.showSuccessMessage("Vehicle updated successfully");
+              Future.delayed(Duration(milliseconds: 500), () {
+                Navigator.pop(context);
+              });
             } else if (state is ErrorAddVehiclesState) {
               context.showErrorMessage(state.message);
+            } else if (state is ErrorUpdateVehiclesState) {
+              context.showErrorMessage(state.message);
+            } else if (state is SuccessGetBrandsVehiclesState && widget.vehicle != null && !_isInitialized) {
+              // Initialize vehicle after brands and connectors are loaded
+              final cubit = VehiclesCubit.get(context);
+              if (cubit.brands.isNotEmpty && cubit.connectors.isNotEmpty) {
+                cubit.initializeVehicleForEdit(widget.vehicle!);
+                setState(() {
+                  _isInitialized = true;
+                });
+              }
             }
           },
           builder: (context, state) {
@@ -210,7 +275,107 @@ class VehicleSetupScreen extends StatelessWidget {
                                   val == null ? 'Please select a brand' : null,
                             ),
                             const SizedBox(height: 24),
-
+                            // Plate Number field
+                            const Text(
+                              'Plate number',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff121212),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _plateNumberController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter your plate number here',
+                                hintStyle: const TextStyle(
+                                  color: Color(0xffB6B6B6),
+                                  fontSize: 15,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xffF8F8F8),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                              validator: (val) => val == null || val.trim().isEmpty
+                                  ? 'Please enter your plate number'
+                                  : null,
+                            ),
+                            const SizedBox(height: 24),
+                            // Year field
+                            const Text(
+                              'Year',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff121212),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _yearController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                hintText: 'Enter year (e.g., 2023)',
+                                hintStyle: const TextStyle(
+                                  color: Color(0xffB6B6B6),
+                                  fontSize: 15,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xffF8F8F8),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return 'Please enter year';
+                                }
+                                final year = int.tryParse(val.trim());
+                                if (year == null || year < 1900 || year > DateTime.now().year + 1) {
+                                  return 'Please enter a valid year';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            // Color field
+                            const Text(
+                              'Color',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xff121212),
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _colorController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter color (e.g., Red)',
+                                hintStyle: const TextStyle(
+                                  color: Color(0xffB6B6B6),
+                                  fontSize: 15,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xffF8F8F8),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                              validator: (val) => val == null || val.trim().isEmpty
+                                  ? 'Please enter color'
+                                  : null,
+                            ),
+                            const SizedBox(height: 24),
                             // Plate number field
                             // Row(
                             //   children: [
@@ -444,8 +609,8 @@ class VehicleSetupScreen extends StatelessWidget {
                                 onPressed: () {
                                   _submit(context);
                                 },
-                                child: const Text(
-                                  'Add Vehicle',
+                                child: Text(
+                                  widget.vehicle != null ? 'Update Vehicle' : 'Add Vehicle',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,

@@ -7,6 +7,7 @@ class EndPoints {
   static const String register = "/api/register";
   static const String forgetPassword = "/api/password/forget";
   static const String changePassword = "/api/profile/password/change";
+  static const String resetPassword = "/api/password/change";
   static const String refreshToken = "/api/refresh";
   static const String onBoarding = "/api/content?type=tip";
   static const String logout = "/api/logout";
@@ -28,6 +29,8 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
+  static String updateVehicle(int id) => "/api/customer/vehicles/$id";
+  static String deleteVehicle(int id) => "/api/customer/vehicles/$id";
   static String getMapStations(double lat, double long) =>
       "/api/stations/map/nearby?lat=$lat&lng=$long&radius=5000";
 
@@ -37,6 +40,10 @@ class EndPoints {
   static const String startCharging = "/api/charging/start";
   static const String stopCharging = "/api/charging/stop";
   static const String chargingHistory = '/api/charging/history';
+  static const String chargingPdf = '/api/charging/chargingPdf?list=1';
+  static String chargingPdfBySessionId(int sessionId) => '/api/charging/chargingPdf?list=0&id=$sessionId';
+  static const String currentCharging = '/api/charging/current';
+  static String currentChargingWithSession(int sessionId) => '/api/charging/$sessionId/current';
   static const String updateProfile = "/api/profile";
   static const String getSettings = "/api/settings";
 }

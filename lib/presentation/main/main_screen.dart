@@ -13,6 +13,8 @@ import 'package:mega_plus/presentation/wallet/wallet_screen.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/map_screen.dart';
 import '../map/qr_code_scanner_screen.dart';
+import '../vehicles/cubit/vehicles_cubit.dart';
+import '../vehicles/my_vehicles_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -37,6 +39,29 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     context.read<WebSocketCubit>().connect();
     context.read<ProfileCubit>().getRFID();
+    // Load vehicles to check if user has any
+    context.read<VehiclesCubit>().getVehicles();
+  }
+
+  void _handleChargeButtonTap(BuildContext context) {
+    // Check if user is logged in
+    if (CacheHelper.checkLogin() != 3) {
+      GuestBottomSheet.show(context);
+      return;
+    }
+
+    // Check if user has vehicles
+    final vehiclesCubit = VehiclesCubit.get(context);
+    
+    // Check vehicles list - if empty, show message and navigate to vehicles screen
+    if (vehiclesCubit.vehicles.isEmpty) {
+      context.showErrorMessage("Please add vehicle");
+      context.goTo(MyVehiclesScreen());
+      return;
+    }
+
+    // User has vehicles, proceed to QR scanner
+    context.goTo(QrCodeScannerScreen());
   }
 
   @override
@@ -58,12 +83,7 @@ class _MainScreenState extends State<MainScreen> {
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (index == 2) {
-                  // Check if user is logged in for charge button
-                  if (CacheHelper.checkLogin() != 3) {
-                    GuestBottomSheet.show(context);
-                    return;
-                  }
-                  context.goTo(QrCodeScannerScreen());
+                  _handleChargeButtonTap(context);
                   return;
                 }
                 
@@ -141,12 +161,7 @@ class _MainScreenState extends State<MainScreen> {
             top: 5,
             child: GestureDetector(
               onTap: () {
-                // Check if user is logged in for charge button
-                if (CacheHelper.checkLogin() != 3) {
-                  GuestBottomSheet.show(context);
-                  return;
-                }
-                context.goTo(QrCodeScannerScreen());
+                _handleChargeButtonTap(context);
               },
               child: Container(
                 height: 62,

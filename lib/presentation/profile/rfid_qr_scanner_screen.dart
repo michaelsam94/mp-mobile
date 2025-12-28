@@ -64,7 +64,7 @@ class _RFIDQrScannerScreenState extends State<RFIDQrScannerScreen> {
             ),
           ),
           
-          // Back button at top
+          // Close button at top left
           Positioned(
             top: 50,
             left: 20,
@@ -79,7 +79,7 @@ class _RFIDQrScannerScreenState extends State<RFIDQrScannerScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Icons.arrow_back,
+                    Icons.close,
                     color: Colors.white,
                     size: 24,
                   ),

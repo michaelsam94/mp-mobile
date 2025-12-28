@@ -5,7 +5,6 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
-import 'package:mega_plus/presentation/vehicles/vehicle_details_screen.dart';
 import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
 import '../../core/style/app_colors.dart';
@@ -14,11 +13,7 @@ class MyVehiclesScreen extends StatelessWidget {
   const MyVehiclesScreen({super.key});
 
   Widget vehicleCard(VehicleResponseModel item, BuildContext context) {
-    return InkWell(
-      onTap: () {
-        context.goTo(VehicleDetailsScreen());
-      },
-      child: Container(
+    return Container(
         margin: EdgeInsets.symmetric(horizontal: 13, vertical: 9),
         padding: EdgeInsets.symmetric(vertical: 18, horizontal: 18),
         decoration: BoxDecoration(
@@ -38,20 +33,40 @@ class MyVehiclesScreen extends StatelessWidget {
                   height: 80,
                   fit: BoxFit.contain,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F3F3),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
-                  child: Text(
-                    item.connectorType ?? "",
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF3F3F3),
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
+                      child: Text(
+                        item.connectorType ?? "",
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => _showDeleteConfirmation(context, item),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -69,26 +84,36 @@ class MyVehiclesScreen extends StatelessWidget {
               item.brandModel?.brand?.name ?? "",
               style: TextStyle(color: Colors.grey[700], fontSize: 15),
             ),
-            // SizedBox(height: 10),
-            // Divider(color: Color(0xffE6ECEF)),
-            // SizedBox(height: 10),
-            // Text(
-            //   "License Plate",
-            //   style: TextStyle(color: Colors.grey[600], fontSize: 14),
-            // ),
-            // SizedBox(height: 2),
-            // Text(
-            //   "",
-            //   style: TextStyle(
-            //     fontWeight: FontWeight.bold,
-            //     fontSize: 19,
-            //     color: Colors.black,
-            //   ),
-            // ),
-            SizedBox(width: 8),
           ],
         ),
-      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, VehicleResponseModel vehicle) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Delete Vehicle'),
+          content: Text('Are you sure you want to delete this vehicle? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                VehiclesCubit.get(context).deleteVehicle(vehicle.id!);
+              },
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -149,7 +174,14 @@ class MyVehiclesScreen extends StatelessWidget {
                 ],
               ),
             ),
-            BlocBuilder<VehiclesCubit, VehiclesState>(
+            BlocConsumer<VehiclesCubit, VehiclesState>(
+              listener: (context, state) {
+                if (state is SuccessDeleteVehiclesState) {
+                  context.showSuccessMessage("Vehicle deleted successfully");
+                } else if (state is ErrorDeleteVehiclesState) {
+                  context.showErrorMessage(state.message);
+                }
+              },
               builder: (context, state) {
                 return Expanded(
                   child: state is LoadingGetVehiclesState

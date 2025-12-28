@@ -23,6 +23,10 @@ class VehiclesCubit extends Cubit<VehiclesState> {
   ModelResponseModel? selectedModel;
   ConnectorResponseModel? selectedConnector;
   File? plateImage;
+  VehicleResponseModel? editingVehicle;
+  String? plateNumber;
+  int? year;
+  String? color;
 
   List<BrandResponseModel> brands = [];
   void getBrands() async {
@@ -162,6 +166,113 @@ class VehiclesCubit extends Cubit<VehiclesState> {
       }
     } catch (e) {
       emit(ErrorGetVehiclesState());
+    }
+  }
+
+  // Initialize vehicle data for editing
+  void initializeVehicleForEdit(VehicleResponseModel vehicle) {
+    editingVehicle = vehicle;
+    plateNumber = vehicle.plateNumber;
+    year = vehicle.year;
+    color = vehicle.color;
+    
+    // Find and select brand
+    if (vehicle.brandModel?.brand != null && brands.isNotEmpty) {
+      selectedBrand = brands.firstWhere(
+        (b) => b.id == vehicle.brandModel!.brand!.id,
+        orElse: () => vehicle.brandModel!.brand!,
+      );
+      // Load models for the selected brand
+      if (selectedBrand != null) {
+        selectBrand(selectedBrand);
+        // After models are loaded, select the model
+        Future.delayed(Duration(milliseconds: 300), () {
+          if (models.isNotEmpty) {
+            selectedModel = models.firstWhere(
+              (m) => m.id == vehicle.brandModelId,
+              orElse: () => models.first,
+            );
+            emit(EndSelectModelVehiclesState());
+          }
+        });
+      }
+    }
+    
+    // Find and select connector
+    if (connectors.isNotEmpty) {
+      selectedConnector = connectors.firstWhere(
+        (c) => c.type == vehicle.connectorType,
+        orElse: () => connectors.firstWhere(
+          (c) => c.type == vehicle.connectorType,
+          orElse: () => connectors.first,
+        ),
+      );
+      emit(EndSelectModelVehiclesState());
+    }
+  }
+
+  // Reset edit state
+  void resetEditState() {
+    editingVehicle = null;
+    plateNumber = null;
+    year = null;
+    color = null;
+    selectedBrand = null;
+    selectedModel = null;
+    selectedConnector = null;
+    plateImage = null;
+  }
+
+  void editVehicle() async {
+    if (editingVehicle == null) return;
+    
+    emit(LoadingUpdateVehiclesState());
+    try {
+      var response = await DioHelper.patchData(
+        url: EndPoints.updateVehicle(editingVehicle!.id!),
+        data: {
+          "brand_model_id": selectedModel!.id,
+          "plate_number": plateNumber ?? "",
+          "connector_type": selectedConnector!.type,
+          "year": year,
+          "color": color ?? "",
+        },
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        emit(SuccessUpdateVehiclesState());
+        getVehicles();
+        resetEditState();
+      } else {
+        emit(ErrorUpdateVehiclesState(
+          response.data["message"] ?? "Failed to update vehicle",
+        ));
+      }
+    } catch (e) {
+      emit(ErrorUpdateVehiclesState("Please try again"));
+    }
+  }
+
+  void deleteVehicle(int vehicleId) async {
+    emit(LoadingDeleteVehiclesState());
+    try {
+      var response = await DioHelper.deleteData(
+        url: EndPoints.deleteVehicle(vehicleId),
+      );
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        // Remove vehicle from list
+        vehicles.removeWhere((v) => v.id == vehicleId);
+        emit(SuccessDeleteVehiclesState());
+        // Refresh vehicles list
+        getVehicles();
+      } else {
+        emit(ErrorDeleteVehiclesState(
+          response.data["message"] ?? "Failed to delete vehicle",
+        ));
+      }
+    } catch (e) {
+      emit(ErrorDeleteVehiclesState("Please try again"));
     }
   }
 }

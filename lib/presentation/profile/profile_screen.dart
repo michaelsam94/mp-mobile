@@ -325,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                         SizedBox(height: 2),
                                         Text(
-                                          '850',
+                                          '0',
                                           style: TextStyle(
                                             color: green,
                                             fontWeight: FontWeight.bold,

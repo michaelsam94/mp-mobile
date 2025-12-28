@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
+import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
-  const VehicleDetailsScreen({super.key});
+  final VehicleResponseModel? vehicle;
+  
+  const VehicleDetailsScreen({super.key, this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,11 @@ class VehicleDetailsScreen extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        if (vehicle != null) {
+                          context.goTo(VehicleSetupScreen(vehicle: vehicle));
+                        }
+                      },
                       child: Text(
                         "Edit",
                         style: TextStyle(

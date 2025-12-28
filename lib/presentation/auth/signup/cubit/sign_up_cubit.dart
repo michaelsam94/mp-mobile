@@ -71,12 +71,35 @@ class SignUpCubit extends Cubit<SignUpState> {
     }
   }
 
+  // Change password from profile (uses PATCH)
   void changePassword(String pass) async {
     emit(LoadingChangePasswordState());
 
     try {
+      var response = await DioHelper.patchData(
+        url: EndPoints.changePassword,
+        data: {
+          "password": pass,
+        },
+      );
+      
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        emit(SuccessChangePasswordState());
+      } else {
+        emit(ErrorChangePasswordState(response.data["message"]));
+      }
+    } catch (e) {
+      emit(ErrorChangePasswordState("Error,Please try again"));
+    }
+  }
+
+  // Reset password from forget password flow (uses PATCH with X-Reset-Token header)
+  void resetPassword(String pass) async {
+    emit(LoadingChangePasswordState());
+
+    try {
       var response = await DioHelper.dio.patch(
-        EndPoints.changePassword,
+        EndPoints.resetPassword,
         options: Options(
           contentType: "application/json",
           headers: {"X-Reset-Token": resetToken},
@@ -87,6 +110,7 @@ class SignUpCubit extends Cubit<SignUpState> {
           "password": pass,
         },
       );
+      
       if (response.statusCode == 200 && response.data["success"] == true) {
         emit(SuccessChangePasswordState());
       } else {

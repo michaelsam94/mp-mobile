@@ -213,7 +213,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                                   ? () {
                                       SignUpCubit.get(
                                         context,
-                                      ).sendOTP(phoneController.text);
+                                      ).forgetPassword(phoneController.text);
                                     }
                                   : null,
                               child: Text(

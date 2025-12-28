@@ -1,13 +1,23 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:dio/dio.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:mega_plus/core/helpers/network/dio_helper.dart';
+import 'package:mega_plus/core/helpers/network/end_points.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'cubit/history_cubit.dart';
 import 'history_model.dart';
 import 'history_repository.dart';
+import '../../core/services/charging_api_service.dart';
+import '../../core/helpers/addons_functions.dart';
+import '../../core/services/websocket_cubit/websocket_cubit.dart';
+import '../map/charger_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -240,20 +250,28 @@ class HistoryView extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, HistorySuccess state) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 10),
-          _buildStatsGrid(state.data.summary),
-          const SizedBox(height: 14),
-          _buildFilters(context, state),
-          _buildSessionsList(state.displayedSessions),
-          const SizedBox(height: 16),
-          _buildDownloadButton(context, state.data.pdfUrl),
-          const SizedBox(height: 20),
-        ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await context.read<HistoryCubit>().getChargingHistory();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            _buildStatsGrid(state.data.summary),
+            const SizedBox(height: 14),
+            _buildFilters(context, state),
+            _buildSessionsList(state.displayedSessions),
+            if (state.displayedSessions.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildDownloadButton(context),
+            ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -465,20 +483,23 @@ class HistoryView extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: sessions.length,
-      itemBuilder: (context, index) => _buildSessionCard(sessions[index]),
+      itemBuilder: (context, index) => _buildSessionCard(context, sessions[index]),
     );
   }
 
-  Widget _buildSessionCard(ChargingSession session) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE9E9E9)),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
+  Widget _buildSessionCard(BuildContext context, ChargingSession session) {
+    return InkWell(
+      onTap: () => _handleSessionTap(context, session),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFE9E9E9)),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -531,7 +552,7 @@ class HistoryView extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      session.isActive ? 'Active' : 'DC Fast',
+                      session.isActive ? 'Active' : 'Completed',
                       style: TextStyle(
                         color: session.isActive 
                             ? Colors.orange 
@@ -575,10 +596,164 @@ class HistoryView extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildDownloadButton(BuildContext context, String pdfUrl) {
+  Future<void> _handleSessionTap(BuildContext context, ChargingSession session) async {
+    // Handle completed sessions
+    if (!session.isActive) {
+      _handleCompletedSessionTap(context, session);
+      return;
+    }
+    
+    // Handle active sessions
+    _handleActiveSessionTap(context, session);
+  }
+
+  Future<void> _handleCompletedSessionTap(BuildContext context, ChargingSession session) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Call the current charging API with session id (integer)
+      final response = await ChargingApiService.getCurrentChargingBySession(session.id);
+
+      // Close loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
+      if (response.statusCode == 200 && response.data != null) {
+        // Initialize meter data in WebSocketCubit from API response
+        if (context.mounted) {
+          context.read<WebSocketCubit>().initializeMeterDataFromApi(response.data, isCompleted: true, sessionId: session.id);
+        }
+        
+        // Navigate to ChargerScreen (using goTo to keep history screen in stack)
+        if (context.mounted) {
+          context.goTo(const ChargerScreen());
+        }
+      } else {
+        // Show error message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response.data['message'] ?? 'Failed to load charging session',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.fixed,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog if still open
+      if (context.mounted) {
+        try {
+          Navigator.pop(context);
+        } catch (_) {
+          // Dialog might already be closed
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error loading charging session: ${e.toString()}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.fixed,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      if (kDebugMode) {
+        print('Error loading completed charging session: $e');
+      }
+    }
+  }
+
+  Future<void> _handleActiveSessionTap(BuildContext context, ChargingSession session) async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Call the current charging API with session id (integer)
+      final response = await ChargingApiService.getCurrentChargingBySession(session.id);
+
+      // Close loading dialog
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
+      if (response.statusCode == 200 && response.data != null) {
+        // Initialize meter data in WebSocketCubit from API response
+        if (context.mounted) {
+          context.read<WebSocketCubit>().initializeMeterDataFromApi(response.data);
+        }
+        
+        // Navigate to ChargerScreen (using goTo to keep history screen in stack)
+        if (context.mounted) {
+          context.goTo(const ChargerScreen());
+        }
+      } else {
+        // Show error message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response.data['message'] ?? 'Failed to load current charging session',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.fixed,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog if still open
+      if (context.mounted) {
+        try {
+          Navigator.pop(context);
+        } catch (_) {
+          // Dialog might already be closed
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error loading charging session: ${e.toString()}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.fixed,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      if (kDebugMode) {
+        print('Error loading current charging session: $e');
+      }
+    }
+  }
+
+  Widget _buildDownloadButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: SizedBox(
@@ -605,10 +780,168 @@ class HistoryView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 17),
           ),
           onPressed: () async {
-            if (pdfUrl.isNotEmpty) {
-              final uri = Uri.parse(pdfUrl);
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(uri, mode: LaunchMode.externalApplication);
+            try {
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+
+              // Get auth headers
+              final authHeaders = await DioHelper.getAuthHeaders();
+              
+              // Download PDF with authentication headers using Dio directly
+              // We need responseType.bytes for binary PDF data
+              final response = await DioHelper.dio.get(
+                EndPoints.chargingPdf,
+                options: Options(
+                  headers: authHeaders,
+                  responseType: ResponseType.bytes,
+                ),
+              );
+
+              if (response.statusCode == 200 && response.data != null) {
+                // Get external storage directory (app's external files directory)
+                // This doesn't require special permissions and works with FileProvider
+                Directory? downloadsDir;
+                
+                try {
+                  // Use external storage directory (app-specific, no permissions needed)
+                  final externalDir = await getExternalStorageDirectory();
+                  if (externalDir != null) {
+                    // Create Downloads subdirectory in app's external storage
+                    downloadsDir = Directory('${externalDir.path}/Downloads');
+                  }
+                } catch (e, stackTrace) {
+                  // Log exception
+                  if (kDebugMode) {
+                    print('Exception getting external storage: $e');
+                    print('Stack trace: $stackTrace');
+                  }
+                  // If external storage fails, use application documents directory
+                  try {
+                    final appDir = await getApplicationDocumentsDirectory();
+                    downloadsDir = Directory('${appDir.path}/Downloads');
+                  } catch (e2, stackTrace2) {
+                    if (kDebugMode) {
+                      print('Exception getting application documents directory: $e2');
+                      print('Stack trace: $stackTrace2');
+                    }
+                    // Show error toast
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Error accessing storage: ${e2.toString()}", style: const TextStyle(color: Colors.white)),
+                          backgroundColor: Colors.red.shade700,
+                          behavior: SnackBarBehavior.fixed,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                    return;
+                  }
+                }
+                
+                // Fallback to application documents if external storage is not available
+                if (downloadsDir == null) {
+                  final appDir = await getApplicationDocumentsDirectory();
+                  downloadsDir = Directory('${appDir.path}/Downloads');
+                }
+                
+                // Create directory if it doesn't exist
+                if (!await downloadsDir.exists()) {
+                  await downloadsDir.create(recursive: true);
+                }
+                
+                // Generate unique filename
+                final fileName = 'charging_history_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+                final filePath = '${downloadsDir.path}/$fileName';
+                
+                // Save PDF to external storage
+                final file = File(filePath);
+                await file.writeAsBytes(response.data as List<int>);
+
+                // Close loading dialog
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("PDF downloaded successfully", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.green.shade600,
+                      behavior: SnackBarBehavior.fixed,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+
+                // Open the PDF file after download completes using open_file
+                // This handles FileProvider automatically for Android
+                try {
+                  final result = await OpenFile.open(filePath);
+                  if (result.type != ResultType.done) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Unable to open PDF file. File saved at: $filePath", style: const TextStyle(color: Colors.white)),
+                          backgroundColor: Colors.red.shade700,
+                          behavior: SnackBarBehavior.fixed,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  }
+                } catch (e, stackTrace) {
+                  // Log exception
+                  if (kDebugMode) {
+                    print('Exception opening PDF: $e');
+                    print('Stack trace: $stackTrace');
+                  }
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Error opening PDF: ${e.toString()}", style: const TextStyle(color: Colors.white)),
+                        backgroundColor: Colors.red.shade700,
+                        behavior: SnackBarBehavior.fixed,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
+              } else {
+                // Close loading dialog
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("Failed to download PDF", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.red.shade700,
+                      behavior: SnackBarBehavior.fixed,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                }
+              }
+            } catch (e, stackTrace) {
+              // Log exception
+              if (kDebugMode) {
+                print('Exception downloading PDF: $e');
+                print('Stack trace: $stackTrace');
+              }
+              // Close loading dialog if still open
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Error downloading PDF: ${e.toString()}", style: const TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.red.shade700,
+                    behavior: SnackBarBehavior.fixed,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
               }
             }
           },

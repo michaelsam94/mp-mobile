@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -93,50 +94,54 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     );
   }
 
-  Widget _buildSupportCard(String label, String value, IconData icon) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
-      decoration: BoxDecoration(
-        color: Color(0xffF6F6F6),
-        borderRadius: BorderRadius.circular(19),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
+  Widget _buildSupportCard(String label, String value, IconData icon, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(19),
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 17),
+        decoration: BoxDecoration(
+          color: Color(0xffF6F6F6),
+          borderRadius: BorderRadius.circular(19),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.white, size: 27),
             ),
-            child: Icon(icon, color: Colors.white, size: 27),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                    color: AppColors.primary,
+                  SizedBox(height: 5),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      color: AppColors.primary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -178,6 +183,21 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
               "Phone Support",
               phone,
               Icons.phone_outlined,
+              onTap: () async {
+                try {
+                  final uri = Uri.parse('tel:${phone.trim()}');
+                  await launchUrl(uri);
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Could not open phone dialer'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           );
         }
@@ -190,6 +210,21 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
               "Email Support",
               email,
               Icons.email_outlined,
+              onTap: () async {
+                try {
+                  final uri = Uri.parse('mailto:${email.trim()}');
+                  await launchUrl(uri);
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Could not open email app'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           );
         }
@@ -202,6 +237,25 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
               "Facebook",
               facebook,
               Icons.link,
+              onTap: () async {
+                try {
+                  String url = facebook.trim();
+                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://$url';
+                  }
+                  final uri = Uri.parse(url);
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Could not open Facebook'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           );
         }
@@ -214,6 +268,25 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
               "TikTok",
               tiktok,
               Icons.video_library_outlined,
+              onTap: () async {
+                try {
+                  String url = tiktok.trim();
+                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://$url';
+                  }
+                  final uri = Uri.parse(url);
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Could not open TikTok'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           );
         }
@@ -226,6 +299,25 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
               "Twitter",
               twitter,
               Icons.link,
+              onTap: () async {
+                try {
+                  String url = twitter.trim();
+                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://$url';
+                  }
+                  final uri = Uri.parse(url);
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Could not open Twitter'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
             ),
           );
         }
