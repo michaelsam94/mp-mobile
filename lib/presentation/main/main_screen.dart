@@ -8,6 +8,7 @@ import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/profile_screen.dart';
 import 'package:mega_plus/presentation/wallet/wallet_screen.dart';
 
+import '../../core/helpers/cache/cache_helper.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/map_screen.dart';
 import '../map/qr_code_scanner_screen.dart';
@@ -17,9 +18,10 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<WebSocketCubit>().connect();
-    context.read<ProfileCubit>().getRFID();
-    
+    if (CacheHelper.checkLogin() != 1) {
+      context.read<WebSocketCubit>().connect();
+      context.read<ProfileCubit>().getRFID();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -34,16 +36,20 @@ class MainScreen extends StatelessWidget {
             child: BottomNavigationBar(
               currentIndex: 0,
               onTap: (index) {
-                switch (index) {
-                  case 1:
-                    context.goTo(WalletScreen());
-                  case 3:
-                    context.goTo(HistoryScreen());
-                  case 4:
-                    context.goTo(ProfileScreen());
-                }
-                if (index == 2) {
-                  return;
+                if (CacheHelper.checkLogin() != 1) {
+                  switch (index) {
+                    case 1:
+                      context.goTo(WalletScreen());
+                    case 3:
+                      context.goTo(HistoryScreen());
+                    case 4:
+                      context.goTo(ProfileScreen());
+                  }
+                  if (index == 2) {
+                    return;
+                  }
+                } else {
+                  context.showErrorMessage("Please login first");
                 }
               },
               type: BottomNavigationBarType.fixed,
@@ -110,7 +116,11 @@ class MainScreen extends StatelessWidget {
             top: 5,
             child: GestureDetector(
               onTap: () {
-                context.goTo(QrCodeScannerScreen());
+                if (CacheHelper.checkLogin() != 1) {
+                  context.goTo(QrCodeScannerScreen());
+                } else {
+                  context.showErrorMessage("Please login first");
+                }
               },
               child: Container(
                 height: 62,

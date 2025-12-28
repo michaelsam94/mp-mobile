@@ -50,7 +50,6 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
               rfidCode: ProfileCubit.get(context).defaultRFID?.code ?? "",
             ),
           );
-          
         } else {
           context.showErrorMessage("No RFID Card found");
         }
@@ -77,42 +76,36 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         width: context.width(),
         height: context.height(),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/qr_code.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
           children: [
-            Container(
-              height: 200,
-              width: 200,
-              padding: const EdgeInsets.only(top: 50),
-              child: Stack(
-                children: [
-                  MobileScanner(
-                    controller: controller,
-                    onDetect: _handleBarcode,
-                  ),
-                  SvgPicture.asset("assets/icons/Crosshair.svg"),
-                ],
+            MobileScanner(controller: controller, onDetect: _handleBarcode),
+            Align(
+              alignment: AlignmentGeometry.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: SvgPicture.asset("assets/icons/Crosshair.svg"),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.black45,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: EdgeInsets.all(16),
-              child: Text(
-                isProcessing ? "Processing..." : "Find a code to scan",
-                style: TextStyle(color: Colors.white),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                margin: EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  isProcessing ? "Processing..." : "Find a code to scan",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],

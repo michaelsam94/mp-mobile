@@ -4,11 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
 import 'package:mega_plus/presentation/notifications/notifications_screen.dart';
-
-import 'models/map_station_response_model.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -105,7 +104,11 @@ class _MapScreenState extends State<MapScreen> {
                   const SizedBox(width: 16),
                   InkWell(
                     onTap: () {
-                      context.goTo(NotificationsScreen());
+                      if (CacheHelper.checkLogin() != 1) {
+                        context.goTo(NotificationsScreen());
+                      } else {
+                        context.showErrorMessage("Please login first");
+                      }
                     },
                     child: SvgPicture.asset("assets/icons/notifications.svg"),
                   ),
@@ -200,6 +203,27 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ),
 
+                      if (CacheHelper.checkLogin() == 1)
+                        Positioned(
+                          bottom: 20,
+                          right: 100,
+                          left: 100,
+                          child: InkWell(
+                            onTap: () {
+                              context.goOffAll(LoginScreen());
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text("Press here to login"),
+                            ),
+                          ),
+                        ),
+
                       // Status Container
                       Positioned(
                         top: 8,
@@ -290,23 +314,6 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
-}
-
-void showStationBottomSheet(
-  MapStationResponseModel station,
-  BuildContext context,
-) {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return BottomSheet(
-        onClosing: () {},
-        builder: (context) {
-          return Container();
-        },
-      );
-    },
-  );
 }
 
 class _Dot extends StatelessWidget {

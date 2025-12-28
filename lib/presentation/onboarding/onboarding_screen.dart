@@ -6,13 +6,7 @@ import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  final List<String> images = [
-    'assets/images/onboarding1.png',
-    'assets/images/onboarding2.png',
-    'assets/images/onboarding3.png',
-  ];
-
-  OnboardingScreen({super.key});
+  const OnboardingScreen({super.key});
   void _goNext(BuildContext context, int currentIndex) {
     if (currentIndex < 2) {
       OnBoardingCubit.get(context).changeIndex(++currentIndex);
@@ -40,10 +34,10 @@ class OnboardingScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Image.network(
-                      cubit.tips[cubit.currentIndex].media?[0].path ?? "",
+                      cubit.tips[cubit.currentIndex].mediaUrl ?? "",
                       width: context.width(),
                       height: 260,
-                      fit: BoxFit.fitHeight,                      
+                      fit: BoxFit.fitHeight,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           width: context.width(),

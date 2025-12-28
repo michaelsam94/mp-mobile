@@ -147,7 +147,6 @@ class LoginScreenUI extends StatelessWidget {
                     },
                   ),
 
-                  // باقي الكود كما هو...
                   SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -206,7 +205,6 @@ class LoginScreenUI extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 32),
-                  // Sign in button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -274,7 +272,9 @@ class LoginScreenUI extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        context.goTo(MainScreen());
+                      },
                     ),
                   ),
 

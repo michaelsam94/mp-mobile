@@ -43,8 +43,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         var rfidData = data[0]["rfids"] as List;
         rfidCards = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
 
-        // Todo Edit
-        defaultRFID = rfidCards[0];
+        defaultRFID = rfidCards.firstWhere((e) => e.isDefault == 1);
+
+        rfidCards.removeWhere((e) => e.isDefault == 1);
         emit(SuccessGetRFIDState());
       } else {
         emit(ErrorGetRFIDState());
@@ -250,7 +251,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         totalCharges = response.data["data"]["total_charges"] ?? 0;
-        image = response.data["data"]["media"][0];
+        image = response.data["data"]["media_url"];
 
         emit(SuccessGetProfileState());
       } else {

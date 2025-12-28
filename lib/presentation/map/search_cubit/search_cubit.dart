@@ -25,7 +25,10 @@ class SearchCubit extends Cubit<SearchState> {
   void getStations() async {
     emit(LoadingGetStationsSearchState());
     try {
-      var response = await DioHelper.getData(url: EndPoints.getStations);
+      var response = await DioHelper.getData(
+        url: EndPoints.getStations,
+        auth: false,
+      );
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
         stations = data.map((e) => StationResponseModel.fromJson(e)).toList();
@@ -71,12 +74,16 @@ class SearchCubit extends Cubit<SearchState> {
           filterStatus == null || station.status == filterStatus;
 
       // Connector Type filter
-      bool matchesConnectorType =
-          filterConnectorType == null ||
-          station.guns!.any(
-            (gun) =>
-                gun.type?.toUpperCase().contains(filterConnectorType!) ?? false,
-          );
+      bool matchesConnectorType = true;
+      if (filterConnectorType != null) {
+        if (filterConnectorType == 'AC') {
+          // For AC: check if acCompatible is true
+          matchesConnectorType = station.acCompatible == true;
+        } else if (filterConnectorType == 'DC') {
+          // For DC: check if acCompatible is false
+          matchesConnectorType = station.acCompatible == false;
+        }
+      }
 
       // Favourite filter (assuming you have a favourite field)
       // bool matchesFavourite = !filterFavouriteOnly || station.isFavourite == true;
@@ -85,10 +92,8 @@ class SearchCubit extends Cubit<SearchState> {
       bool matchesPower =
           filterMinimumPower == null ||
           station.guns!.any((gun) {
-            int? gunPower = int.tryParse(
-              gun.maxPower?.replaceAll('kw', '').replaceAll('KW', '') ?? '0',
-            );
-            int? minPower = int.tryParse(
+            double? gunPower = double.tryParse(gun.maxPower ?? '0');
+            double? minPower = double.tryParse(
               filterMinimumPower?.replaceAll('kw', '').replaceAll('KW', '') ??
                   '0',
             );

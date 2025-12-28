@@ -10,8 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
-import 'package:mega_plus/presentation/map/map_screen.dart';
 import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
+
+import '../station_details_widget.dart';
 
 part 'map_state.dart';
 
@@ -170,6 +171,7 @@ class MapCubit extends Cubit<MapState> {
           userLatLng!.latitude,
           userLatLng!.longitude,
         ),
+        auth: false,
       ).timeout(Duration(seconds: 10));
 
       print("-" * 25);
@@ -322,7 +324,7 @@ class MapCubit extends Cubit<MapState> {
                   '${station.totalGunsFormat} - ${double.parse(station.distance ?? "0").toStringAsFixed(0)} km',
             ),
             onTap: () {
-              showStationBottomSheet(station,context);
+              showStationBottomSheet(station.id ?? 0, context);
             },
           ),
         );
