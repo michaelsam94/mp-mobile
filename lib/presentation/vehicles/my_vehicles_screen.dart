@@ -7,8 +7,6 @@ import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
-import '../../core/style/app_colors.dart';
-
 class MyVehiclesScreen extends StatelessWidget {
   const MyVehiclesScreen({super.key});
 
@@ -122,6 +120,16 @@ class MyVehiclesScreen extends StatelessWidget {
     final cubit = VehiclesCubit.get(context);
     cubit.getVehicles();
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.goTo(VehicleSetupScreen());
+        },
+        backgroundColor: Colors.green,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -153,21 +161,6 @@ class MyVehiclesScreen extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Color(0xff212121),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        context.goTo(VehicleSetupScreen());
-                      },
-                      child: Text(
-                        "Add",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                     ),
                   ),

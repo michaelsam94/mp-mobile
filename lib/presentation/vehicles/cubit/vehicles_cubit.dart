@@ -129,8 +129,11 @@ class VehiclesCubit extends Cubit<VehiclesState> {
         url: EndPoints.addVehicle,
         data: FormData.fromMap({
           "brand_model_id": selectedModel!.id,
+          "plate_number": plateNumber ?? "",
           "connector_type": selectedConnector!.type,
           "path": "customerVehicle",
+          "year": year,
+          "color": color ?? "",
           "media": plateImage == null
               ? null
               : await MultipartFile.fromFile(plateImage!.path),

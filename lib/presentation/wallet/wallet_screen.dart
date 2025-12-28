@@ -23,9 +23,16 @@ class WalletScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          children: [
+        child: RefreshIndicator(
+          onRefresh: () async {
+            WalletCubit.get(context).getWallet();
+            // Wait a bit to allow the API call to complete
+            await Future.delayed(Duration(milliseconds: 500));
+          },
+          child: ListView(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            physics: AlwaysScrollableScrollPhysics(),
+            children: [
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
               width: double.infinity,
@@ -383,6 +390,7 @@ class WalletScreen extends StatelessWidget {
               },
             ),
           ],
+          ),
         ),
       ),
     );

@@ -461,7 +461,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                             ),
                                             SizedBox(height: 12),
                                             Text(
-                                              'Take a picture now',
+                                              'Take picture of vehicle licence',
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 color: Color(0xff121212),

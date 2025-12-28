@@ -137,6 +137,19 @@ class RFIDCardsScreen extends StatelessWidget {
     ProfileCubit.get(context).getRFID();
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final rfid = await showAddRfidBottomSheet(context);
+          if (rfid != null) {
+            ProfileCubit.get(context).addRFID(rfid);
+          }
+        },
+        backgroundColor: Colors.green,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           if (state is ErrorGetRFIDState) {
@@ -179,25 +192,6 @@ class RFIDCardsScreen extends StatelessWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Color(0xff212121),
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          onTap: () async {
-                            final rfid = await showAddRfidBottomSheet(context);
-                            if (rfid != null) {
-                              ProfileCubit.get(context).addRFID(rfid);
-                            }
-                          },
-
-                          child: Text(
-                            "Add",
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
                           ),
                         ),
                       ),
