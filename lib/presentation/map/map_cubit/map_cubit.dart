@@ -155,18 +155,6 @@ class MapCubit extends Cubit<MapState> {
     print("_loadIcons: Finished loading all icons");
   }
 
-  // Check if station has at least one DC connector
-  // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
-  bool _hasDCConnector(StationResponseModel station) {
-    if (station.guns == null || station.guns!.isEmpty) return false;
-    return station.guns!.any((gun) {
-      final type = gun.type?.toUpperCase() ?? '';
-      return type.contains('CCS2') || 
-             type.contains('TESLA') || 
-             type.contains('CHADEMO') ||
-             type.contains('GB-T');
-    });
-  }
 
   // Create DC marker icon using PNG files based on status
   Future<BitmapDescriptor> _createDCMarkerIcon(String status) async {
@@ -365,12 +353,25 @@ class MapCubit extends Cubit<MapState> {
         var station = cluster.stations.first;
         if (station.latitude == null || station.longitude == null) continue;
         
-        // Determine icon based on status and DC connector presence
-        String status = station.status ?? 'available';
-        String iconKey = status;
-        if (_hasDCConnector(station)) {
-          iconKey = '${status}_dc';
+        // Determine icon based on status and ac_compatible field
+        String statusRaw = station.status ?? 'available';
+        String status = statusRaw.toLowerCase();
+        
+        // Normalize status values to match icon cache keys
+        if (status == 'inuse' || status == 'in_use') {
+          status = 'inUse'; // Icon cache uses camelCase
+        } else if (status == 'available') {
+          status = 'available';
+        } else if (status == 'unavailable') {
+          status = 'unavailable';
+        } else {
+          // Default to available if unknown status
+          status = 'available';
         }
+        
+        // If ac_compatible is false, it's DC, otherwise it's AC
+        bool isDC = !(station.acCompatible ?? false);
+        String iconKey = isDC ? '${status}_dc' : status;
         
         newMarkers.add(
           Marker(

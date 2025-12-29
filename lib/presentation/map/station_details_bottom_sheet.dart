@@ -365,24 +365,26 @@ class StationDetailsSheet extends StatelessWidget {
     }
   }
 
-  /// Checks if station has at least one DC gun
-  bool _hasDCGun(StationResponseModel station) {
-    if (station.guns == null || station.guns!.isEmpty) return false;
-    return station.guns!.any((gun) {
-      final type = gun.type?.toUpperCase() ?? '';
-      return type.contains('CCS2') ||
-          type.contains('CHADEMO') ||
-          type.contains('TESLA') ||
-          type.contains('GB-T');
-    });
-  }
-
-  /// Gets the appropriate station marker icon path based on DC/AC and status
+  /// Gets the appropriate station marker icon path based on AC/DC (ac_compatible) and status
   String _getStationIconPath(StationResponseModel station) {
-    final hasDC = _hasDCGun(station);
+    // If ac_compatible is true, it's AC, otherwise it's DC
+    final isAC = station.acCompatible ?? false;
     final status = station.status?.toLowerCase() ?? 'available';
     
-    if (hasDC) {
+    if (isAC) {
+      // AC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png'; // AC in-use icon
+        default:
+          return 'assets/icons/ac.png';
+      }
+    } else {
       // DC marker icons
       switch (status) {
         case 'available':
@@ -394,19 +396,6 @@ class StationDetailsSheet extends StatelessWidget {
           return 'assets/icons/dc_inuse.png';
         default:
           return 'assets/icons/dc_available.png';
-      }
-    } else {
-      // AC marker icons
-      switch (status) {
-        case 'available':
-          return 'assets/icons/ac.png';
-        case 'unavailable':
-          return 'assets/icons/unavailable.png';
-        case 'inuse':
-        case 'in_use':
-          return 'assets/icons/ac.png'; // Use AC icon for in use
-        default:
-          return 'assets/icons/ac.png';
       }
     }
   }

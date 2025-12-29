@@ -6,6 +6,7 @@ class StationResponseModel {
   double? latitude;
   double? longitude;
   String? status;
+  bool? acCompatible;
   List<Guns>? guns;
   String? mediaUrl;
   List<String>? mediaUrls;
@@ -18,6 +19,7 @@ class StationResponseModel {
       this.latitude,
       this.longitude,
       this.status,
+      this.acCompatible,
       this.guns,
       this.mediaUrl,
       this.mediaUrls});
@@ -30,6 +32,7 @@ class StationResponseModel {
     latitude = json['latitude'];
     longitude = json['longitude'];
     status = json['status'];
+    acCompatible = json['ac_compatible'] ?? false;
     
     // Handle media_url - can be a string, list, or null
     if (json['media_url'] != null) {
@@ -85,6 +88,7 @@ class StationResponseModel {
     data['latitude'] = this.latitude;
     data['longitude'] = this.longitude;
     data['status'] = this.status;
+    data['ac_compatible'] = this.acCompatible;
     data['media_url'] = this.mediaUrl;
     data['media_urls'] = this.mediaUrls;
     if (this.guns != null) {

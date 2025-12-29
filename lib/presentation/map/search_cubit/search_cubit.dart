@@ -310,38 +310,38 @@ class SearchCubit extends Cubit<SearchState> {
     applyFiltersAndSearch();
   }
 
-  // Check if station has at least one DC connector
-  // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
-  bool hasDCConnector(StationResponseModel station) {
-    if (station.guns == null || station.guns!.isEmpty) return false;
-    return station.guns!.any((gun) {
-      final type = gun.type?.toUpperCase() ?? '';
-      return type.contains('CCS2') || 
-             type.contains('TESLA') || 
-             type.contains('CHADEMO') ||
-             type.contains('GB-T');
-    });
-  }
-
-  // Get the appropriate icon path for a station based on status and DC connector presence
+  // Get the appropriate icon path for a station based on AC/DC (ac_compatible) and status
   String getStationIconPath(StationResponseModel station) {
-    String status = station.status ?? 'available';
-    bool isDC = hasDCConnector(station);
+    // If ac_compatible is true, it's AC, otherwise it's DC
+    final isAC = station.acCompatible ?? false;
+    final status = station.status?.toLowerCase() ?? 'available';
     
-    if (isDC) {
+    if (isAC) {
+      // AC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png'; // AC in-use icon
+        default:
+          return 'assets/icons/ac.png';
+      }
+    } else {
+      // DC marker icons
       switch (status) {
         case 'available':
           return 'assets/icons/dc_available.png';
         case 'unavailable':
           return 'assets/icons/dc_unavailable.png';
-        case 'inUse':
+        case 'inuse':
+        case 'in_use':
           return 'assets/icons/dc_inuse.png';
         default:
           return 'assets/icons/dc_available.png';
       }
-    } else {
-      // For non-DC stations, use the regular AC icon
-      return 'assets/icons/ac.png';
     }
   }
 }

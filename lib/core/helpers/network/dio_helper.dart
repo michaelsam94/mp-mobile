@@ -52,19 +52,28 @@ class DioHelper {
              response.data['success'] == false && 
              (response.data['message']?.toString().toLowerCase().contains('unauthorized') == true ||
               response.data['message']?.toString().toLowerCase().contains('login') == true))) {
-          _handleUnauthorized();
+          // Handle 401 in response - logout immediately
+          if (response.requestOptions.path != EndPoints.login) {
+            _handleUnauthorized();
+          }
         }
         handler.next(response);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
         // Check if error indicates unauthorized
-        if (error.response?.statusCode == 401 ||
+        final isUnauthorized = error.response?.statusCode == 401 ||
             (error.response?.data is Map && 
              error.response?.data['success'] == false && 
              (error.response?.data['message']?.toString().toLowerCase().contains('unauthorized') == true ||
-              error.response?.data['message']?.toString().toLowerCase().contains('login') == true))) {
+              error.response?.data['message']?.toString().toLowerCase().contains('login') == true));
+        
+        // If unauthorized and not login endpoint, logout immediately
+        if (isUnauthorized && error.requestOptions.path != EndPoints.login) {
           _handleUnauthorized();
+          handler.reject(error);
+          return;
         }
+        
         handler.next(error);
       },
     ));
@@ -255,31 +264,59 @@ class DioHelper {
 
   static Future<bool> refreshToken() async {
     try {
+      // Try with current token first (even if expired, some APIs accept it)
+      final currentToken = CacheHelper.getString(CacheKeys.token.name);
       var response = await dio.post(
         EndPoints.refreshToken,
         options: Options(
           contentType: 'application/json',
           headers: {
             "Accept": "application/json",
-            "Authorization":
-                "Bearer ${CacheHelper.getString(CacheKeys.token.name)}",
+            if (currentToken != null && currentToken.isNotEmpty)
+              "Authorization": "Bearer $currentToken",
           },
         ),
       );
-      if (response.statusCode == 200 &&
-          response.data["success"] == true &&
-          response.data["data"]["refresh_token"] != null) {
-        await CacheHelper.refreshToken(
-          response.data["data"]["refresh_token"],
-          response.data["data"]["expires_in"],
-        );
-        return true;
-      } else {
+      
+      // Check if refresh endpoint returned 401 - this means refresh token is invalid/expired
+      if (response.statusCode == 401) {
+        if (kDebugMode) {
+          print('Refresh token returned 401 - logging out');
+        }
         return false;
       }
+      
+      if (response.statusCode == 200 &&
+          response.data["success"] == true &&
+          response.data["data"] != null) {
+        // The new token is in data.refresh_token
+        final newToken = response.data["data"]["refresh_token"];
+        final expiresIn = response.data["data"]["expires_in"];
+        
+        if (newToken != null && expiresIn != null) {
+          await CacheHelper.refreshToken(
+            newToken,
+            expiresIn,
+          );
+          return true;
+        }
+      }
+      return false;
+    } on DioException catch (e) {
+      // If refresh endpoint returns 401, handle it
+      if (e.response?.statusCode == 401) {
+        if (kDebugMode) {
+          print('Refresh token returned 401 - logging out');
+        }
+        return false;
+      }
+      if (kDebugMode) {
+        print('Refresh token error: ${e.toString()}');
+      }
+      return false;
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print('Refresh token error: ${e.toString()}');
       }
       return false;
     }

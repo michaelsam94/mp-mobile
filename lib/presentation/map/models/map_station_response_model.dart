@@ -80,7 +80,7 @@ class MapStationResponseModel  {
           return 'assets/icons/unavailable.png';
         case 'inuse':
         case 'in_use':
-          return 'assets/icons/ac.png'; // Use AC icon for in use
+          return 'assets/icons/use.png'; // AC in-use icon
         default:
           return 'assets/icons/ac.png';
       }
