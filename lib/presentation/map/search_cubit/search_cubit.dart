@@ -58,10 +58,12 @@ class SearchCubit extends Cubit<SearchState> {
         url: EndPoints.getMapStations(lat, lng),
         auth: false, // This endpoint doesn't require authentication
       );
-      
+
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
-        nearbyStations = data.map((e) => MapStationResponseModel.fromJson(e)).toList();
+        nearbyStations = data
+            .map((e) => MapStationResponseModel.fromJson(e))
+            .toList();
         // Initially show nearby stations
         useCachedStations = false;
         _updateFilteredStations();
@@ -81,15 +83,20 @@ class SearchCubit extends Cubit<SearchState> {
     applyFiltersAndSearch();
   }
 
-  void searchStations(String query, {List<StationResponseModel>? cachedStations}) {
+  void searchStations(
+    String query, {
+    List<StationResponseModel>? cachedStations,
+  }) {
     searchQuery = query.toLowerCase();
-    
+
     // If user starts searching and we have cached stations, switch to them
-    if (cachedStations != null && cachedStations.isNotEmpty && !useCachedStations) {
+    if (cachedStations != null &&
+        cachedStations.isNotEmpty &&
+        !useCachedStations) {
       stations = cachedStations;
       useCachedStations = true;
     }
-    
+
     applyFiltersAndSearch();
   }
 
@@ -104,13 +111,15 @@ class SearchCubit extends Cubit<SearchState> {
     filterConnectorType = connectorType;
     filterFavouriteOnly = favouriteOnly ?? false;
     filterMinimumPower = minimumPower;
-    
+
     // If applying filters and we have cached stations, switch to them
-    if (cachedStations != null && cachedStations.isNotEmpty && !useCachedStations) {
+    if (cachedStations != null &&
+        cachedStations.isNotEmpty &&
+        !useCachedStations) {
       stations = cachedStations;
       useCachedStations = true;
     }
-    
+
     applyFiltersAndSearch();
   }
 
@@ -145,15 +154,17 @@ class SearchCubit extends Cubit<SearchState> {
 
       // Connector Type filter
       bool matchesConnectorType = filterConnectorType == null;
-      if (!matchesConnectorType && station.guns != null && station.guns!.isNotEmpty) {
+      if (!matchesConnectorType &&
+          station.guns != null &&
+          station.guns!.isNotEmpty) {
         if (filterConnectorType == 'DC') {
           // DC connectors: CCS2 / GB-T, Tesla, CHAdeMO, CCS2
           matchesConnectorType = station.guns!.any((gun) {
             final type = gun.type?.toUpperCase() ?? '';
-            return type.contains('CCS2') || 
-                   type.contains('TESLA') || 
-                   type.contains('CHADEMO') ||
-                   type.contains('GB-T');
+            return type.contains('CCS2') ||
+                type.contains('TESLA') ||
+                type.contains('CHADEMO') ||
+                type.contains('GB-T');
           });
         } else if (filterConnectorType == 'AC') {
           // AC connectors: AC-Type-2 or any type containing AC
@@ -164,7 +175,11 @@ class SearchCubit extends Cubit<SearchState> {
         } else {
           // For other filters, check if type contains the filter string
           matchesConnectorType = station.guns!.any(
-            (gun) => gun.type?.toUpperCase().contains(filterConnectorType!.toUpperCase()) ?? false,
+            (gun) =>
+                gun.type?.toUpperCase().contains(
+                  filterConnectorType!.toUpperCase(),
+                ) ??
+                false,
           );
         }
       }
@@ -179,19 +194,19 @@ class SearchCubit extends Cubit<SearchState> {
         double? minPowerValue = double.tryParse(
           filterMinimumPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
         );
-        
+
         if (minPowerValue != null) {
           // Check if any gun has maxPower >= minimum power
           matchesPower = station.guns!.any((gun) {
             if (gun.maxPower == null || gun.maxPower!.isEmpty) {
               return false; // Skip guns with no power info
             }
-            
+
             // Parse the gun's max power (e.g., "23.00" -> 23.0)
             double? gunPower = double.tryParse(
               gun.maxPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
             );
-            
+
             // Return true if gun power is valid and >= minimum power
             return gunPower != null && gunPower >= minPowerValue;
           });
@@ -239,10 +254,10 @@ class SearchCubit extends Cubit<SearchState> {
     if (station.guns == null || station.guns!.isEmpty) return false;
     return station.guns!.any((gun) {
       final type = gun.type?.toUpperCase() ?? '';
-      return type.contains('CCS2') || 
-             type.contains('TESLA') || 
-             type.contains('CHADEMO') ||
-             type.contains('GB-T');
+      return type.contains('CCS2') ||
+          type.contains('TESLA') ||
+          type.contains('CHADEMO') ||
+          type.contains('GB-T');
     });
   }
 
@@ -250,7 +265,7 @@ class SearchCubit extends Cubit<SearchState> {
   String getStationIconPath(StationResponseModel station) {
     String status = station.status ?? 'available';
     bool isDC = hasDCConnector(station);
-    
+
     if (isDC) {
       switch (status) {
         case 'available':
@@ -265,6 +280,40 @@ class SearchCubit extends Cubit<SearchState> {
     } else {
       // For non-DC stations, use the regular AC icon
       return 'assets/icons/ac.png';
+    }
+  }
+
+  //add station to favouries
+  Future<bool> favStation(bool isFav, int id) async {
+    emit(LoadingGetStationsSearchState());
+
+    try {
+      if (isFav) {
+        var response = await DioHelper.postData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          emit(SuccessGetStationsSearchState());
+          return true;
+        } else {
+          emit(ErrorGetStationsSearchState());
+          return false;
+        }
+      } else {
+        var response = await DioHelper.deleteData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          emit(SuccessGetStationsSearchState());
+          return true;
+        } else {
+          emit(ErrorGetStationsSearchState());
+          return false;
+        }
+      }
+    } catch (e) {
+      emit(ErrorGetStationsSearchState());
+      return false;
     }
   }
 }

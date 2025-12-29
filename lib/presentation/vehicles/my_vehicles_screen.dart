@@ -11,7 +11,11 @@ class MyVehiclesScreen extends StatelessWidget {
   const MyVehiclesScreen({super.key});
 
   Widget vehicleCard(VehicleResponseModel item, BuildContext context) {
-    return Container(
+    return InkWell(
+      onTap: () {
+        context.goTo(VehicleSetupScreen(vehicle: item));
+      },
+      child: Container(
         margin: EdgeInsets.symmetric(horizontal: 13, vertical: 9),
         padding: EdgeInsets.symmetric(vertical: 18, horizontal: 18),
         decoration: BoxDecoration(
@@ -38,7 +42,10 @@ class MyVehiclesScreen extends StatelessWidget {
                         color: Color(0xFFF3F3F3),
                         borderRadius: BorderRadius.circular(11),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 15,
+                      ),
                       child: Text(
                         item.connectorType ?? "",
                         style: TextStyle(
@@ -84,16 +91,22 @@ class MyVehiclesScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, VehicleResponseModel vehicle) {
+  void _showDeleteConfirmation(
+    BuildContext context,
+    VehicleResponseModel vehicle,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text('Delete Vehicle'),
-          content: Text('Are you sure you want to delete this vehicle? This action cannot be undone.'),
+          content: Text(
+            'Are you sure you want to delete this vehicle? This action cannot be undone.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
@@ -104,10 +117,7 @@ class MyVehiclesScreen extends StatelessWidget {
                 Navigator.pop(dialogContext);
                 VehiclesCubit.get(context).deleteVehicle(vehicle.id!);
               },
-              child: Text(
-                'Delete',
-                style: TextStyle(color: Colors.red),
-              ),
+              child: Text('Delete', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -125,10 +135,7 @@ class MyVehiclesScreen extends StatelessWidget {
           context.goTo(VehicleSetupScreen());
         },
         backgroundColor: Colors.green,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.add, color: Colors.white),
       ),
       body: SafeArea(
         child: Column(
@@ -200,24 +207,31 @@ class MyVehiclesScreen extends StatelessWidget {
                                   SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         ShimmerWidget(
                                           width: double.infinity,
                                           height: 20,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         SizedBox(height: 8),
                                         ShimmerWidget(
                                           width: 150,
                                           height: 16,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         SizedBox(height: 8),
                                         ShimmerWidget(
                                           width: 100,
                                           height: 16,
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                       ],
                                     ),

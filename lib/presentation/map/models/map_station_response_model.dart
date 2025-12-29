@@ -1,5 +1,4 @@
-
-class MapStationResponseModel  {
+class MapStationResponseModel {
   int? id;
   String? name;
   String? latitude;
@@ -10,6 +9,7 @@ class MapStationResponseModel  {
   String? totalGuns;
   String? totalGunsFormat;
   bool? acCompatible;
+  bool? isFavourite;
 
   MapStationResponseModel({
     this.id,
@@ -22,6 +22,7 @@ class MapStationResponseModel  {
     this.totalGuns,
     this.totalGunsFormat,
     this.acCompatible,
+    this.isFavourite,
   });
 
   MapStationResponseModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +36,7 @@ class MapStationResponseModel  {
     totalGuns = json['total_guns'].toString();
     totalGunsFormat = json['total_guns_format'].toString();
     acCompatible = json['ac_compatible'] ?? false;
+    isFavourite = json['is_favourite'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
@@ -49,6 +51,7 @@ class MapStationResponseModel  {
     data['total_guns'] = totalGuns;
     data['total_guns_format'] = totalGunsFormat;
     data['ac_compatible'] = acCompatible;
+    data['is_favourite'] = isFavourite;
     return data;
   }
 
@@ -57,7 +60,7 @@ class MapStationResponseModel  {
     // If ac_compatible is true, it's AC, otherwise it's DC
     final isDC = !(acCompatible ?? false);
     final statusLower = status?.toLowerCase() ?? 'available';
-    
+
     if (isDC) {
       // DC marker icons
       switch (statusLower) {

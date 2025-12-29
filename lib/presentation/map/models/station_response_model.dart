@@ -9,18 +9,21 @@ class StationResponseModel {
   List<Guns>? guns;
   String? mediaUrl;
   List<String>? mediaUrls;
+  bool? isFavourite;
 
-  StationResponseModel(
-      {this.id,
-      this.name,
-      this.address,
-      this.city,
-      this.latitude,
-      this.longitude,
-      this.status,
-      this.guns,
-      this.mediaUrl,
-      this.mediaUrls});
+  StationResponseModel({
+    this.id,
+    this.name,
+    this.address,
+    this.city,
+    this.latitude,
+    this.longitude,
+    this.status,
+    this.guns,
+    this.mediaUrl,
+    this.mediaUrls,
+    this.isFavourite,
+  });
 
   StationResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -30,7 +33,8 @@ class StationResponseModel {
     latitude = json['latitude'];
     longitude = json['longitude'];
     status = json['status'];
-    
+    isFavourite = json['is_favourite'] ?? false;
+
     // Handle media_url - can be a string, list, or null
     if (json['media_url'] != null) {
       if (json['media_url'] is String) {
@@ -40,34 +44,42 @@ class StationResponseModel {
         // Array of URLs
         final mediaList = json['media_url'] as List;
         if (mediaList.isNotEmpty) {
-          mediaUrls = mediaList.map((e) {
-            if (e is String) return e;
-            if (e is Map && e['url'] != null) return e['url'].toString();
-            if (e is Map && e['media_url'] != null) return e['media_url'].toString();
-            return e.toString();
-          }).toList().cast<String>();
+          mediaUrls = mediaList
+              .map((e) {
+                if (e is String) return e;
+                if (e is Map && e['url'] != null) return e['url'].toString();
+                if (e is Map && e['media_url'] != null)
+                  return e['media_url'].toString();
+                return e.toString();
+              })
+              .toList()
+              .cast<String>();
         }
       }
     }
-    
+
     // Handle media_urls (separate field)
     if (json['media_urls'] != null && json['media_urls'] is List) {
       mediaUrls = List<String>.from(json['media_urls']);
     }
-    
+
     // Fallback: handle media field
     if (json['media'] != null && json['media'] is List) {
       final mediaList = json['media'] as List;
       if (mediaList.isNotEmpty) {
-        mediaUrls = mediaList.map((e) {
-          if (e is String) return e;
-          if (e is Map && e['url'] != null) return e['url'].toString();
-          if (e is Map && e['media_url'] != null) return e['media_url'].toString();
-          return e.toString();
-        }).toList().cast<String>();
+        mediaUrls = mediaList
+            .map((e) {
+              if (e is String) return e;
+              if (e is Map && e['url'] != null) return e['url'].toString();
+              if (e is Map && e['media_url'] != null)
+                return e['media_url'].toString();
+              return e.toString();
+            })
+            .toList()
+            .cast<String>();
       }
     }
-    
+
     if (json['guns'] != null) {
       guns = <Guns>[];
       json['guns'].forEach((v) {
@@ -87,6 +99,7 @@ class StationResponseModel {
     data['status'] = this.status;
     data['media_url'] = this.mediaUrl;
     data['media_urls'] = this.mediaUrls;
+    data['is_favourite'] = this.isFavourite;
     if (this.guns != null) {
       data['guns'] = this.guns!.map((v) => v.toJson()).toList();
     }
@@ -114,14 +127,15 @@ class Guns {
   String? type;
   String? price;
 
-  Guns(
-      {this.id,
-      this.chargerId,
-      this.status,
-      this.name,
-      this.maxPower,
-      this.type,
-      this.price});
+  Guns({
+    this.id,
+    this.chargerId,
+    this.status,
+    this.name,
+    this.maxPower,
+    this.type,
+    this.price,
+  });
 
   Guns.fromJson(Map<String, dynamic> json) {
     id = json['id'];
