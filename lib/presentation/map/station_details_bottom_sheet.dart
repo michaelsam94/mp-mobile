@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
+import 'package:mega_plus/presentation/map/qr_code_scanner_screen.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -213,7 +217,15 @@ class StationDetailsSheet extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 18),
-                  _buildImageCarousel(station),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      "assets/images/onboarding1.png",
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                   SizedBox(height: 18),
                   Row(
                     children: [
@@ -233,8 +245,8 @@ class StationDetailsSheet extends StatelessWidget {
                     children: [
                       Image.asset(
                         _getStationIconPath(station),
-                        width: 50,
-                        height: 50,
+                        width: 32,
+                        height: 32,
                       ),
                       SizedBox(width: 6),
                       Expanded(
@@ -297,19 +309,7 @@ class StationDetailsSheet extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   if (station.guns != null && station.guns!.isNotEmpty)
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
-                      ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: station.guns!.length,
-                        itemBuilder: (context, index) {
-                          return ConnectorCard(gun: station.guns![index]);
-                        },
-                      ),
-                    )
+                    ...station.guns!.map((gun) => ConnectorCard(gun: gun)).toList()
                   else
                     Padding(
                       padding: const EdgeInsets.all(16),
@@ -365,39 +365,34 @@ class StationDetailsSheet extends StatelessWidget {
     }
   }
 
-  /// Gets the appropriate station marker icon path based on AC/DC (ac_compatible) and status
+  /// Checks if station has at least one DC gun
+  bool _hasDCGun(StationResponseModel station) {
+    if (station.guns == null || station.guns!.isEmpty) return false;
+    return station.guns!.any((gun) {
+      final type = gun.type?.toUpperCase() ?? '';
+      return type.contains('CCS2') ||
+          type.contains('CHADEMO') ||
+          type.contains('TESLA') ||
+          type.contains('GB-T');
+    });
+  }
+
+  /// Gets the appropriate station icon path based on DC/AC and status
   String _getStationIconPath(StationResponseModel station) {
-    // If ac_compatible is true, it's AC, otherwise it's DC
-    final isAC = station.acCompatible ?? false;
+    final hasDC = _hasDCGun(station);
     final status = station.status?.toLowerCase() ?? 'available';
     
-    if (isAC) {
-      // AC marker icons
-      switch (status) {
-        case 'available':
-          return 'assets/icons/ac.png';
-        case 'unavailable':
-          return 'assets/icons/unavailable.png';
-        case 'inuse':
-        case 'in_use':
-          return 'assets/icons/use.png'; // AC in-use icon
-        default:
-          return 'assets/icons/ac.png';
-      }
+    String statusKey;
+    if (status == 'inuse' || status == 'in_use') {
+      statusKey = 'inuse';
+    } else if (status == 'unavailable') {
+      statusKey = hasDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
     } else {
-      // DC marker icons
-      switch (status) {
-        case 'available':
-          return 'assets/icons/dc_available.png';
-        case 'unavailable':
-          return 'assets/icons/dc_unavailable.png';
-        case 'inuse':
-        case 'in_use':
-          return 'assets/icons/dc_inuse.png';
-        default:
-          return 'assets/icons/dc_available.png';
-      }
+      statusKey = 'available';
     }
+    
+    final prefix = hasDC ? 'dc' : 'ac';
+    return 'assets/images/${prefix}_$statusKey.png';
   }
 
   String _formatStatus(String? status) {
@@ -452,170 +447,6 @@ class StationDetailsSheet extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildImageCarousel(StationResponseModel station) {
-    final imageUrls = station.imageUrls;
-    
-    // If no images, show placeholder
-    if (imageUrls.isEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          height: 120,
-          width: double.infinity,
-          color: Colors.grey[200],
-          child: Icon(
-            Icons.image_not_supported,
-            size: 50,
-            color: Colors.grey[400],
-          ),
-        ),
-      );
-    }
-
-    // If only one image, show it without carousel
-    if (imageUrls.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.network(
-          imageUrls.first,
-          height: 120,
-          width: double.infinity,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              height: 120,
-              width: double.infinity,
-              color: Colors.grey[200],
-              child: Icon(
-                Icons.image_not_supported,
-                size: 50,
-                color: Colors.grey[400],
-              ),
-            );
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              height: 120,
-              width: double.infinity,
-              color: Colors.grey[200],
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              ),
-            );
-          },
-        ),
-      );
-    }
-
-    // Multiple images - show carousel with indicators
-    return _ImageCarouselWidget(imageUrls: imageUrls);
-  }
-}
-
-class _ImageCarouselWidget extends StatefulWidget {
-  final List<String> imageUrls;
-
-  const _ImageCarouselWidget({required this.imageUrls});
-
-  @override
-  State<_ImageCarouselWidget> createState() => _ImageCarouselWidgetState();
-}
-
-class _ImageCarouselWidgetState extends State<_ImageCarouselWidget> {
-  late PageController _pageController;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: SizedBox(
-            height: 120,
-            width: double.infinity,
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              itemCount: widget.imageUrls.length,
-              itemBuilder: (context, index) {
-                return Image.network(
-                  widget.imageUrls[index],
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey[200],
-                      child: Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: Colors.grey[400],
-                      ),
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: Colors.grey[200],
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: 8),
-        // Point indicators
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.imageUrls.length, (index) {
-            return AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              margin: EdgeInsets.symmetric(horizontal: 4),
-              width: index == _currentPage ? 24 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: index == _currentPage
-                    ? AppColors.primary
-                    : Colors.grey[300],
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
 }
 
 class ConnectorCard extends StatelessWidget {
@@ -651,57 +482,6 @@ class ConnectorCard extends StatelessWidget {
     return 'assets/images/${prefix}_$statusKey.png';
   }
 
-  /// Formats connector status for display
-  String _formatConnectorStatus(String? status) {
-    if (status == null) return 'available';
-    final statusLower = status.toLowerCase();
-    if (statusLower == 'inuse' || statusLower == 'in_use') {
-      return 'inUse';
-    }
-    return statusLower;
-  }
-
-  /// Gets status badge widget for connector
-  Widget _getStatusBadge(String? status) {
-    final formattedStatus = _formatConnectorStatus(status);
-    Color colorBG;
-    Color colorText;
-    
-    switch (formattedStatus) {
-      case 'available':
-        colorText = Color(0xff058A3C);
-        colorBG = Color(0xffE6F9EE);
-        break;
-      case 'inUse':
-        colorText = Color(0xff1261FF);
-        colorBG = Color(0xffE8EFFF);
-        break;
-      case 'unavailable':
-        colorText = Color(0xffC31D07);
-        colorBG = Color(0xffFFEAE7);
-        break;
-      default:
-        colorText = Colors.grey.shade300;
-        colorBG = Colors.grey.shade300;
-    }
-    
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorBG,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        formattedStatus,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 12,
-          color: colorText,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -727,17 +507,9 @@ class ConnectorCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        gun.type ?? 'Unknown Type',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    _getStatusBadge(gun.status),
-                  ],
+                Text(
+                  gun.type ?? 'Unknown Type',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(height: 2),
                 Text(
@@ -753,6 +525,28 @@ class ConnectorCard extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF24C064),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 0,
+            ),
+            onPressed: () {
+              // Check if user is logged in (not in guest mode)
+              if (CacheHelper.checkLogin() != 3) {
+                GuestBottomSheet.show(context);
+                return;
+              }
+              context.goTo(QrCodeScannerScreen());
+            },
+            child: Text(
+              "Click to charge",
+              style: TextStyle(fontSize: 13, color: Colors.white),
             ),
           ),
         ],

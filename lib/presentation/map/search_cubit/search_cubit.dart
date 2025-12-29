@@ -16,11 +16,9 @@ class SearchCubit extends Cubit<SearchState> {
 
   List<StationResponseModel> stations = [];
   List<StationResponseModel> filteredStations = [];
-  List<StationResponseModel> allCachedStations = []; // Keep all cached stations for re-filtering
   List<MapStationResponseModel> nearbyStations = [];
   bool useCachedStations = false;
   String searchQuery = '';
-  bool wasShowingAllResults = false; // Track if we were showing all results before search
 
   // Filter variables
   String? filterStatus;
@@ -84,60 +82,12 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void searchStations(String query, {List<StationResponseModel>? cachedStations}) {
-    final previousQuery = searchQuery;
-    searchQuery = query.trim().toLowerCase();
+    searchQuery = query.toLowerCase();
     
-    // Check if filters are applied
-    bool hasFilters = filterStatus != null || 
-                     filterConnectorType != null || 
-                     filterMinimumPower != null || 
-                     filterFavouriteOnly;
-    
-    // If search query is empty (user cleared the search)
-    if (searchQuery.isEmpty) {
-      // If we were showing all results before search, restore that state
-      if (wasShowingAllResults && allCachedStations.isNotEmpty) {
-        stations = allCachedStations;
-        useCachedStations = true;
-        // Show all results (no filters, no search)
-        filteredStations = allCachedStations;
-        emit(SearchUpdatedState());
-        return;
-      }
-      
-      // If filters are applied, return to filtered results
-      if (hasFilters && allCachedStations.isNotEmpty) {
-        stations = allCachedStations; // Use all cached stations as base
-        useCachedStations = true;
-        applyFiltersAndSearch(); // Apply filters only (no search)
-        return;
-      } else {
-        // No filters and wasn't showing all results, return to nearby stations
-        useCachedStations = false;
-        filteredStations = [];
-        emit(SearchUpdatedState());
-        return;
-      }
-    }
-    
-    // Search query is not empty - track if we're starting a new search
-    if (previousQuery.isEmpty && searchQuery.isNotEmpty) {
-      // Starting a new search - remember the current state
-      wasShowingAllResults = useCachedStations && !hasFilters && filteredStations.isNotEmpty;
-    }
-    
-    // Search query is not empty
-    if (hasFilters && useCachedStations && allCachedStations.isNotEmpty) {
-      // Filters are applied, ensure we have all cached stations as base
-      stations = allCachedStations;
+    // If user starts searching and we have cached stations, switch to them
+    if (cachedStations != null && cachedStations.isNotEmpty && !useCachedStations) {
+      stations = cachedStations;
       useCachedStations = true;
-    } else {
-      // No filters applied, use all cached stations for searching
-      if (cachedStations != null && cachedStations.isNotEmpty) {
-        stations = cachedStations;
-        allCachedStations = cachedStations; // Store all cached stations
-        useCachedStations = true;
-      }
     }
     
     applyFiltersAndSearch();
@@ -155,25 +105,10 @@ class SearchCubit extends Cubit<SearchState> {
     filterFavouriteOnly = favouriteOnly ?? false;
     filterMinimumPower = minimumPower;
     
-    // Clear search query when filters are applied
-    searchQuery = '';
-    
-    // Check if all filters are cleared (reset filter case)
-    bool allFiltersCleared = status == null && 
-                            connectorType == null && 
-                            !(favouriteOnly ?? false) && 
-                            minimumPower == null;
-    
-    // Always use all cached stations when applying filters
-    if (cachedStations != null && cachedStations.isNotEmpty) {
-      stations = cachedStations; // Update with all cached stations
-      allCachedStations = cachedStations; // Store all cached stations for later use
+    // If applying filters and we have cached stations, switch to them
+    if (cachedStations != null && cachedStations.isNotEmpty && !useCachedStations) {
+      stations = cachedStations;
       useCachedStations = true;
-      
-      // If all filters are cleared, mark that we're showing all results
-      if (allFiltersCleared) {
-        wasShowingAllResults = true;
-      }
     }
     
     applyFiltersAndSearch();
@@ -196,82 +131,78 @@ class SearchCubit extends Cubit<SearchState> {
       return;
     }
 
-    // Check if filters are applied
-    bool hasFilters = filterStatus != null || 
-                     filterConnectorType != null || 
-                     filterMinimumPower != null || 
-                     filterFavouriteOnly;
-    
-    // If filters are applied and user is searching, search within the filtered results
-    // First apply filters to get filtered results, then apply search on top
-    List<StationResponseModel> stationsToFilter = stations;
-    
-    // Apply filters first
-    if (hasFilters) {
-      stationsToFilter = stations.where((station) {
-        // Status filter
-        bool matchesStatus =
-            filterStatus == null || station.status == filterStatus;
-
-        // Connector Type filter
-        bool matchesConnectorType = filterConnectorType == null;
-        if (!matchesConnectorType && station.guns != null && station.guns!.isNotEmpty) {
-          if (filterConnectorType == 'DC') {
-            matchesConnectorType = station.guns!.any((gun) {
-              final type = gun.type?.toUpperCase() ?? '';
-              return type.contains('CCS2') || 
-                     type.contains('TESLA') || 
-                     type.contains('CHADEMO') ||
-                     type.contains('GB-T');
-            });
-          } else if (filterConnectorType == 'AC') {
-            matchesConnectorType = station.guns!.any((gun) {
-              final type = gun.type?.toUpperCase() ?? '';
-              return type.contains('AC');
-            });
-          } else {
-            matchesConnectorType = station.guns!.any(
-              (gun) => gun.type?.toUpperCase().contains(filterConnectorType!.toUpperCase()) ?? false,
-            );
-          }
-        }
-
-        // Minimum Power filter
-        bool matchesPower = filterMinimumPower == null;
-        if (!matchesPower && station.guns != null && station.guns!.isNotEmpty) {
-          double? minPowerValue = double.tryParse(
-            filterMinimumPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
-          );
-          
-          if (minPowerValue != null) {
-            matchesPower = station.guns!.any((gun) {
-              if (gun.maxPower == null || gun.maxPower!.isEmpty) {
-                return false;
-              }
-              
-              double? gunPower = double.tryParse(
-                gun.maxPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
-              );
-              
-              return gunPower != null && gunPower >= minPowerValue;
-            });
-          }
-        }
-
-        return matchesStatus && matchesConnectorType && matchesPower;
-      }).toList();
-    }
-    
-    // Now apply search on the filtered results (or all stations if no filters)
-    filteredStations = stationsToFilter.where((station) {
-      // Search filter - only apply if search query is not empty
+    filteredStations = stations.where((station) {
+      // Search filter
       bool matchesSearch =
           searchQuery.isEmpty ||
           (station.name?.toLowerCase().contains(searchQuery) ?? false) ||
           (station.address?.toLowerCase().contains(searchQuery) ?? false) ||
           (station.city?.toLowerCase().contains(searchQuery) ?? false);
 
-      return matchesSearch;
+      // Status filter
+      bool matchesStatus =
+          filterStatus == null || station.status == filterStatus;
+
+      // Connector Type filter
+      bool matchesConnectorType = filterConnectorType == null;
+      if (!matchesConnectorType && station.guns != null && station.guns!.isNotEmpty) {
+        if (filterConnectorType == 'DC') {
+          // DC connectors: CCS2 / GB-T, Tesla, CHAdeMO, CCS2
+          matchesConnectorType = station.guns!.any((gun) {
+            final type = gun.type?.toUpperCase() ?? '';
+            return type.contains('CCS2') || 
+                   type.contains('TESLA') || 
+                   type.contains('CHADEMO') ||
+                   type.contains('GB-T');
+          });
+        } else if (filterConnectorType == 'AC') {
+          // AC connectors: AC-Type-2 or any type containing AC
+          matchesConnectorType = station.guns!.any((gun) {
+            final type = gun.type?.toUpperCase() ?? '';
+            return type.contains('AC');
+          });
+        } else {
+          // For other filters, check if type contains the filter string
+          matchesConnectorType = station.guns!.any(
+            (gun) => gun.type?.toUpperCase().contains(filterConnectorType!.toUpperCase()) ?? false,
+          );
+        }
+      }
+
+      // Favourite filter (assuming you have a favourite field)
+      // bool matchesFavourite = !filterFavouriteOnly || station.isFavourite == true;
+
+      // Minimum Power filter
+      bool matchesPower = filterMinimumPower == null;
+      if (!matchesPower && station.guns != null && station.guns!.isNotEmpty) {
+        // Parse the minimum power from filter (e.g., "7kw" -> 7.0)
+        double? minPowerValue = double.tryParse(
+          filterMinimumPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
+        );
+        
+        if (minPowerValue != null) {
+          // Check if any gun has maxPower >= minimum power
+          matchesPower = station.guns!.any((gun) {
+            if (gun.maxPower == null || gun.maxPower!.isEmpty) {
+              return false; // Skip guns with no power info
+            }
+            
+            // Parse the gun's max power (e.g., "23.00" -> 23.0)
+            double? gunPower = double.tryParse(
+              gun.maxPower!.replaceAll('kw', '').replaceAll('KW', '').trim(),
+            );
+            
+            // Return true if gun power is valid and >= minimum power
+            return gunPower != null && gunPower >= minPowerValue;
+          });
+        }
+      }
+
+      return matchesSearch &&
+          matchesStatus &&
+          matchesConnectorType &&
+          // matchesFavourite &&
+          matchesPower;
     }).toList();
 
     emit(SearchUpdatedState());
@@ -279,25 +210,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   void clearSearch() {
     searchQuery = '';
-    // Reset to nearby stations when search is cleared
-    useCachedStations = false;
-    filteredStations = [];
-    getStations(); // Reload nearby stations
-  }
-
-  void resetSearchState() {
-    // Reset all search and filter state
-    searchQuery = '';
-    useCachedStations = false;
-    filteredStations = [];
-    stations = [];
-    nearbyStations = [];
-    filterStatus = null;
-    filterConnectorType = null;
-    filterFavouriteOnly = false;
-    filterMinimumPower = null;
-    wasShowingAllResults = false;
-    emit(SearchInitial());
+    applyFiltersAndSearch();
   }
 
   void clearFilters() {
@@ -305,43 +218,53 @@ class SearchCubit extends Cubit<SearchState> {
     filterConnectorType = null;
     filterFavouriteOnly = false;
     filterMinimumPower = null;
-    // When filters are cleared, show all results
-    wasShowingAllResults = true;
     applyFiltersAndSearch();
   }
 
-  // Get the appropriate icon path for a station based on AC/DC (ac_compatible) and status
+  void resetSearchState() {
+    searchQuery = '';
+    filterStatus = null;
+    filterConnectorType = null;
+    filterFavouriteOnly = false;
+    filterMinimumPower = null;
+    useCachedStations = false;
+    filteredStations = [];
+    stations = [];
+    emit(SearchInitial());
+  }
+
+  // Check if station has at least one DC connector
+  // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
+  bool hasDCConnector(StationResponseModel station) {
+    if (station.guns == null || station.guns!.isEmpty) return false;
+    return station.guns!.any((gun) {
+      final type = gun.type?.toUpperCase() ?? '';
+      return type.contains('CCS2') || 
+             type.contains('TESLA') || 
+             type.contains('CHADEMO') ||
+             type.contains('GB-T');
+    });
+  }
+
+  // Get the appropriate icon path for a station based on status and DC connector presence
   String getStationIconPath(StationResponseModel station) {
-    // If ac_compatible is true, it's AC, otherwise it's DC
-    final isAC = station.acCompatible ?? false;
-    final status = station.status?.toLowerCase() ?? 'available';
+    String status = station.status ?? 'available';
+    bool isDC = hasDCConnector(station);
     
-    if (isAC) {
-      // AC marker icons
-      switch (status) {
-        case 'available':
-          return 'assets/icons/ac.png';
-        case 'unavailable':
-          return 'assets/icons/unavailable.png';
-        case 'inuse':
-        case 'in_use':
-          return 'assets/icons/use.png'; // AC in-use icon
-        default:
-          return 'assets/icons/ac.png';
-      }
-    } else {
-      // DC marker icons
+    if (isDC) {
       switch (status) {
         case 'available':
           return 'assets/icons/dc_available.png';
         case 'unavailable':
           return 'assets/icons/dc_unavailable.png';
-        case 'inuse':
-        case 'in_use':
+        case 'inUse':
           return 'assets/icons/dc_inuse.png';
         default:
           return 'assets/icons/dc_available.png';
       }
+    } else {
+      // For non-DC stations, use the regular AC icon
+      return 'assets/icons/ac.png';
     }
   }
 }

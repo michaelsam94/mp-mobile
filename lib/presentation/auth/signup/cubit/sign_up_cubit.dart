@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
@@ -178,6 +179,21 @@ class SignUpCubit extends Cubit<SignUpState> {
     emit(LoadingCreateAccountState());
 
     try {
+      // Get Firebase Cloud Messaging token
+      String? deviceToken;
+      try {
+        deviceToken = await FirebaseMessaging.instance.getToken();
+        if (kDebugMode) {
+          print('FCM Token: $deviceToken');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error getting FCM token: $e');
+        }
+        // Continue with registration even if token retrieval fails
+        deviceToken = null;
+      }
+
       var response = await DioHelper.postData(
         url: EndPoints.register,
         data: FormData.fromMap({
@@ -186,7 +202,7 @@ class SignUpCubit extends Cubit<SignUpState> {
           "mobile_number": phone,
           "country_code": countryCode,
           "full_name": name,
-          "device_token": "device_token",
+          "device_token": deviceToken ?? "",
           "media": imageFile == null
               ? null
               : await MultipartFile.fromFile(imageFile.path),
