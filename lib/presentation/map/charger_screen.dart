@@ -840,10 +840,20 @@ class _ChargerScreenState extends State<ChargerScreen> {
               );
 
               if (confirmed == true) {
+                final webSocketCubit = context.read<WebSocketCubit>();
+                
+                // Use charger serial number if available (from loaded session), otherwise use charger_id
+                final chargerId = webSocketCubit.chargerSerialNumber ?? 
+                                 meterData?.chargerId.toString() ?? "";
+                
+                // Use charger_id_prefix if available (from loaded session), otherwise use connector_id from meterData
+                final connectorId = webSocketCubit.chargerIdPrefix ?? 
+                                   meterData?.connectorId.toString() ?? "";
+                
                 context.read<ChargingCubit>().stopCharging(
-                  meterData?.chargerId.toString() ?? "",
+                  chargerId,
                   transactionId ?? "",
-                  meterData?.connectorId.toString() ?? "",
+                  connectorId,
                 );
               }
             } catch (e, stackTrace) {

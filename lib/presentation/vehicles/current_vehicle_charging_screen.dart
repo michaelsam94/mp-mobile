@@ -430,9 +430,16 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
     if (!vehicle.isCharging || vehicle.chargingSession == null) return;
 
     final session = vehicle.chargingSession!;
-    final chargerId = session.chargerId?.toString() ?? "";
+    
+    // Use charger serial_number if available (from loaded session), otherwise use charger_id
+    final chargerId = session.charger?.serialNumber ?? 
+                     session.chargerId?.toString() ?? "";
+    
+    // Use charger_id_prefix if available, otherwise use connector_id
+    final connectorId = session.chargerIdPrefix ?? 
+                        session.connectorId ?? "";
+    
     final transactionId = session.transactionId ?? "";
-    final connectorId = session.connectorId ?? "";
 
     if (chargerId.isEmpty || transactionId.isEmpty || connectorId.isEmpty) {
       context.showErrorMessage("Missing charging session data");

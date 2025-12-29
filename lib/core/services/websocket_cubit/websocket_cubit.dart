@@ -18,11 +18,15 @@ class WebSocketCubit extends Cubit<WebSocketState> {
   String? _currentTransactionId;
   bool _isCompletedSession = false;
   int? _completedSessionId;
+  String? _chargerSerialNumber; // Store charger serial number from loaded session
+  String? _chargerIdPrefix; // Store charger_id_prefix for connector_id
 
   MeterValueData? get currentMeterData => _currentMeterData;
   String? get currentTransactionId => _currentTransactionId;
   bool get isCompletedSession => _isCompletedSession;
   int? get completedSessionId => _completedSessionId;
+  String? get chargerSerialNumber => _chargerSerialNumber;
+  String? get chargerIdPrefix => _chargerIdPrefix;
 
   WebSocketCubit(this.service) : super(WebSocketInitial()) {
     service.setMessageHandler(_handleMessage);
@@ -44,6 +48,12 @@ class WebSocketCubit extends Cubit<WebSocketState> {
     try {
       // Convert API response to MeterValueData format
       final station = apiResponse['station'] as Map<String, dynamic>? ?? {};
+      final charger = apiResponse['charger'] as Map<String, dynamic>? ?? {};
+      
+      // Store charger serial number and charger_id_prefix for stop charging
+      _chargerSerialNumber = charger['serial_number']?.toString();
+      _chargerIdPrefix = apiResponse['charger_id_prefex']?.toString() ?? 
+                        apiResponse['charger_id_prefix']?.toString(); // Handle typo in API
       
       // Create meter data from API response
       final meterDataJson = {
@@ -110,6 +120,9 @@ class WebSocketCubit extends Cubit<WebSocketState> {
           // Reset completed session flag when receiving new meter values (active session)
           _isCompletedSession = false;
           _completedSessionId = null;
+          // Reset charger serial number when receiving live updates (not from loaded session)
+          _chargerSerialNumber = null;
+          _chargerIdPrefix = null;
         }
         emit(SessionUpdate(parsedMessage));
       } else {

@@ -44,6 +44,8 @@ class ChargingSession {
   String? sessionId;
   String? connectorId;
   bool? stopCharging;
+  String? chargerIdPrefix; // charger_id_prefex from API
+  ChargerData? charger; // Full charger data if available
 
   ChargingSession({
     this.id,
@@ -53,6 +55,8 @@ class ChargingSession {
     this.sessionId,
     this.connectorId,
     this.stopCharging,
+    this.chargerIdPrefix,
+    this.charger,
   });
 
   ChargingSession.fromJson(Map<String, dynamic> json) {
@@ -63,6 +67,9 @@ class ChargingSession {
     sessionId = json['session_id']?.toString();
     connectorId = json['connector_id']?.toString();
     stopCharging = json['stop_charging'];
+    chargerIdPrefix = json['charger_id_prefex']?.toString() ?? 
+                      json['charger_id_prefix']?.toString(); // Handle typo in API
+    charger = json['charger'] != null ? ChargerData.fromJson(json['charger']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -74,6 +81,32 @@ class ChargingSession {
     data['session_id'] = sessionId;
     data['connector_id'] = connectorId;
     data['stop_charging'] = stopCharging;
+    data['charger_id_prefex'] = chargerIdPrefix;
+    if (charger != null) {
+      data['charger'] = charger!.toJson();
+    }
+    return data;
+  }
+}
+
+class ChargerData {
+  int? id;
+  String? serialNumber;
+
+  ChargerData({
+    this.id,
+    this.serialNumber,
+  });
+
+  ChargerData.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    serialNumber = json['serial_number']?.toString();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['serial_number'] = serialNumber;
     return data;
   }
 }
