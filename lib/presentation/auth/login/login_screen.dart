@@ -75,9 +75,9 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                   ),
                   SizedBox(height: 40),
 
-                  // Email / Name
+                  // Email / Phone
                   Text(
-                    'Name / E-mail',
+                    'Phone / E-mail',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
@@ -90,7 +90,7 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: 'name or e-mail',
+                      hintText: 'Phone or e-mail',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(11),
                         borderSide: const BorderSide(color: Colors.black12),
@@ -101,9 +101,8 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                     validator: (value) {
                       final text = value?.trim() ?? '';
                       if (text.isEmpty) {
-                        return 'Please enter your name or email';
+                        return 'Please enter your phone or email';
                       }
-                      // لو عايز تفرّق بين name و email
                       if (text.contains('@')) {
                         final emailRegex = RegExp(
                           r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,4}$',
@@ -296,7 +295,9 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const MainScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const MainScreen(),
+                          ),
                           (route) => false,
                         );
                       },
@@ -319,8 +320,6 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                       Expanded(child: Divider(color: Color(0xffE7E7E7))),
                     ],
                   ),
-
-                  
 
                   Center(
                     child: TextButton(
