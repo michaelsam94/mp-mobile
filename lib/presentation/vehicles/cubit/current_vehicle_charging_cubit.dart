@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
@@ -24,9 +25,24 @@ class CurrentVehicleChargingCubit extends Cubit<CurrentVehicleChargingState> {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
+        if (kDebugMode) {
+          print("Parsing ${data.length} vehicles from API");
+        }
         vehicles = data
-            .map((e) => VehicleChargingResponseModel.fromJson(e))
+            .map((e) {
+              if (kDebugMode) {
+                print("Vehicle data: $e");
+                print("Charging session type: ${e['charging_session'].runtimeType}");
+              }
+              return VehicleChargingResponseModel.fromJson(e);
+            })
             .toList();
+        if (kDebugMode) {
+          print("Parsed ${vehicles.length} vehicles successfully");
+          for (var vehicle in vehicles) {
+            print("Vehicle ${vehicle.id}: isCharging=${vehicle.isCharging}, chargingSession=${vehicle.chargingSession != null}");
+          }
+        }
         emit(SuccessCurrentVehicleChargingState());
       } else {
         emit(ErrorCurrentVehicleChargingState(

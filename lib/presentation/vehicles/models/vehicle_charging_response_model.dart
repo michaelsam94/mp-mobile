@@ -15,11 +15,16 @@ class VehicleChargingResponseModel {
     id = json['id'];
     plateNumber = json['plate_number'];
     carModel = json['car_model'];
-    chargingSession = json['charging_session'] != null && 
-                      json['charging_session'] is Map &&
-                      (json['charging_session'] as Map).isNotEmpty
-        ? ChargingSession.fromJson(json['charging_session'])
-        : null;
+    // Handle charging_session: can be null, empty array [], or an object
+    final chargingSessionData = json['charging_session'];
+    if (chargingSessionData != null && 
+        chargingSessionData is Map && 
+        chargingSessionData.isNotEmpty) {
+      chargingSession = ChargingSession.fromJson(Map<String, dynamic>.from(chargingSessionData));
+    } else {
+      // If it's null, empty array, or empty object, set to null
+      chargingSession = null;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -38,7 +43,7 @@ class VehicleChargingResponseModel {
 
 class ChargingSession {
   int? id;
-  int? chargerId;
+  String? chargerId; // Changed to String since API returns serial number as string
   String? transactionId;
   String? currentBatteryPercentage;
   String? sessionId;
@@ -61,7 +66,8 @@ class ChargingSession {
 
   ChargingSession.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    chargerId = json['charger_id'];
+    // charger_id can be string (serial number) or int, convert to string
+    chargerId = json['charger_id']?.toString();
     transactionId = json['transaction_id']?.toString();
     currentBatteryPercentage = json['current_battery_percentage']?.toString();
     sessionId = json['session_id']?.toString();
