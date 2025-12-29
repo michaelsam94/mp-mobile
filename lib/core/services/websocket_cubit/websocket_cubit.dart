@@ -43,6 +43,18 @@ class WebSocketCubit extends Cubit<WebSocketState> {
     service.disconnect();
   }
 
+  // Clear meter data when starting a new session
+  void clearMeterData() {
+    _currentMeterData = null;
+    _currentTransactionId = null;
+    _isCompletedSession = false;
+    _completedSessionId = null;
+    _chargerSerialNumber = null;
+    _chargerIdPrefix = null;
+    // Emit initial state to trigger UI update (show shimmer)
+    emit(WebSocketInitial());
+  }
+
   // Initialize meter data from API response (when navigating from history)
   void initializeMeterDataFromApi(Map<String, dynamic> apiResponse, {bool isCompleted = false, int? sessionId}) {
     try {

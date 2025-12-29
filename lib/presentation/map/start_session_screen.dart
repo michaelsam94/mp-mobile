@@ -46,6 +46,8 @@ class StartSessionScreen extends StatelessWidget {
                 context.goTo(TopUpScreen());
               }
             } else if (state is ChargingSuccess) {
+              // Clear old meter data when starting a new session
+              context.read<WebSocketCubit>().clearMeterData();
               // Navigate to ChargerScreen only on success
               if (context.mounted) {
                 context.goOff(ChargerScreen());

@@ -124,35 +124,38 @@ class _ChargerScreenState extends State<ChargerScreen> {
             stoppedData = state.data.stoppedData!;
             meterData = context.read<WebSocketCubit>().currentMeterData;
           } else {
-            // Check for current meter data from WebSocketCubit (e.g., when initialized from API)
-            final webSocketCubit = context.read<WebSocketCubit>();
-            final currentMeterData = webSocketCubit.currentMeterData;
-            if (currentMeterData != null) {
-              meterData = currentMeterData;
-              transactionId = webSocketCubit.currentTransactionId;
+            // Only use current meter data if we're in a connected state and have valid data
+            // Don't show old data when starting a new session (state is WebSocketInitial)
+            if (state is! WebSocketInitial) {
+              final webSocketCubit = context.read<WebSocketCubit>();
+              final currentMeterData = webSocketCubit.currentMeterData;
+              if (currentMeterData != null) {
+                meterData = currentMeterData;
+                transactionId = webSocketCubit.currentTransactionId;
+              }
             }
           }
 
-          // Show shimmer if no meter data yet (initial loading state)
+          // Show shimmer if no meter data yet (initial loading state or new session)
           if (meterData == null) {
             return _buildShimmerLoading();
           }
 
           return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                children: [
-                  _buildStationInfo(meterData),
-                  SizedBox(height: 24),
-                  _buildChargeProgress(meterData),
-                  SizedBox(height: 28),
-                  _buildInfoTiles(meterData),
-                  SizedBox(height: 24),
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                _buildStationInfo(meterData),
+                SizedBox(height: 24),
+                _buildChargeProgress(meterData),
+                SizedBox(height: 28),
+                _buildInfoTiles(meterData),
+                SizedBox(height: 24),
 
-                  _buildActionButton(context, state, meterData, transactionId),
-                ],
-              ),
+                _buildActionButton(context, state, meterData, transactionId),
+                SizedBox(height: 20), // Extra padding at bottom for better scrolling
+              ],
             ),
           );
         },
@@ -411,8 +414,13 @@ class _ChargerScreenState extends State<ChargerScreen> {
     }
     
     // Show stop button for active sessions
-    if (state is SessionUpdate && state.data.isMeterValue) {
-      return _buildStopButton(meterData, transactionId);
+    // Check if we have meter data from current state or from WebSocketCubit
+    final currentMeterData = meterData ?? webSocketCubit.currentMeterData;
+    final currentTransactionId = transactionId ?? webSocketCubit.currentTransactionId;
+    
+    // Show stop button if we have meter data (active session)
+    if (currentMeterData != null && currentTransactionId != null && currentTransactionId.isNotEmpty) {
+      return _buildStopButton(currentMeterData, currentTransactionId);
     }
     
     return SizedBox();
