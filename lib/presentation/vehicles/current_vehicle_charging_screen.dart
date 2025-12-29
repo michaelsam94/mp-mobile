@@ -86,7 +86,18 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                   final vehicles = cubit.vehicles;
 
                   if (vehicles.isEmpty) {
-                    return _buildEmptyState();
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await cubit.getVehiclesCharging();
+                      },
+                      child: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 200,
+                          child: _buildEmptyState(),
+                        ),
+                      ),
+                    );
                   }
 
                   return RefreshIndicator(
@@ -94,6 +105,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                       await cubit.getVehiclesCharging();
                     },
                     child: ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.all(16),
                       itemCount: vehicles.length,
                       itemBuilder: (context, index) {

@@ -71,13 +71,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase with error handling
+  bool firebaseInitialized = false;
   try {
     await Firebase.initializeApp();
+    firebaseInitialized = true;
   } catch (e) {
     if (kDebugMode) {
       print('Firebase initialization error: $e');
       print('App will continue without Firebase features');
     }
+    firebaseInitialized = false;
   }
 
   // Initialize other services
@@ -151,75 +154,87 @@ void main() async {
     // Continue without local notifications - Firebase will handle background notifications
   }
 
-  // Set up Firebase Messaging
-  final messaging = FirebaseMessaging.instance;
+  // Set up Firebase Messaging only if Firebase is initialized
+  if (firebaseInitialized) {
+    try {
+      final messaging = FirebaseMessaging.instance;
 
-  // Request notification permissions
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+      // Request notification permissions
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
 
-  if (kDebugMode) {
-    print('Notification permission status: ${settings.authorizationStatus}');
-  }
-
-  // Set up background message handler
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Handle foreground messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (kDebugMode) {
-      print('Received foreground message: ${message.messageId}');
-      print('Message data: ${message.data}');
-      print('Message notification: ${message.notification?.title}');
-      print('Message notification body: ${message.notification?.body}');
-    }
-    // Show local notification for foreground messages
-    _showLocalNotification(message);
-  });
-
-  // Handle notification taps when app is in background
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (kDebugMode) {
-      print('Notification opened app: ${message.messageId}');
-      print('Message data: ${message.data}');
-    }
-    // Handle navigation based on notification data
-  });
-
-  // Check if app was opened from a terminated state via notification
-  RemoteMessage? initialMessage = await messaging.getInitialMessage();
-  if (initialMessage != null) {
-    if (kDebugMode) {
-      print('App opened from terminated state via notification: ${initialMessage.messageId}');
-      print('Message data: ${initialMessage.data}');
-    }
-    // Handle navigation based on notification data
-  }
-
-  // Get and log Firebase token
-  try {
-    final token = await messaging.getToken();
-    if (kDebugMode) {
-      print('Firebase Token: $token');
-    }
-
-    // Listen for token refresh
-    messaging.onTokenRefresh.listen((newToken) {
       if (kDebugMode) {
-        print('Firebase Token refreshed: $newToken');
+        print('Notification permission status: ${settings.authorizationStatus}');
       }
-      // You can send the new token to your server here
-    });
-  } catch (e) {
+
+      // Set up background message handler
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+      // Handle foreground messages
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        if (kDebugMode) {
+          print('Received foreground message: ${message.messageId}');
+          print('Message data: ${message.data}');
+          print('Message notification: ${message.notification?.title}');
+          print('Message notification body: ${message.notification?.body}');
+        }
+        // Show local notification for foreground messages
+        _showLocalNotification(message);
+      });
+
+      // Handle notification taps when app is in background
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        if (kDebugMode) {
+          print('Notification opened app: ${message.messageId}');
+          print('Message data: ${message.data}');
+        }
+        // Handle navigation based on notification data
+      });
+
+      // Check if app was opened from a terminated state via notification
+      RemoteMessage? initialMessage = await messaging.getInitialMessage();
+      if (initialMessage != null) {
+        if (kDebugMode) {
+          print('App opened from terminated state via notification: ${initialMessage.messageId}');
+          print('Message data: ${initialMessage.data}');
+        }
+        // Handle navigation based on notification data
+      }
+
+      // Get and log Firebase token
+      try {
+        final token = await messaging.getToken();
+        if (kDebugMode) {
+          print('Firebase Token: $token');
+        }
+
+        // Listen for token refresh
+        messaging.onTokenRefresh.listen((newToken) {
+          if (kDebugMode) {
+            print('Firebase Token refreshed: $newToken');
+          }
+          // You can send the new token to your server here
+        });
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error getting Firebase token: $e');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error setting up Firebase Messaging: $e');
+      }
+    }
+  } else {
     if (kDebugMode) {
-      print('Error getting Firebase token: $e');
+      print('Firebase Messaging skipped - Firebase not initialized');
     }
   }
 
