@@ -10,6 +10,7 @@ import 'package:mega_plus/presentation/map/search_cubit/search_cubit.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
+import 'package:mega_plus/presentation/vehicles/cubit/current_vehicle_charging_cubit.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'core/style/app_themes.dart';
 import 'presentation/start/splash_screen.dart';
@@ -29,6 +30,7 @@ class AppRoot extends StatelessWidget {
         BlocProvider(create: (context) => SignUpCubit()),
         BlocProvider(create: (context) => ProfileCubit()),
         BlocProvider(create: (context) => VehiclesCubit()),
+        BlocProvider(create: (context) => CurrentVehicleChargingCubit()),
         BlocProvider(create: (context) => WalletCubit()),
         BlocProvider(create: (context) => ChargingCubit()),
         BlocProvider(create: (context) => WebSocketCubit(WebSocketService())),

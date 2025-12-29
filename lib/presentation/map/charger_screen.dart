@@ -843,6 +843,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                 context.read<ChargingCubit>().stopCharging(
                   meterData?.chargerId.toString() ?? "",
                   transactionId ?? "",
+                  meterData?.connectorId.toString() ?? "",
                 );
               }
             } catch (e, stackTrace) {
