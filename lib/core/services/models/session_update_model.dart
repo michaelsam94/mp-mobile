@@ -84,6 +84,8 @@ class MeterValueData extends SessionData {
   final dynamic stationId;
   final String? stationName;
   final String? stationAddress;
+  final String? stationStatus;
+  final bool? acCompatible;
   final dynamic chargePercentage;
   final dynamic timeRemaining;
   final String? timeRemainingDisplay;
@@ -108,6 +110,8 @@ class MeterValueData extends SessionData {
     required this.stationId,
     this.stationName,
     this.stationAddress,
+    this.stationStatus,
+    this.acCompatible,
     this.chargePercentage,
     this.timeRemaining,
     this.timeRemainingDisplay,
@@ -133,6 +137,8 @@ class MeterValueData extends SessionData {
       stationId: json['station_id'],
       stationName: json['station_name'] as String?,
       stationAddress: json['station_address'] as String?,
+      stationStatus: json['station_status'] as String?,
+      acCompatible: json['ac_compatible'] as bool?,
       chargePercentage: json['charge_percentage'],
       timeRemaining: json['time_remaining'],
       timeRemainingDisplay: json['time_remaining_display'] as String?,

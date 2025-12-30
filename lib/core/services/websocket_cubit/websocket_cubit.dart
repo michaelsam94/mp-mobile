@@ -42,39 +42,51 @@ class WebSocketCubit extends Cubit<WebSocketState> {
   // Initialize meter data from API response (when navigating from history)
   void initializeMeterDataFromApi(Map<String, dynamic> apiResponse, {bool isCompleted = false, int? sessionId}) {
     try {
-      // Convert API response to MeterValueData format
-      final station = apiResponse['station'] as Map<String, dynamic>? ?? {};
+      // Extract data from API response - handle both old and new formats
+      Map<String, dynamic> data;
+      if (apiResponse.containsKey('data') && apiResponse['data'] is Map) {
+        // New format: response has 'data' wrapper
+        data = apiResponse['data'] as Map<String, dynamic>;
+      } else {
+        // Old format: data is directly in apiResponse
+        data = apiResponse;
+      }
+      
+      // Handle nested station object (old format) or direct fields (new format)
+      final station = data['station'] as Map<String, dynamic>?;
       
       // Create meter data from API response
       final meterDataJson = {
-        'charger_id': apiResponse['charger_id']?.toString() ?? '',
-        'connector_id': apiResponse['gun_id']?.toString() ?? '',
-        'station_id': apiResponse['station_id']?.toString() ?? '',
-        'station_name': station['name']?.toString() ?? '',
-        'station_address': station['address']?.toString() ?? '',
-        'charge_percentage': apiResponse['current_battery_percentage']?.toString() ?? '0',
-        'energy_consumed': apiResponse['kwh']?.toString() ?? '0',
+        'charger_id': data['charger_id']?.toString() ?? '',
+        'connector_id': data['connector_id']?.toString() ?? data['gun_id']?.toString() ?? '',
+        'station_id': data['station_id']?.toString() ?? '',
+        'station_name': data['station_name']?.toString() ?? station?['name']?.toString() ?? '',
+        'station_address': data['address']?.toString() ?? data['station_address']?.toString() ?? station?['address']?.toString() ?? '',
+        'station_status': data['station_status']?.toString(),
+        'ac_compatible': data['ac_compatible'] ?? station?['ac_compatible'] ?? true,
+        'charge_percentage': data['current_percentage']?.toString() ?? data['current_battery_percentage']?.toString() ?? '0',
+        'energy_consumed': data['power_consumtion']?.toString() ?? data['power_consumption']?.toString() ?? data['kwh']?.toString() ?? '0',
         'energy_consumed_unit': 'kWh',
-        'cost': apiResponse['cost']?.toString() ?? '0',
+        'cost': data['cost']?.toString() ?? '0',
         'cost_currency': 'EGP',
-        'charging_duration': apiResponse['duration']?.toString() ?? '0 hr 0 min',
-        'charging_duration_display': apiResponse['duration']?.toString() ?? '0 hr 0 min',
-        'output_power': null, // Not available in API response
+        'charging_duration': data['duration']?.toString() ?? '0 hr 0 min',
+        'charging_duration_display': data['duration']?.toString() ?? '0 hr 0 min',
+        'output_power': data['output']?.toString() ?? data['output_power']?.toString(),
         'output_power_unit': 'kW',
         'timestamp': DateTime.now().toIso8601String(),
       };
 
       final meterData = MeterValueData.fromJson(meterDataJson);
       _currentMeterData = meterData;
-      _currentTransactionId = apiResponse['transaction_id']?.toString();
+      _currentTransactionId = data['transaction_id']?.toString();
       _isCompletedSession = isCompleted;
-      _completedSessionId = sessionId;
+      _completedSessionId = sessionId ?? data['id'];
 
       // Create a SessionUpdate event to trigger UI update
       final sessionUpdate = SessionUpdateModel(
         type: 'session_update',
-        sessionId: apiResponse['session_id']?.toString() ?? '',
-        transactionId: apiResponse['transaction_id']?.toString() ?? '0',
+        sessionId: data['id']?.toString() ?? data['session_id']?.toString() ?? '',
+        transactionId: data['transaction_id']?.toString() ?? '0',
         event: 'meter_value',
         data: meterData,
         timestamp: DateTime.now().toIso8601String(),

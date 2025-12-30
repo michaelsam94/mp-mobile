@@ -645,7 +645,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(
-            "assets/icons/ac.png",
+            _getStationIcon(meterData),
             width: 32,
             height: 40,
             fit: BoxFit.cover,
@@ -671,17 +671,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               ],
             ),
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Color(0xffE6F9EE),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              "Available",
-              style: TextStyle(color: Color(0xff058A3C)),
-            ),
-          ),
+          _buildStationStatusBadge(meterData?.stationStatus),
         ],
       ),
     );
@@ -941,6 +931,76 @@ class _ChargerScreenState extends State<ChargerScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildStationStatusBadge(String? status) {
+    // Default to "Available" if status is null or empty
+    final statusText = status?.toLowerCase() ?? 'available';
+    
+    Color backgroundColor;
+    Color textColor;
+    String displayText;
+
+    switch (statusText) {
+      case 'available':
+        backgroundColor = Color(0xffE6F9EE);
+        textColor = Color(0xff058A3C);
+        displayText = 'Available';
+        break;
+      case 'unavailable':
+        backgroundColor = Color(0xffFEE2E2);
+        textColor = Color(0xffDC2626);
+        displayText = 'Unavailable';
+        break;
+      case 'in_use':
+      case 'inuse':
+        backgroundColor = Color(0xffFEF3C7);
+        textColor = Color(0xffD97706);
+        displayText = 'In Use';
+        break;
+      default:
+        backgroundColor = Color(0xffE6F9EE);
+        textColor = Color(0xff058A3C);
+        displayText = status?.replaceAll('_', ' ').split(' ').map((word) => 
+          word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1)
+        ).join(' ') ?? 'Available';
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        displayText,
+        style: TextStyle(color: textColor),
+      ),
+    );
+  }
+
+  String _getStationIcon(MeterValueData? meterData) {
+    // If ac_compatible is true, use AC icon; otherwise use DC icon
+    final isAC = meterData?.acCompatible ?? true;
+    final status = meterData?.stationStatus?.toLowerCase() ?? 'available';
+    
+    if (isAC) {
+      // AC station - use AC icon
+      return "assets/icons/ac.png";
+    } else {
+      // DC station - use DC icon based on status
+      switch (status) {
+        case 'available':
+          return 'assets/icons/dc_available.png';
+        case 'unavailable':
+          return 'assets/icons/dc_unavailable.png';
+        case 'in_use':
+        case 'inuse':
+          return 'assets/icons/dc_inuse.png';
+        default:
+          return 'assets/icons/dc_available.png';
+      }
+    }
   }
 }
 
