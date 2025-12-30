@@ -28,7 +28,7 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       var response = await DioHelper.postData(
         url: EndPoints.login,
-        data: FormData.fromMap({"email": email, "password": pass}),
+        data: FormData.fromMap({"login": email, "password": pass}),
         auth: false,
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
