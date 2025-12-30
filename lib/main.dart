@@ -36,6 +36,7 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
+      icon: 'ic_notification',
     );
 
     const NotificationDetails platformChannelSpecifics =
