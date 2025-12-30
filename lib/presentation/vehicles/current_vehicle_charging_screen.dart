@@ -194,6 +194,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
   }
 
   Widget _buildVehicleCard(BuildContext context, VehicleChargingResponseModel vehicle) {
+    final hasChargingSession = vehicle.chargingSession != null;
     final isCharging = vehicle.isCharging;
     final session = vehicle.chargingSession;
     final batteryPercentage = session?.currentBatteryPercentage != null
@@ -219,7 +220,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
         children: [
           // Top Section: Charging Status and Vehicle Info
           InkWell(
-            onTap: isCharging ? () => _handleChargingVehicleTap(context, vehicle) : null,
+            onTap: hasChargingSession ? () => _handleChargingVehicleTap(context, vehicle) : null,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -230,12 +231,12 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Rounded Progress Bar
+                      // Rounded Progress Bar - only show for active charging sessions
                       if (isCharging)
                         CircularProgressIndicator(
-                          value: batteryPercentage / 100,
+                          value: batteryPercentage > 0 ? batteryPercentage / 100 : 0.0,
                           strokeWidth: 4,
-                          backgroundColor: Colors.grey[200],
+                          backgroundColor: Colors.grey[200]!,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             AppColors.primary,
                           ),
@@ -243,7 +244,9 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                       // Lightning Icon
                       Icon(
                         Icons.bolt,
-                        color: isCharging ? AppColors.primary : Colors.grey[400],
+                        color: hasChargingSession 
+                            ? (isCharging ? AppColors.primary : Colors.grey[400])
+                            : Colors.grey[400],
                         size: 30,
                       ),
                     ],
@@ -258,8 +261,11 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Battery Percentage and Range
+                      // Show percentage for active charging sessions, or "N/A" if stopped or no session
                       Text(
-                        isCharging ? "${batteryPercentage.toInt()}%" : "N/A",
+                        isCharging 
+                            ? (batteryPercentage > 0 ? "${batteryPercentage.toInt()}%" : "0%")
+                            : "N/A",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,

@@ -16,11 +16,13 @@ class StartSessionScreen extends StatelessWidget {
     required this.chargerId,
     required this.connectorId,
     required this.rfidCode,
+    this.vehicleId,
   });
 
   final String chargerId;
   final String connectorId;
   final String rfidCode;
+  final int? vehicleId;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +110,7 @@ class StartSessionScreen extends StatelessWidget {
                           chargerId,
                           int.parse(connectorId),
                           defaultRFID.code!,
+                          vehicleId: vehicleId,
                         );
                       },
                       child: Text(
