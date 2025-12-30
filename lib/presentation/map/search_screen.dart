@@ -322,11 +322,15 @@ class _SearchScreenState extends State<SearchScreen> {
                       cubit.searchQuery.isEmpty &&
                       cubit.filterStatus == null &&
                       cubit.filterConnectorType == null &&
-                      cubit.filterMinimumPower == null;
+                      cubit.filterMinimumPower == null &&
+                      !cubit.filterFavouriteOnly;
 
                   if (isNearbyMode) {
                     // Show nearby stations (MapStationResponseModel)
-                    displayStations = cubit.nearbyStations;
+                    // Use filtered list if filters are applied, otherwise use original
+                    displayStations = cubit.filterFavouriteOnly 
+                        ? cubit.filteredNearbyStations 
+                        : cubit.nearbyStations;
                   } else {
                     // Use cached stations from map if available, otherwise use filtered
                     if (mapCubit.mapStations.isNotEmpty &&
@@ -436,11 +440,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ).favStation(!isFav, stationId ?? 0);
                                           if (done) {
                                             context.showSuccessMessage(
-                                              "Saved Successfully",
+                                              isFav ? "Removed from favorites" : "Added to favorites",
                                             );
                                           } else {
                                             context.showErrorMessage(
-                                              "Not Saved, please try again later",
+                                              "Failed to update favorite, please try again later",
                                             );
                                           }
                                         },

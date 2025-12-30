@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
@@ -276,6 +278,33 @@ class StationDetailsSheet extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (CacheHelper.checkLogin() == 3)
+                        InkWell(
+                          onTap: () async {
+                            final cubit = StationDetailsCubit.get(context);
+                            final isFav = station.isFavourite ?? false;
+                            var done = await cubit.favStation(!isFav, station.id ?? 0);
+                            if (done) {
+                              context.showSuccessMessage(
+                                isFav ? "Removed from favorites" : "Added to favorites",
+                              );
+                            } else {
+                              context.showErrorMessage(
+                                "Failed to update favorite, please try again later",
+                              );
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Icon(
+                              (station.isFavourite ?? false)
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: AppColors.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ),
                       InkWell(
                         onTap: () async {
                           if (station.latitude != null && station.longitude != null) {

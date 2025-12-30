@@ -13,6 +13,8 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
 
   static StationDetailsCubit get(context) => BlocProvider.of(context);
 
+  StationResponseModel? currentStation;
+
   void getStationDetails(int stationId) async {
     emit(LoadingStationDetailsState());
     try {
@@ -24,6 +26,7 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"];
         var station = StationResponseModel.fromJson(data);
+        currentStation = station;
         emit(SuccessStationDetailsState(station));
       } else {
         emit(ErrorStationDetailsState(
@@ -35,6 +38,41 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
         print("Error fetching station details: $e");
       }
       emit(ErrorStationDetailsState("Failed to load station details"));
+    }
+  }
+
+  // Add/remove station from favorites
+  Future<bool> favStation(bool isFav, int id) async {
+    try {
+      bool success = false;
+      if (isFav) {
+        // Add to favorites - POST request
+        var response = await DioHelper.postData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          success = true;
+        }
+      } else {
+        // Remove from favorites - DELETE request
+        var response = await DioHelper.deleteData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          success = true;
+        }
+      }
+
+      if (success && currentStation != null && currentStation!.id == id) {
+        // Update local state
+        currentStation!.isFavourite = isFav;
+        emit(SuccessStationDetailsState(currentStation!));
+        return true;
+      } else {
+        return success;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }

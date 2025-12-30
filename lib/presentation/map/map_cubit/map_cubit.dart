@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
@@ -223,7 +224,7 @@ class MapCubit extends Cubit<MapState> {
     try {
       var response = await DioHelper.getData(
         url: EndPoints.getStations,
-        auth: false, // This endpoint doesn't require authentication
+        auth: CacheHelper.checkLogin() == 3, // Add token if user is logged in
       ).timeout(Duration(seconds: 10));
 
       print("-" * 25);
@@ -556,6 +557,47 @@ class MapCubit extends Cubit<MapState> {
       format: ui.ImageByteFormat.png,
     ))!.buffer.asUint8List();
     return BitmapDescriptor.fromBytes(resizedBytes);
+  }
+
+  // Add/remove station from favorites
+  Future<bool> favStation(bool isFav, int id) async {
+    try {
+      bool success = false;
+      if (isFav) {
+        // Add to favorites - POST request
+        var response = await DioHelper.postData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          success = true;
+        }
+      } else {
+        // Remove from favorites - DELETE request
+        var response = await DioHelper.deleteData(
+          url: "/api/stations/$id/favourite",
+        );
+        if (response.statusCode! >= 200 && response.statusCode! <= 300) {
+          success = true;
+        }
+      }
+
+      if (success) {
+        // Update local state
+        for (var station in mapStations) {
+          if (station.id == id) {
+            station.isFavourite = isFav;
+            break;
+          }
+        }
+        // Rebuild markers to reflect favorite status
+        await _updateClusters();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 }
 

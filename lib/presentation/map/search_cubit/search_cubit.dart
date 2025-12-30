@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
@@ -17,6 +18,7 @@ class SearchCubit extends Cubit<SearchState> {
   List<StationResponseModel> stations = [];
   List<StationResponseModel> filteredStations = [];
   List<MapStationResponseModel> nearbyStations = [];
+  List<MapStationResponseModel> filteredNearbyStations = [];
   bool useCachedStations = false;
   String searchQuery = '';
 
@@ -56,7 +58,7 @@ class SearchCubit extends Cubit<SearchState> {
 
       var response = await DioHelper.getData(
         url: EndPoints.getMapStations(lat, lng),
-        auth: false, // This endpoint doesn't require authentication
+        auth: CacheHelper.checkLogin() == 3, // Add token if user is logged in
       );
 
       if (response.statusCode == 200 && response.data["success"] == true) {
@@ -64,6 +66,8 @@ class SearchCubit extends Cubit<SearchState> {
         nearbyStations = data
             .map((e) => MapStationResponseModel.fromJson(e))
             .toList();
+        // Reset filtered nearby stations
+        filteredNearbyStations = [];
         // Initially show nearby stations
         useCachedStations = false;
         _updateFilteredStations();
@@ -134,8 +138,14 @@ class SearchCubit extends Cubit<SearchState> {
 
   void applyFiltersAndSearch() {
     if (!useCachedStations) {
-      // If not using cached stations, don't filter (show nearby as is)
-      filteredStations = [];
+      // If not using cached stations, filter nearby stations
+      filteredNearbyStations = nearbyStations.where((station) {
+        // Apply favorite filter if enabled
+        if (filterFavouriteOnly && station.isFavourite != true) {
+          return false;
+        }
+        return true;
+      }).toList();
       emit(SearchUpdatedState());
       return;
     }
@@ -184,8 +194,8 @@ class SearchCubit extends Cubit<SearchState> {
         }
       }
 
-      // Favourite filter (assuming you have a favourite field)
-      // bool matchesFavourite = !filterFavouriteOnly || station.isFavourite == true;
+      // Favourite filter
+      bool matchesFavourite = !filterFavouriteOnly || (station.isFavourite == true);
 
       // Minimum Power filter
       bool matchesPower = filterMinimumPower == null;
@@ -216,7 +226,7 @@ class SearchCubit extends Cubit<SearchState> {
       return matchesSearch &&
           matchesStatus &&
           matchesConnectorType &&
-          // matchesFavourite &&
+          matchesFavourite &&
           matchesPower;
     }).toList();
 
@@ -233,6 +243,7 @@ class SearchCubit extends Cubit<SearchState> {
     filterConnectorType = null;
     filterFavouriteOnly = false;
     filterMinimumPower = null;
+    filteredNearbyStations = [];
     applyFiltersAndSearch();
   }
 
@@ -244,6 +255,7 @@ class SearchCubit extends Cubit<SearchState> {
     filterMinimumPower = null;
     useCachedStations = false;
     filteredStations = [];
+    filteredNearbyStations = [];
     emit(SearchUpdatedState());
   }
 
@@ -284,34 +296,54 @@ class SearchCubit extends Cubit<SearchState> {
 
   //add station to favouries
   Future<bool> favStation(bool isFav, int id) async {
-    emit(LoadingGetStationsSearchState());
-
     try {
+      bool success = false;
       if (isFav) {
+        // Add to favorites - POST request
         var response = await DioHelper.postData(
           url: "/api/stations/$id/favourite",
         );
         if (response.statusCode! >= 200 && response.statusCode! <= 300) {
-          emit(SuccessGetStationsSearchState());
-          return true;
-        } else {
-          emit(ErrorGetStationsSearchState());
-          return false;
+          success = true;
         }
       } else {
+        // Remove from favorites - DELETE request
         var response = await DioHelper.deleteData(
           url: "/api/stations/$id/favourite",
         );
         if (response.statusCode! >= 200 && response.statusCode! <= 300) {
-          emit(SuccessGetStationsSearchState());
-          return true;
-        } else {
-          emit(ErrorGetStationsSearchState());
-          return false;
+          success = true;
         }
       }
+
+      if (success) {
+        // Update local state for nearby stations
+        for (var station in nearbyStations) {
+          if (station.id == id) {
+            station.isFavourite = isFav;
+            break;
+          }
+        }
+        // Update local state for cached stations
+        for (var station in stations) {
+          if (station.id == id) {
+            station.isFavourite = isFav;
+            break;
+          }
+        }
+        // Update filtered stations
+        for (var station in filteredStations) {
+          if (station.id == id) {
+            station.isFavourite = isFav;
+            break;
+          }
+        }
+        emit(SearchUpdatedState());
+        return true;
+      } else {
+        return false;
+      }
     } catch (e) {
-      emit(ErrorGetStationsSearchState());
       return false;
     }
   }
