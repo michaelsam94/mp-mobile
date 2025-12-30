@@ -772,6 +772,9 @@ class _ChargerScreenState extends State<ChargerScreen> {
             });
             context.showSuccessMessage("Charging stopped successfully");
             
+            // Don't clear meter data here - keep it so user can see final values and download PDF
+            // Meter data will be cleared when starting a new session
+            
             // Recall charging history API when session is closed
             _refreshChargingHistory();
           } else if (state is ChargingError) {

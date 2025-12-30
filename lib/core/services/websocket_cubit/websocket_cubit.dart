@@ -39,6 +39,16 @@ class WebSocketCubit extends Cubit<WebSocketState> {
     service.disconnect();
   }
 
+  // Clear cached meter data (when starting a new session)
+  void clearMeterData() {
+    _currentMeterData = null;
+    _currentTransactionId = null;
+    _isCompletedSession = false;
+    _completedSessionId = null;
+    // Emit initial state to trigger UI update (show shimmer)
+    emit(WebSocketInitial());
+  }
+
   // Initialize meter data from API response (when navigating from history)
   void initializeMeterDataFromApi(Map<String, dynamic> apiResponse, {bool isCompleted = false, int? sessionId}) {
     try {
@@ -123,6 +133,9 @@ class WebSocketCubit extends Cubit<WebSocketState> {
           _isCompletedSession = false;
           _completedSessionId = null;
         }
+        // Note: We don't clear meter data when session_stopped is received via WebSocket
+        // This allows the UI to show final values for PDF download
+        // Meter data will be cleared when starting a new session
         emit(SessionUpdate(parsedMessage));
       } else {
         emit(WebSocketMessage(parsedMessage));

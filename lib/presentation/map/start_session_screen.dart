@@ -46,6 +46,11 @@ class StartSessionScreen extends StatelessWidget {
                 context.goTo(TopUpScreen());
               }
             } else if (state is ChargingSuccess) {
+              // Clear cached meter data before navigating to charger screen
+              // This ensures shimmer is shown until new meter values arrive
+              if (context.mounted) {
+                context.read<WebSocketCubit>().clearMeterData();
+              }
               // Navigate to ChargerScreen only on success
               if (context.mounted) {
                 context.goOff(ChargerScreen());

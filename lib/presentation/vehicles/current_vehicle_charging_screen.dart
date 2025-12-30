@@ -316,6 +316,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
             listener: (context, state) {
               if (state is StopChargingSuccess) {
                 context.showSuccessMessage("Charging stopped successfully");
+                // Don't clear meter data here - it will be cleared when starting a new session
                 // Refresh the list
                 CurrentVehicleChargingCubit.get(context).getVehiclesCharging();
               } else if (state is ChargingError) {
@@ -485,6 +486,10 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
       ),
     );
 
-    // QR scanner will handle the rest of the flow
+    // Refresh the vehicle list after returning from QR scanner
+    // This ensures the list is updated if charging was started
+    if (context.mounted) {
+      CurrentVehicleChargingCubit.get(context).getVehiclesCharging();
+    }
   }
 }
