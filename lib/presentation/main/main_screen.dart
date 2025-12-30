@@ -14,7 +14,6 @@ import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/map_screen.dart';
 import '../vehicles/cubit/vehicles_cubit.dart';
 import '../vehicles/my_vehicles_screen.dart';
-import '../vehicles/current_vehicle_charging_screen.dart';
 import '../map/qr_code_scanner_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -62,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     // User has vehicles, proceed to current vehicle charging screen
-    context.goTo(CurrentVehicleChargingScreen());
+    context.goTo(QrCodeScannerScreen());
   }
 
   @override

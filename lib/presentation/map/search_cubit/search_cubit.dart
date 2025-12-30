@@ -221,18 +221,6 @@ class SearchCubit extends Cubit<SearchState> {
     applyFiltersAndSearch();
   }
 
-  void resetSearchState() {
-    searchQuery = '';
-    filterStatus = null;
-    filterConnectorType = null;
-    filterFavouriteOnly = false;
-    filterMinimumPower = null;
-    useCachedStations = false;
-    filteredStations = [];
-    stations = [];
-    emit(SearchInitial());
-  }
-
   // Check if station has at least one DC connector
   // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
   bool hasDCConnector(StationResponseModel station) {

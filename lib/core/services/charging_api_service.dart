@@ -6,35 +6,28 @@ class ChargingApiService {
   static Future<Response> startCharging(
     String chargerId,
     int connectorId,
-    String rfid, {
-    int? vehicleId,
-  }) async {
-    final data = {
-      "charger_id": chargerId,
-      "connector_id": connectorId,
-      "id_tag": rfid,
-    };
-    if (vehicleId != null) {
-      data["vehicle_id"] = vehicleId;
-    }
+    String rfid,
+  ) async {
     return DioHelper.postData(
       url: EndPoints.startCharging,
-      data: data,
+      data: {
+        "charger_id": chargerId,
+        "connector_id": connectorId,
+        "id_tag": rfid,
+      },
     );
   }
 
   static Future<Response> stopCharging(
     String chargerId,
-    String transactionId,
-    String connectorId,
+    String trasactionId,
   ) async {
     return DioHelper.postData(
       url: EndPoints.stopCharging,
-      data: {
-        "charger_id": chargerId,
-        "transaction_id": transactionId,
-        "connector_id": connectorId,
-      },
+      // data: {
+      //   'charger_id': chargerId,
+      // },
+      data: {"charger_id": chargerId, "transaction_id": trasactionId},
     );
   }
 

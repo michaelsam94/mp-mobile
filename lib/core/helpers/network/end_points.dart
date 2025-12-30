@@ -29,7 +29,6 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
-  static const String vehiclesCharging = "/api/customer/vehicles/charging";
   static String updateVehicle(int id) => "/api/customer/vehicles/$id";
   static String deleteVehicle(int id) => "/api/customer/vehicles/$id";
   static String getMapStations(double lat, double long) =>

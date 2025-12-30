@@ -5,9 +5,7 @@ import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrCodeScannerScreen extends StatefulWidget {
-  final int? vehicleId;
-  
-  const QrCodeScannerScreen({super.key, this.vehicleId});
+  const QrCodeScannerScreen({super.key});
 
   @override
   State<QrCodeScannerScreen> createState() => _QrCodeScannerScreenState();
@@ -50,7 +48,6 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
               chargerId: chargerId,
               connectorId: connectorId,
               rfidCode: ProfileCubit.get(context).defaultRFID?.code ?? "",
-              vehicleId: widget.vehicleId,
             ),
           );
           

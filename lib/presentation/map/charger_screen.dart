@@ -124,38 +124,35 @@ class _ChargerScreenState extends State<ChargerScreen> {
             stoppedData = state.data.stoppedData!;
             meterData = context.read<WebSocketCubit>().currentMeterData;
           } else {
-            // Only use current meter data if we're in a connected state and have valid data
-            // Don't show old data when starting a new session (state is WebSocketInitial)
-            if (state is! WebSocketInitial) {
-              final webSocketCubit = context.read<WebSocketCubit>();
-              final currentMeterData = webSocketCubit.currentMeterData;
-              if (currentMeterData != null) {
-                meterData = currentMeterData;
-                transactionId = webSocketCubit.currentTransactionId;
-              }
+            // Check for current meter data from WebSocketCubit (e.g., when initialized from API)
+            final webSocketCubit = context.read<WebSocketCubit>();
+            final currentMeterData = webSocketCubit.currentMeterData;
+            if (currentMeterData != null) {
+              meterData = currentMeterData;
+              transactionId = webSocketCubit.currentTransactionId;
             }
           }
 
-          // Show shimmer if no meter data yet (initial loading state or new session)
+          // Show shimmer if no meter data yet (initial loading state)
           if (meterData == null) {
             return _buildShimmerLoading();
           }
 
           return SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              children: [
-                _buildStationInfo(meterData),
-                SizedBox(height: 24),
-                _buildChargeProgress(meterData),
-                SizedBox(height: 28),
-                _buildInfoTiles(meterData),
-                SizedBox(height: 24),
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                children: [
+                  _buildStationInfo(meterData),
+                  SizedBox(height: 24),
+                  _buildChargeProgress(meterData),
+                  SizedBox(height: 28),
+                  _buildInfoTiles(meterData),
+                  SizedBox(height: 24),
 
-                _buildActionButton(context, state, meterData, transactionId),
-                SizedBox(height: 20), // Extra padding at bottom for better scrolling
-              ],
+                  _buildActionButton(context, state, meterData, transactionId),
+                ],
+              ),
             ),
           );
         },
@@ -414,13 +411,8 @@ class _ChargerScreenState extends State<ChargerScreen> {
     }
     
     // Show stop button for active sessions
-    // Check if we have meter data from current state or from WebSocketCubit
-    final currentMeterData = meterData ?? webSocketCubit.currentMeterData;
-    final currentTransactionId = transactionId ?? webSocketCubit.currentTransactionId;
-    
-    // Show stop button if we have meter data (active session)
-    if (currentMeterData != null && currentTransactionId != null && currentTransactionId.isNotEmpty) {
-      return _buildStopButton(currentMeterData, currentTransactionId);
+    if (state is SessionUpdate && state.data.isMeterValue) {
+      return _buildStopButton(meterData, transactionId);
     }
     
     return SizedBox();
@@ -848,20 +840,9 @@ class _ChargerScreenState extends State<ChargerScreen> {
               );
 
               if (confirmed == true) {
-                final webSocketCubit = context.read<WebSocketCubit>();
-                
-                // Use charger serial number if available (from loaded session), otherwise use charger_id
-                final chargerId = webSocketCubit.chargerSerialNumber ?? 
-                                 meterData?.chargerId.toString() ?? "";
-                
-                // Use charger_id_prefix if available (from loaded session), otherwise use connector_id from meterData
-                final connectorId = webSocketCubit.chargerIdPrefix ?? 
-                                   meterData?.connectorId.toString() ?? "";
-                
                 context.read<ChargingCubit>().stopCharging(
-                  chargerId,
+                  meterData?.chargerId.toString() ?? "",
                   transactionId ?? "",
-                  connectorId,
                 );
               }
             } catch (e, stackTrace) {
