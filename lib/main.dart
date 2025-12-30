@@ -36,7 +36,6 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
-      icon: 'ic_notification',
     );
 
     const NotificationDetails platformChannelSpecifics =
@@ -156,29 +155,18 @@ void main() async {
   // Get and log Firebase token
   try {
     final token = await messaging.getToken();
-    print('========================================');
-    print('🔥 FIREBASE TOKEN:');
-    print('========================================');
-    print(token ?? 'Token is null');
-    print('========================================');
     if (kDebugMode) {
       print('Firebase Token: $token');
     }
 
     // Listen for token refresh
     messaging.onTokenRefresh.listen((newToken) {
-      print('========================================');
-      print('🔄 FIREBASE TOKEN REFRESHED:');
-      print('========================================');
-      print(newToken);
-      print('========================================');
       if (kDebugMode) {
         print('Firebase Token refreshed: $newToken');
       }
       // You can send the new token to your server here
     });
   } catch (e) {
-    print('❌ Error getting Firebase token: $e');
     if (kDebugMode) {
       print('Error getting Firebase token: $e');
     }

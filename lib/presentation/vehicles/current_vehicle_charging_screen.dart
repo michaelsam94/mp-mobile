@@ -462,6 +462,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
       ChargingCubit.get(context).stopCharging(
         chargerId,
         transactionId,
+        connectorId,
       );
     }
   }
@@ -470,11 +471,11 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
     BuildContext context,
     VehicleChargingResponseModel vehicle,
   ) async {
-    // Navigate to QR scanner
+    // Navigate to QR scanner with vehicle id
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QrCodeScannerScreen(),
+        builder: (context) => QrCodeScannerScreen(vehicleId: vehicle.id),
       ),
     );
 
