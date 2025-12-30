@@ -16,16 +16,14 @@ class ChargingCubit extends Cubit<ChargingState> {
   Future<void> startCharging(
     String chargerId,
     int connectorId,
-    String rfid, {
-    int? vehicleId,
-  }) async {
+    String rfid,
+  ) async {
     emit(ChargingLoading());
     try {
       final response = await ChargingApiService.startCharging(
         chargerId,
         connectorId,
         rfid,
-        vehicleId: vehicleId,
       );
 
       print(response.data);
@@ -71,17 +69,12 @@ class ChargingCubit extends Cubit<ChargingState> {
   }
 
   String? pdfUrl;
-  Future<void> stopCharging(
-    String chargerId,
-    String transactionId,
-    String connectorId,
-  ) async {
+  Future<void> stopCharging(String chargerId, String transactionId) async {
     emit(ChargingLoading());
     try {
       final response = await ChargingApiService.stopCharging(
         chargerId,
         transactionId,
-        connectorId,
       );
 
       print(response.data);
