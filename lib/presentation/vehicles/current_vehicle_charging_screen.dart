@@ -86,18 +86,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                   final vehicles = cubit.vehicles;
 
                   if (vehicles.isEmpty) {
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        await cubit.getVehiclesCharging();
-                      },
-                      child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 200,
-                          child: _buildEmptyState(),
-                        ),
-                      ),
-                    );
+                    return _buildEmptyState();
                   }
 
                   return RefreshIndicator(
@@ -105,7 +94,6 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                       await cubit.getVehiclesCharging();
                     },
                     child: ListView.builder(
-                      physics: AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.all(16),
                       itemCount: vehicles.length,
                       itemBuilder: (context, index) {
@@ -442,16 +430,9 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
     if (!vehicle.isCharging || vehicle.chargingSession == null) return;
 
     final session = vehicle.chargingSession!;
-    
-    // Use charger serial_number if available (from loaded session), otherwise use charger_id
-    final chargerId = session.charger?.serialNumber ?? 
-                     session.chargerId?.toString() ?? "";
-    
-    // Use charger_id_prefix if available, otherwise use connector_id
-    final connectorId = session.chargerIdPrefix ?? 
-                        session.connectorId ?? "";
-    
+    final chargerId = session.chargerId?.toString() ?? "";
     final transactionId = session.transactionId ?? "";
+    final connectorId = session.connectorId ?? "";
 
     if (chargerId.isEmpty || transactionId.isEmpty || connectorId.isEmpty) {
       context.showErrorMessage("Missing charging session data");

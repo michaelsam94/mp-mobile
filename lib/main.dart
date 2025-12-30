@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -29,30 +28,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // Show local notification
 Future<void> _showLocalNotification(RemoteMessage message) async {
   try {
-    NotificationDetails platformChannelSpecifics;
-    
-    if (Platform.isAndroid) {
-      const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'high_importance_channel', // channel id
-        'High Importance Notifications', // channel name
-        channelDescription: 'This channel is used for important notifications.',
-        importance: Importance.high,
-        priority: Priority.high,
-        showWhen: true,
-      );
-      platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    } else if (Platform.isIOS) {
-      const DarwinNotificationDetails iosPlatformChannelSpecifics =
-          DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-      platformChannelSpecifics = NotificationDetails(iOS: iosPlatformChannelSpecifics);
-    } else {
-      platformChannelSpecifics = NotificationDetails();
-    }
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'high_importance_channel', // channel id
+      'High Importance Notifications', // channel name
+      channelDescription: 'This channel is used for important notifications.',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       message.hashCode,
@@ -70,83 +57,42 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with error handling
-  bool firebaseInitialized = false;
+  await Future.wait([
+    Firebase.initializeApp(),
+    CacheHelper.init(),
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
+  ]);
+
+  // Initialize local notifications
   try {
-    await Firebase.initializeApp();
-    firebaseInitialized = true;
-  } catch (e) {
-    if (kDebugMode) {
-      print('Firebase initialization error: $e');
-      print('App will continue without Firebase features');
-    }
-    firebaseInitialized = false;
-  }
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  // Initialize other services
-  try {
-    await Future.wait([
-      CacheHelper.init(),
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
-    ]);
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error during initialization: $e');
-    }
-  }
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
-  // Initialize local notifications (platform-specific)
-  try {
-    if (Platform.isAndroid) {
-      const AndroidInitializationSettings initializationSettingsAndroid =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (kDebugMode) {
+          print('Notification tapped: ${response.payload}');
+        }
+        // Handle notification tap
+      },
+    );
 
-      const InitializationSettings initializationSettings =
-          InitializationSettings(android: initializationSettingsAndroid);
+    // Create notification channel for Android
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'High Importance Notifications', // name
+      description: 'This channel is used for important notifications.',
+      importance: Importance.high,
+    );
 
-      await flutterLocalNotificationsPlugin.initialize(
-        initializationSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse response) {
-          if (kDebugMode) {
-            print('Notification tapped: ${response.payload}');
-          }
-          // Handle notification tap
-        },
-      );
-
-      // Create notification channel for Android
-      const AndroidNotificationChannel channel = AndroidNotificationChannel(
-        'high_importance_channel', // id
-        'High Importance Notifications', // name
-        description: 'This channel is used for important notifications.',
-        importance: Importance.high,
-      );
-
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(channel);
-    } else {
-      // iOS initialization
-      const DarwinInitializationSettings initializationSettingsIOS =
-          DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
-
-      const InitializationSettings initializationSettings =
-          InitializationSettings(iOS: initializationSettingsIOS);
-
-      await flutterLocalNotificationsPlugin.initialize(
-        initializationSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse response) {
-          if (kDebugMode) {
-            print('Notification tapped: ${response.payload}');
-          }
-        },
-      );
-    }
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   } catch (e) {
     if (kDebugMode) {
       print('Error initializing local notifications: $e');
@@ -154,87 +100,75 @@ void main() async {
     // Continue without local notifications - Firebase will handle background notifications
   }
 
-  // Set up Firebase Messaging only if Firebase is initialized
-  if (firebaseInitialized) {
-    try {
-      final messaging = FirebaseMessaging.instance;
+  // Set up Firebase Messaging
+  final messaging = FirebaseMessaging.instance;
 
-      // Request notification permissions
-      NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
+  // Request notification permissions
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
 
-      if (kDebugMode) {
-        print('Notification permission status: ${settings.authorizationStatus}');
-      }
+  if (kDebugMode) {
+    print('Notification permission status: ${settings.authorizationStatus}');
+  }
 
-      // Set up background message handler
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-      // Handle foreground messages
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        if (kDebugMode) {
-          print('Received foreground message: ${message.messageId}');
-          print('Message data: ${message.data}');
-          print('Message notification: ${message.notification?.title}');
-          print('Message notification body: ${message.notification?.body}');
-        }
-        // Show local notification for foreground messages
-        _showLocalNotification(message);
-      });
-
-      // Handle notification taps when app is in background
-      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        if (kDebugMode) {
-          print('Notification opened app: ${message.messageId}');
-          print('Message data: ${message.data}');
-        }
-        // Handle navigation based on notification data
-      });
-
-      // Check if app was opened from a terminated state via notification
-      RemoteMessage? initialMessage = await messaging.getInitialMessage();
-      if (initialMessage != null) {
-        if (kDebugMode) {
-          print('App opened from terminated state via notification: ${initialMessage.messageId}');
-          print('Message data: ${initialMessage.data}');
-        }
-        // Handle navigation based on notification data
-      }
-
-      // Get and log Firebase token
-      try {
-        final token = await messaging.getToken();
-        if (kDebugMode) {
-          print('Firebase Token: $token');
-        }
-
-        // Listen for token refresh
-        messaging.onTokenRefresh.listen((newToken) {
-          if (kDebugMode) {
-            print('Firebase Token refreshed: $newToken');
-          }
-          // You can send the new token to your server here
-        });
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error getting Firebase token: $e');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error setting up Firebase Messaging: $e');
-      }
-    }
-  } else {
+  // Handle foreground messages
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     if (kDebugMode) {
-      print('Firebase Messaging skipped - Firebase not initialized');
+      print('Received foreground message: ${message.messageId}');
+      print('Message data: ${message.data}');
+      print('Message notification: ${message.notification?.title}');
+      print('Message notification body: ${message.notification?.body}');
+    }
+    // Show local notification for foreground messages
+    _showLocalNotification(message);
+  });
+
+  // Handle notification taps when app is in background
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    if (kDebugMode) {
+      print('Notification opened app: ${message.messageId}');
+      print('Message data: ${message.data}');
+    }
+    // Handle navigation based on notification data
+  });
+
+  // Check if app was opened from a terminated state via notification
+  RemoteMessage? initialMessage = await messaging.getInitialMessage();
+  if (initialMessage != null) {
+    if (kDebugMode) {
+      print('App opened from terminated state via notification: ${initialMessage.messageId}');
+      print('Message data: ${initialMessage.data}');
+    }
+    // Handle navigation based on notification data
+  }
+
+  // Get and log Firebase token
+  try {
+    final token = await messaging.getToken();
+    if (kDebugMode) {
+      print('Firebase Token: $token');
+    }
+
+    // Listen for token refresh
+    messaging.onTokenRefresh.listen((newToken) {
+      if (kDebugMode) {
+        print('Firebase Token refreshed: $newToken');
+      }
+      // You can send the new token to your server here
+    });
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error getting Firebase token: $e');
     }
   }
 

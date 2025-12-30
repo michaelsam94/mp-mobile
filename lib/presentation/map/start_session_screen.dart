@@ -16,13 +16,11 @@ class StartSessionScreen extends StatelessWidget {
     required this.chargerId,
     required this.connectorId,
     required this.rfidCode,
-    this.vehicleId,
   });
 
   final String chargerId;
   final String connectorId;
   final String rfidCode;
-  final int? vehicleId;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +44,6 @@ class StartSessionScreen extends StatelessWidget {
                 context.goTo(TopUpScreen());
               }
             } else if (state is ChargingSuccess) {
-              // Clear old meter data when starting a new session
-              context.read<WebSocketCubit>().clearMeterData();
               // Navigate to ChargerScreen only on success
               if (context.mounted) {
                 context.goOff(ChargerScreen());
@@ -112,7 +108,6 @@ class StartSessionScreen extends StatelessWidget {
                           chargerId,
                           int.parse(connectorId),
                           defaultRFID.code!,
-                          vehicleId: vehicleId,
                         );
                       },
                       child: Text(

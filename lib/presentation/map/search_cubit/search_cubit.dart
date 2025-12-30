@@ -244,8 +244,7 @@ class SearchCubit extends Cubit<SearchState> {
     filterMinimumPower = null;
     useCachedStations = false;
     filteredStations = [];
-    stations = [];
-    emit(SearchInitial());
+    emit(SearchUpdatedState());
   }
 
   // Check if station has at least one DC connector

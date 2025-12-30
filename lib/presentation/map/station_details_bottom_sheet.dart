@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
-import 'package:mega_plus/presentation/map/qr_code_scanner_screen.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -198,15 +194,19 @@ class StationDetailsSheet extends StatelessWidget {
         if (state is SuccessStationDetailsState) {
           final station = state.station;
           return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.9,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                   SizedBox(height: 8),
                   Text(
                     'Station Details',
@@ -318,7 +318,8 @@ class StationDetailsSheet extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -482,6 +483,59 @@ class ConnectorCard extends StatelessWidget {
     return 'assets/images/${prefix}_$statusKey.png';
   }
 
+  String _formatConnectorStatus(String? status) {
+    if (status == null) return 'Available';
+    // Convert API status format to display format
+    switch (status.toLowerCase()) {
+      case 'available':
+        return 'Available';
+      case 'inuse':
+      case 'in_use':
+        return 'In Use';
+      case 'unavailable':
+        return 'Unavailable';
+      default:
+        return status; // Return as-is if unknown format
+    }
+  }
+
+  Widget _connectorStatusBadge(String status) {
+    Color colorBG;
+    Color colorText;
+    switch (status) {
+      case 'Available':
+        colorText = Color(0xff058A3C);
+        colorBG = Color(0xffE6F9EE);
+        break;
+      case 'In Use':
+        colorText = Color(0xff1261FF);
+        colorBG = Color(0xffE8EFFF);
+        break;
+      case 'Unavailable':
+        colorText = Color(0xffC31D07);
+        colorBG = Color(0xffFFEAE7);
+        break;
+      default:
+        colorText = Colors.grey.shade300;
+        colorBG = Colors.grey.shade300;
+    }
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: colorBG,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
+          color: colorText,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -527,28 +581,7 @@ class ConnectorCard extends StatelessWidget {
               ],
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF24C064),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 0,
-            ),
-            onPressed: () {
-              // Check if user is logged in (not in guest mode)
-              if (CacheHelper.checkLogin() != 3) {
-                GuestBottomSheet.show(context);
-                return;
-              }
-              context.goTo(QrCodeScannerScreen());
-            },
-            child: Text(
-              "Click to charge",
-              style: TextStyle(fontSize: 13, color: Colors.white),
-            ),
-          ),
+          _connectorStatusBadge(_formatConnectorStatus(gun.status)),
         ],
       ),
     );

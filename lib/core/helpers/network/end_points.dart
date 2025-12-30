@@ -29,7 +29,6 @@ class EndPoints {
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";
-  static const String vehiclesCharging = "/api/customer/vehicles/charging";
   static String updateVehicle(int id) => "/api/customer/vehicles/$id";
   static String deleteVehicle(int id) => "/api/customer/vehicles/$id";
   static String getMapStations(double lat, double long) =>
@@ -43,7 +42,7 @@ class EndPoints {
   static const String chargingHistory = '/api/charging/history';
   static const String chargingPdf = '/api/charging/chargingPdf?list=1';
   static String chargingPdfBySessionId(int sessionId) => '/api/charging/chargingPdf?list=0&id=$sessionId';
-  static const String currentCharging = '/api/charging/current';
+  static const String currentCharging = '/api/customer/vehicles/charging';
   static String currentChargingWithSession(int sessionId) => '/api/charging/$sessionId/current';
   static const String updateProfile = "/api/profile";
   static const String getSettings = "/api/settings";
