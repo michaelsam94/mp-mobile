@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/start/splash_screen.dart';
 
 class DeleteAccountPasswordScreen extends StatefulWidget {
   final String reason;
@@ -133,64 +137,83 @@ class _DeleteAccountPasswordScreenState
               Spacer(),
 
               // Delete Account Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (passwordController.text.isEmpty) {
-                      context.showErrorMessage("Please enter your password");
-                      return;
+              BlocConsumer<ProfileCubit, ProfileState>(
+                listener: (context, state) async {
+                  if (state is SuccessLogoutProfileState) {
+                    await CacheHelper.logout();
+                    if (context.mounted) {
+                      context.showSuccessMessage(
+                        "Account Deleted Successfully",
+                      );
+                      context.goOffAll(SplashScreen());
                     }
+                  }
+                },
+                builder: (context, state) {
+                  if (state is LoadingLogoutProfileState) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (passwordController.text.isEmpty) {
+                          context.showErrorMessage(
+                            "Please enter your password",
+                          );
+                          return;
+                        }
 
-                    // Show confirmation dialog
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Delete Account'),
-                        content: Text(
-                          'Are you sure you want to delete your account? This action cannot be undone.',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              // Call delete account API
-                              // AuthCubit.get(context).deleteAccount(
-                              //   password: passwordController.text,
-                              //   reason: widget.reason,
-                              // );
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
+                        // Show confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Delete Account'),
+                            content: Text(
+                              'Are you sure you want to delete your account? This action cannot be undone.',
                             ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  // Call delete account API
+                                  ProfileCubit.get(
+                                    context,
+                                  ).deleteAccount(widget.reason);
+                                },
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB71C1C),
+                        disabledBackgroundColor: Colors.grey[300],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFB71C1C),
-                    disabledBackgroundColor: Colors.grey[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      child: Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'Delete Account',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ],
           ),

@@ -244,16 +244,24 @@ class DioHelper {
 
   static Future<Response> deleteData({
     required String url,
+     dynamic data,
     Map<String, dynamic>? query,
     bool auth = true,
+
   }) async {
     Options options = Options();
 
     if (auth) {
       options.headers = await getAuthHeaders();
     }
+    
+    if (data is FormData) {
+      options.contentType = 'multipart/form-data';
+    } else {
+      options.contentType = 'application/json';
+    }
     try {
-      return await dio.delete(url, queryParameters: query, options: options);
+      return await dio.delete(url, queryParameters: query, options: options,data: data);
     } on DioException catch (e) {
       if (kDebugMode) {
         print(e.message.toString());

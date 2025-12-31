@@ -44,8 +44,10 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
         var rfidData = data[0]["rfids"] as List;
-        var allRfids = rfidData.map((e) => RFIDResponseModel.fromJson(e)).toList();
-        
+        var allRfids = rfidData
+            .map((e) => RFIDResponseModel.fromJson(e))
+            .toList();
+
         // Set default RFID to the one with is_default = 1
         try {
           defaultRFID = allRfids.firstWhere((rfid) => rfid.isDefault == 1);
@@ -54,13 +56,15 @@ class ProfileCubit extends Cubit<ProfileState> {
           if (allRfids.isNotEmpty) {
             defaultRFID = allRfids.first;
           } else {
-          defaultRFID = null;
+            defaultRFID = null;
+          }
         }
-        }
-        
+
         // Filter out the default RFID for UI display
         if (defaultRFID != null) {
-          rfidCards = allRfids.where((rfid) => rfid.id != defaultRFID!.id).toList();
+          rfidCards = allRfids
+              .where((rfid) => rfid.id != defaultRFID!.id)
+              .toList();
         } else {
           rfidCards = allRfids;
         }
@@ -85,7 +89,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         url: EndPoints.rfidCards,
         data: FormData.fromMap({"code": code, "status": "1"}),
       );
-      if (response.statusCode == 200 && (response.data["success"] == true || response.data["status"] == true)) {
+      if (response.statusCode == 200 &&
+          (response.data["success"] == true ||
+              response.data["status"] == true)) {
         emit(SuccessAddRFIDState());
         getRFID();
       } else {
@@ -99,7 +105,8 @@ class ProfileCubit extends Cubit<ProfileState> {
           if (errors is Map) {
             // Get first error message from errors map
             final firstErrorKey = errors.keys.first;
-            if (errors[firstErrorKey] is List && (errors[firstErrorKey] as List).isNotEmpty) {
+            if (errors[firstErrorKey] is List &&
+                (errors[firstErrorKey] as List).isNotEmpty) {
               errorMessage = errors[firstErrorKey][0];
             } else if (errors[firstErrorKey] is String) {
               errorMessage = errors[firstErrorKey];
@@ -321,19 +328,13 @@ class ProfileCubit extends Cubit<ProfileState> {
       if (kDebugMode) {
         print(e.toString());
       }
-      emit(
-        ErrorUpdateProfileState(
-          message: e.toString(),
-        ),
-      );
+      emit(ErrorUpdateProfileState(message: e.toString()));
     }
   }
 
   void getProfile() async {
     try {
-      var response = await DioHelper.getData(
-        url: EndPoints.updateProfile,
-      );
+      var response = await DioHelper.getData(url: EndPoints.updateProfile);
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         // Update cache with fresh user data
@@ -355,15 +356,11 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(LoadingGetSettingsState());
 
     try {
-      var response = await DioHelper.getData(
-        url: EndPoints.getSettings,
-      );
+      var response = await DioHelper.getData(url: EndPoints.getSettings);
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"] as List;
-        settings = data
-            .map((e) => SettingsResponseModel.fromJson(e))
-            .toList();
+        settings = data.map((e) => SettingsResponseModel.fromJson(e)).toList();
         emit(SuccessGetSettingsState());
       } else {
         emit(
@@ -386,6 +383,27 @@ class ProfileCubit extends Cubit<ProfileState> {
       return settings.firstWhere((setting) => setting.key == key).value;
     } catch (e) {
       return null;
+    }
+  }
+
+  void deleteAccount(String reason) async {
+    emit(LoadingLogoutProfileState());
+
+    try {
+      var response = await DioHelper.deleteData(
+        url: "/api/profile/delete",
+        data: FormData.fromMap({"delete_reason": reason}),
+      );
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        emit(SuccessLogoutProfileState());
+      } else {
+        emit(ErrorGetRFIDState());
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      emit(ErrorGetRFIDState());
     }
   }
 }

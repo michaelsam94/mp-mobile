@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
@@ -24,11 +25,28 @@ class LoginCubit extends Cubit<LoginState> {
 
   void login(String email, String pass) async {
     emit(LoadingLoginState());
+    String? deviceToken;
+    try {
+      deviceToken = await FirebaseMessaging.instance.getToken();
+      if (kDebugMode) {
+        print('FCM Token: $deviceToken');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting FCM token: $e');
+      }
+      // Continue with registration even if token retrieval fails
+      deviceToken = null;
+    }
 
     try {
       var response = await DioHelper.postData(
         url: EndPoints.login,
-        data: FormData.fromMap({"login": email, "password": pass}),
+        data: FormData.fromMap({
+          "login": email,
+          "password": pass,
+          "device_token": deviceToken ?? "",
+        }),
         auth: false,
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
