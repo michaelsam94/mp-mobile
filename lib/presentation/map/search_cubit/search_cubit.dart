@@ -274,25 +274,41 @@ class SearchCubit extends Cubit<SearchState> {
     });
   }
 
-  // Get the appropriate icon path for a station based on status and DC connector presence
+  // Get the appropriate icon path for a station based on status and ac_compatible
   String getStationIconPath(StationResponseModel station) {
-    String status = station.status ?? 'available';
-    bool isDC = hasDCConnector(station);
+    // Use ac_compatible from API if available, otherwise fallback to checking guns
+    final isDC = station.acCompatible != null 
+        ? !(station.acCompatible ?? false)  // If ac_compatible is true, it's AC (not DC)
+        : hasDCConnector(station);  // Fallback to checking guns if ac_compatible not available
+    
+    final statusLower = (station.status ?? 'available').toLowerCase();
 
     if (isDC) {
-      switch (status) {
+      // DC marker icons
+      switch (statusLower) {
         case 'available':
           return 'assets/icons/dc_available.png';
         case 'unavailable':
           return 'assets/icons/dc_unavailable.png';
-        case 'inUse':
+        case 'inuse':
+        case 'in_use':
           return 'assets/icons/dc_inuse.png';
         default:
           return 'assets/icons/dc_available.png';
       }
     } else {
-      // For non-DC stations, use the regular AC icon
-      return 'assets/icons/ac.png';
+      // AC marker icons
+      switch (statusLower) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png';
+        default:
+          return 'assets/icons/ac.png';
+      }
     }
   }
 

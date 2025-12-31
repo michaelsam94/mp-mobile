@@ -10,6 +10,7 @@ class StationResponseModel {
   String? mediaUrl;
   List<String>? mediaUrls;
   bool? isFavourite;
+  bool? acCompatible;
 
   StationResponseModel({
     this.id,
@@ -23,6 +24,7 @@ class StationResponseModel {
     this.mediaUrl,
     this.mediaUrls,
     this.isFavourite,
+    this.acCompatible,
   });
 
   StationResponseModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class StationResponseModel {
     longitude = json['longitude'];
     status = json['status'];
     isFavourite = json['is_favourite'] ?? false;
+    acCompatible = json['ac_compatible'] ?? false;
 
     // Handle media_url - can be a string, list, or null
     if (json['media_url'] != null) {
@@ -100,6 +103,7 @@ class StationResponseModel {
     data['media_url'] = this.mediaUrl;
     data['media_urls'] = this.mediaUrls;
     data['is_favourite'] = this.isFavourite;
+    data['ac_compatible'] = this.acCompatible;
     if (this.guns != null) {
       data['guns'] = this.guns!.map((v) => v.toJson()).toList();
     }

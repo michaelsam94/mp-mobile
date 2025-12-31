@@ -988,8 +988,18 @@ class _ChargerScreenState extends State<ChargerScreen> {
     final status = meterData?.stationStatus?.toLowerCase() ?? 'available';
     
     if (isAC) {
-      // AC station - use AC icon
-      return "assets/icons/ac.png";
+      // AC station - use AC icon based on status
+      switch (status) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png';
+        default:
+          return 'assets/icons/ac.png';
+      }
     } else {
       // DC station - use DC icon based on status
       switch (status) {

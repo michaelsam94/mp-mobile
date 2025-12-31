@@ -408,13 +408,17 @@ class StationDetailsSheet extends StatelessWidget {
     });
   }
 
-  /// Gets the appropriate station icon path based on DC/AC and status
+  /// Gets the appropriate station icon path based on ac_compatible and status
   /// Uses marker icons from assets/icons/ instead of rounded icons
   String _getStationIconPath(StationResponseModel station) {
-    final hasDC = _hasDCGun(station);
+    // Use ac_compatible from API if available, otherwise fallback to checking guns
+    final isDC = station.acCompatible != null 
+        ? !(station.acCompatible ?? false)  // If ac_compatible is true, it's AC (not DC)
+        : _hasDCGun(station);  // Fallback to checking guns if ac_compatible not available
+    
     final status = station.status?.toLowerCase() ?? 'available';
     
-    if (hasDC) {
+    if (isDC) {
       // DC marker icons
       switch (status) {
         case 'available':
@@ -436,7 +440,7 @@ class StationDetailsSheet extends StatelessWidget {
           return 'assets/icons/unavailable.png';
         case 'inuse':
         case 'in_use':
-          return 'assets/icons/ac.png';
+          return 'assets/icons/use.png';
         default:
           return 'assets/icons/ac.png';
       }
