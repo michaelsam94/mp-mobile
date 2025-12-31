@@ -1,9 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
+import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
+import 'package:mega_plus/presentation/map/search_cubit/search_cubit.dart';
 import 'package:meta/meta.dart';
 
 part 'station_details_state.dart';
@@ -20,7 +24,7 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
     try {
       var response = await DioHelper.getData(
         url: EndPoints.getStationDetails(stationId),
-        auth: false, // Station details API doesn't require authentication
+        auth: CacheHelper.checkLogin() == 3, // Add token if user is logged in
       );
 
       if (response.statusCode == 200 && response.data["success"] == true) {
@@ -42,7 +46,7 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
   }
 
   // Add/remove station from favorites
-  Future<bool> favStation(bool isFav, int id) async {
+  Future<bool> favStation(bool isFav, int id, {BuildContext? context}) async {
     try {
       bool success = false;
       if (isFav) {
@@ -63,13 +67,30 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
         }
       }
 
-      if (success && currentStation != null && currentStation!.id == id) {
+      if (success) {
         // Update local state
-        currentStation!.isFavourite = isFav;
-        emit(SuccessStationDetailsState(currentStation!));
+        if (currentStation != null && currentStation!.id == id) {
+          currentStation!.isFavourite = isFav;
+          emit(SuccessStationDetailsState(currentStation!));
+        }
+        
+        // Update cached lists in MapCubit and SearchCubit if context is provided
+        if (context != null) {
+          try {
+            MapCubit.get(context).updateStationFavorite(id, isFav);
+          } catch (e) {
+            // MapCubit might not be available, ignore
+          }
+          try {
+            SearchCubit.get(context).updateStationFavorite(id, isFav);
+          } catch (e) {
+            // SearchCubit might not be available, ignore
+          }
+        }
+        
         return true;
       } else {
-        return success;
+        return false;
       }
     } catch (e) {
       return false;

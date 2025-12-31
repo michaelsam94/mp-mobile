@@ -437,7 +437,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         onTap: () async {
                                           var done = await SearchCubit.get(
                                             context,
-                                          ).favStation(!isFav, stationId ?? 0);
+                                          ).favStation(!isFav, stationId ?? 0, context: context);
                                           if (done) {
                                             context.showSuccessMessage(
                                               isFav ? "Removed from favorites" : "Added to favorites",

@@ -559,6 +559,18 @@ class MapCubit extends Cubit<MapState> {
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
 
+  // Update station favorite status in cached list (called from other cubits)
+  void updateStationFavorite(int id, bool isFav) {
+    for (var station in mapStations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        // Rebuild markers to reflect favorite status (fire and forget)
+        _updateClusters();
+        break;
+      }
+    }
+  }
+
   // Add/remove station from favorites
   Future<bool> favStation(bool isFav, int id) async {
     try {
@@ -583,14 +595,7 @@ class MapCubit extends Cubit<MapState> {
 
       if (success) {
         // Update local state
-        for (var station in mapStations) {
-          if (station.id == id) {
-            station.isFavourite = isFav;
-            break;
-          }
-        }
-        // Rebuild markers to reflect favorite status
-        await _updateClusters();
+        updateStationFavorite(id, isFav);
         return true;
       } else {
         return false;
