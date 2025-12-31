@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
@@ -410,9 +411,26 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
           context.read<WebSocketCubit>().initializeMeterDataFromApi(response.data);
         }
         
-        // Navigate to ChargerScreen
+        // Navigate to ChargerScreen and refresh when returning
         if (context.mounted) {
-          context.goTo(const ChargerScreen());
+          if (kDebugMode) {
+            print('CurrentVehicleChargingScreen: Navigating to ChargerScreen');
+          }
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChargerScreen()),
+          );
+          if (kDebugMode) {
+            print('CurrentVehicleChargingScreen: Returned from ChargerScreen with result: $result');
+          }
+          // Refetch vehicle charging data when returning from charger screen
+          // Always refresh when returning from charger screen (regardless of result)
+          if (context.mounted) {
+            if (kDebugMode) {
+              print('CurrentVehicleChargingScreen: Refreshing vehicle charging data');
+            }
+            CurrentVehicleChargingCubit.get(context).getVehiclesCharging();
+          }
         }
       } else {
         // Show error message

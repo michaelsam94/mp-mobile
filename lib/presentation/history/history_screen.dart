@@ -636,9 +636,26 @@ class HistoryView extends StatelessWidget {
           context.read<WebSocketCubit>().initializeMeterDataFromApi(response.data, isCompleted: true, sessionId: session.id);
         }
         
-        // Navigate to ChargerScreen (using goTo to keep history screen in stack)
+        // Navigate to ChargerScreen and refresh when returning
         if (context.mounted) {
-          context.goTo(const ChargerScreen());
+          if (kDebugMode) {
+            print('HistoryScreen: Navigating to ChargerScreen');
+          }
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChargerScreen()),
+          );
+          if (kDebugMode) {
+            print('HistoryScreen: Returned from ChargerScreen with result: $result');
+          }
+          // Refetch charging history when returning from charger screen
+          // Always refresh when returning from charger screen (regardless of result)
+          if (context.mounted) {
+            if (kDebugMode) {
+              print('HistoryScreen: Refreshing charging history');
+            }
+            context.read<HistoryCubit>().getChargingHistory();
+          }
         }
       } else {
         // Show error message
@@ -707,9 +724,26 @@ class HistoryView extends StatelessWidget {
           context.read<WebSocketCubit>().initializeMeterDataFromApi(response.data);
         }
         
-        // Navigate to ChargerScreen (using goTo to keep history screen in stack)
+        // Navigate to ChargerScreen and refresh when returning
         if (context.mounted) {
-          context.goTo(const ChargerScreen());
+          if (kDebugMode) {
+            print('HistoryScreen: Navigating to ChargerScreen');
+          }
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChargerScreen()),
+          );
+          if (kDebugMode) {
+            print('HistoryScreen: Returned from ChargerScreen with result: $result');
+          }
+          // Refetch charging history when returning from charger screen
+          // Always refresh when returning from charger screen (regardless of result)
+          if (context.mounted) {
+            if (kDebugMode) {
+              print('HistoryScreen: Refreshing charging history');
+            }
+            context.read<HistoryCubit>().getChargingHistory();
+          }
         }
       } else {
         // Show error message

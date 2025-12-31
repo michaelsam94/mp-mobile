@@ -17,6 +17,8 @@ import '../../core/services/models/session_update_model.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../../core/helpers/network/end_points.dart';
 import '../../presentation/history/history_repository.dart';
+import '../../presentation/vehicles/current_vehicle_charging_screen.dart';
+import '../../presentation/vehicles/cubit/current_vehicle_charging_cubit.dart';
 
 class ChargerScreen extends StatefulWidget {
   const ChargerScreen({super.key});
@@ -28,18 +30,61 @@ class ChargerScreen extends StatefulWidget {
 class _ChargerScreenState extends State<ChargerScreen> {
   SessionStoppedData? stoppedData;
   bool? isSessionStopped;
+  String? _lastNotificationTitle; // Track last notification to prevent duplicates
+  
+  void _handleBackPressed() {
+    // Navigate directly to CurrentVehicleChargingScreen and refresh
+    if (kDebugMode) {
+      print('ChargerScreen: Back button pressed, navigating to CurrentVehicleChargingScreen');
+    }
+    
+    // Get the cubit before navigation to trigger refresh
+    try {
+      final cubit = CurrentVehicleChargingCubit.get(context);
+      // Trigger refresh immediately
+      cubit.getVehiclesCharging();
+      if (kDebugMode) {
+        print('ChargerScreen: Triggered refresh for CurrentVehicleChargingScreen');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error accessing CurrentVehicleChargingCubit: $e');
+      }
+    }
+    
+    // Navigate to CurrentVehicleChargingScreen, removing all intermediate routes
+    // This ensures we go directly to CurrentVehicleChargingScreen
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const CurrentVehicleChargingScreen(),
+      ),
+      (route) => route.isFirst, // Keep only the first route (main screen)
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(color: Colors.black),
-        title: Text("Charging", style: TextStyle(color: Colors.black)),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: Colors.white,
-        surfaceTintColor: Colors.white,
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          // Handle system back gesture - pop with result to trigger refresh
+          _handleBackPressed();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: _handleBackPressed,
+          ),
+          title: Text("Charging", style: TextStyle(color: Colors.black)),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 1,
+          shadowColor: Colors.white,
+          surfaceTintColor: Colors.white,
+        ),
       body: BlocConsumer<WebSocketCubit, WebSocketState>(
         listener: (context, state) {
           try {
@@ -88,9 +133,13 @@ class _ChargerScreenState extends State<ChargerScreen> {
           }
 
             if (state is NotificationUpdate) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.data.message)));
+              // Only show notification if it's different from the last one (prevent duplicates)
+              final notificationTitle = state.data.title ?? state.data.message ?? '';
+              if (notificationTitle.isNotEmpty && notificationTitle != _lastNotificationTitle) {
+                _lastNotificationTitle = notificationTitle;
+                // Use the styled success message helper instead of plain SnackBar
+                context.showSuccessMessage(notificationTitle);
+              }
             }
           } catch (e, stackTrace) {
             // Log exception
@@ -156,6 +205,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
           );
         },
+      ),
       ),
     );
   }

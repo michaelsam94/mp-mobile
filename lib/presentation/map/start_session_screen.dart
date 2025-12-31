@@ -26,14 +26,7 @@ class StartSessionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<WebSocketCubit, WebSocketState>(
-      listener: (context, state) {
-        // Show success message when notification arrives (in ChargerScreen)
-        if (state is NotificationUpdate) {
-          context.showSuccessMessage(state.data.title);
-        }
-      },
-      child: Scaffold(
+    return Scaffold(
         body: BlocConsumer<ChargingCubit, ChargingState>(
           listener: (context, state) {
             if (state is ChargingError) {
@@ -134,7 +127,6 @@ class StartSessionScreen extends StatelessWidget {
             );
           },
         ),
-      ),
     );
   }
 }
