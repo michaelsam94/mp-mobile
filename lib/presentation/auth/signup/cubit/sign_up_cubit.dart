@@ -182,7 +182,30 @@ class SignUpCubit extends Cubit<SignUpState> {
       // Get Firebase Cloud Messaging token
       String? deviceToken;
       try {
-        deviceToken = await FirebaseMessaging.instance.getToken();
+        final messaging = FirebaseMessaging.instance;
+        
+        // On iOS, get APNS token first
+        if (Platform.isIOS) {
+          try {
+            final apnsToken = await messaging.getAPNSToken();
+            if (kDebugMode) {
+              print('APNS Token: $apnsToken');
+            }
+            // Wait a bit if APNS token is not available yet
+            if (apnsToken == null) {
+              if (kDebugMode) {
+                print('APNS token not available yet, waiting...');
+              }
+              await Future.delayed(const Duration(milliseconds: 500));
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error getting APNS token: $e');
+            }
+          }
+        }
+        
+        deviceToken = await messaging.getToken();
         if (kDebugMode) {
           print('FCM Token: $deviceToken');
         }
@@ -194,19 +217,23 @@ class SignUpCubit extends Cubit<SignUpState> {
         deviceToken = null;
       }
 
+      // Build form data - always include device_token
+      final formDataMap = <String, dynamic>{
+        "email": email,
+        "password": pass,
+        "mobile_number": phone,
+        "country_code": countryCode,
+        "full_name": name,
+        "device_token": (deviceToken != null && deviceToken.isNotEmpty) ? deviceToken : "device_token",
+      };
+      
+      if (imageFile != null) {
+        formDataMap["media"] = await MultipartFile.fromFile(imageFile.path);
+      }
+
       var response = await DioHelper.postData(
         url: EndPoints.register,
-        data: FormData.fromMap({
-          "email": email,
-          "password": pass,
-          "mobile_number": phone,
-          "country_code": countryCode,
-          "full_name": name,
-          "device_token": deviceToken ?? "",
-          "media": imageFile == null
-              ? null
-              : await MultipartFile.fromFile(imageFile.path),
-        }),
+        data: FormData.fromMap(formDataMap),
         auth: false,
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
