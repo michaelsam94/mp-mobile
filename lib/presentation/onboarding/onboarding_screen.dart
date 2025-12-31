@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
@@ -13,6 +14,8 @@ class OnboardingScreen extends StatelessWidget {
     if (currentIndex < totalTips - 1) {
       OnBoardingCubit.get(context).changeIndex(++currentIndex);
     } else {
+      // Mark onboarding as completed when user finishes
+      CacheHelper.setOnboardingCompleted();
       context.goTo(LoginScreen());
     }
   }

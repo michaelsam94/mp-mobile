@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mega_plus/core/helpers/addons_functions.dart';
-import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
@@ -203,153 +201,156 @@ class StationDetailsSheet extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                  SizedBox(height: 8),
-                  Text(
-                    'Station Details',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 18),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      "assets/images/onboarding1.png",
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(height: 18),
-                  Row(
-                    children: [
-                      _statusBadge(_formatStatus(station.status ?? 'available')),
-                      SizedBox(width: 12),
-                      Text(
-                        'Opens 24 hours',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Image.asset(
-                        _getStationIconPath(station),
-                        width: 32,
-                        height: 32,
-                      ),
-                      SizedBox(width: 6),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              station.name ?? 'Unknown Station',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            SizedBox(height: 3),
-                            Text(
-                              station.address ?? '',
-                              style: TextStyle(color: Colors.grey[800], fontSize: 14),
-                            ),
-                            if (station.city != null) ...[
-                              SizedBox(height: 2),
-                              Text(
-                                station.city ?? '',
-                                style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      if (CacheHelper.checkLogin() == 3)
-                        InkWell(
-                          onTap: () async {
-                            final cubit = StationDetailsCubit.get(context);
-                            final isFav = station.isFavourite ?? false;
-                            var done = await cubit.favStation(!isFav, station.id ?? 0);
-                            if (done) {
-                              context.showSuccessMessage(
-                                isFav ? "Removed from favorites" : "Added to favorites",
-                              );
-                            } else {
-                              context.showErrorMessage(
-                                "Failed to update favorite, please try again later",
-                              );
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Icon(
-                              (station.isFavourite ?? false)
-                                  ? Icons.star
-                                  : Icons.star_border,
-                              color: AppColors.primary,
-                              size: 28,
-                            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                GestureDetector(
+                  onVerticalDragUpdate: (details) {
+                    if (details.delta.dy > 0) {
+                      // Dragging down - close the bottom sheet
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                      InkWell(
-                        onTap: () async {
-                          if (station.latitude != null && station.longitude != null) {
-                            await _openGoogleMapsDirections(
-                              context,
-                              station.latitude!,
-                              station.longitude!,
-                            );
-                          }
-                        },
-                        child: SvgPicture.asset(
-                          "assets/icons/navigation.svg",
-                          width: 32,
+                        SizedBox(height: 8),
+                        Text(
+                          'Station Details',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Fixed header content
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 18),
+                      _buildImageCarousel(station),
+                      SizedBox(height: 18),
+                      Row(
+                        children: [
+                          _statusBadge(_formatStatus(station.status ?? 'available')),
+                          SizedBox(width: 12),
+                          Text(
+                            'Opens 24 hours',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Image.asset(
+                            _getStationIconPath(station),
+                            width: 50,
+                            height: 50,
+                          ),
+                          SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  station.name ?? 'Unknown Station',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  station.address ?? '',
+                                  style: TextStyle(color: Colors.grey[800], fontSize: 14),
+                                ),
+                                if (station.city != null) ...[
+                                  SizedBox(height: 2),
+                                  Text(
+                                    station.city ?? '',
+                                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              if (station.latitude != null && station.longitude != null) {
+                                await _openGoogleMapsDirections(
+                                  context,
+                                  station.latitude!,
+                                  station.longitude!,
+                                );
+                              }
+                            },
+                            child: SvgPicture.asset(
+                              "assets/icons/navigation.svg",
+                              width: 32,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 18),
+                      Divider(height: 1, color: Color(0xffE6ECEF)),
+                      SizedBox(height: 18),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Connectors Types',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
+                      SizedBox(height: 12),
                     ],
                   ),
-                  SizedBox(height: 18),
-                  Divider(height: 1, color: Color(0xffE6ECEF)),
-                  SizedBox(height: 18),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Connectors Types',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  if (station.guns != null && station.guns!.isNotEmpty)
-                    ...station.guns!.map((gun) => ConnectorCard(gun: gun)).toList()
-                  else
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'No connectors available',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                // Scrollable connectors section
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      if (station.guns != null && station.guns!.isNotEmpty)
+                        ...station.guns!.map((gun) => ConnectorCard(gun: gun)).toList()
+                      else
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            'No connectors available',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      SizedBox(height: 16), // Bottom padding
+                    ],
+                  ),
+                ),
+              ],
             ),
           );
         }
@@ -407,22 +408,43 @@ class StationDetailsSheet extends StatelessWidget {
     });
   }
 
-  /// Gets the appropriate station icon path based on DC/AC and status
+  /// Gets the appropriate station icon path based on ac_compatible and status
+  /// Uses marker icons from assets/icons/ instead of rounded icons
   String _getStationIconPath(StationResponseModel station) {
-    final hasDC = _hasDCGun(station);
+    // Use ac_compatible from API if available, otherwise fallback to checking guns
+    final isDC = station.acCompatible != null 
+        ? !(station.acCompatible ?? false)  // If ac_compatible is true, it's AC (not DC)
+        : _hasDCGun(station);  // Fallback to checking guns if ac_compatible not available
+    
     final status = station.status?.toLowerCase() ?? 'available';
     
-    String statusKey;
-    if (status == 'inuse' || status == 'in_use') {
-      statusKey = 'inuse';
-    } else if (status == 'unavailable') {
-      statusKey = hasDC ? 'unavailable' : 'unavailabe'; // Note: AC has typo in filename
+    if (isDC) {
+      // DC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/dc_available.png';
+        case 'unavailable':
+          return 'assets/icons/dc_unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/dc_inuse.png';
+        default:
+          return 'assets/icons/dc_available.png';
+      }
     } else {
-      statusKey = 'available';
+      // AC marker icons
+      switch (status) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png';
+        default:
+          return 'assets/icons/ac.png';
+      }
     }
-    
-    final prefix = hasDC ? 'dc' : 'ac';
-    return 'assets/images/${prefix}_$statusKey.png';
   }
 
   String _formatStatus(String? status) {
@@ -475,6 +497,170 @@ class StationDetailsSheet extends StatelessWidget {
           color: colorText,
         ),
       ),
+    );
+  }
+
+  Widget _buildImageCarousel(StationResponseModel station) {
+    final imageUrls = station.imageUrls;
+    
+    // If no images, show placeholder
+    if (imageUrls.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          height: 200,
+          width: double.infinity,
+          color: Colors.grey[200],
+          child: Icon(
+            Icons.image_not_supported,
+            size: 50,
+            color: Colors.grey[400],
+          ),
+        ),
+      );
+    }
+
+    // Single image - no carousel needed
+    if (imageUrls.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          imageUrls[0],
+          height: 200,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              height: 200,
+              width: double.infinity,
+              color: Colors.grey[200],
+              child: Icon(
+                Icons.broken_image,
+                size: 50,
+                color: Colors.grey[400],
+              ),
+            );
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              height: 200,
+              width: double.infinity,
+              color: Colors.grey[200],
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    // Multiple images - show carousel
+    return _ImageCarouselWidget(imageUrls: imageUrls);
+  }
+}
+
+class _ImageCarouselWidget extends StatefulWidget {
+  final List<String> imageUrls;
+
+  const _ImageCarouselWidget({required this.imageUrls});
+
+  @override
+  State<_ImageCarouselWidget> createState() => _ImageCarouselWidgetState();
+}
+
+class _ImageCarouselWidgetState extends State<_ImageCarouselWidget> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: 200,
+            width: double.infinity,
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              itemCount: widget.imageUrls.length,
+              itemBuilder: (context, index) {
+                return Image.network(
+                  widget.imageUrls[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 50,
+                        color: Colors.grey[400],
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        // Page indicators
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            widget.imageUrls.length,
+            (index) => Container(
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentPage == index
+                    ? AppColors.primary
+                    : Colors.grey[300],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -622,6 +808,8 @@ void showStationDetails(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
+    enableDrag: true,
+    isDismissible: true,
     builder: (_) => BlocProvider.value(
       value: StationDetailsCubit.get(context),
       child: StationDetailsSheet(),

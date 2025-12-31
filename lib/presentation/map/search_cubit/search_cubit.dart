@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
+import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:meta/meta.dart';
@@ -272,30 +274,79 @@ class SearchCubit extends Cubit<SearchState> {
     });
   }
 
-  // Get the appropriate icon path for a station based on status and DC connector presence
+  // Get the appropriate icon path for a station based on status and ac_compatible
   String getStationIconPath(StationResponseModel station) {
-    String status = station.status ?? 'available';
-    bool isDC = hasDCConnector(station);
+    // Use ac_compatible from API if available, otherwise fallback to checking guns
+    final isDC = station.acCompatible != null 
+        ? !(station.acCompatible ?? false)  // If ac_compatible is true, it's AC (not DC)
+        : hasDCConnector(station);  // Fallback to checking guns if ac_compatible not available
+    
+    final statusLower = (station.status ?? 'available').toLowerCase();
 
     if (isDC) {
-      switch (status) {
+      // DC marker icons
+      switch (statusLower) {
         case 'available':
           return 'assets/icons/dc_available.png';
         case 'unavailable':
           return 'assets/icons/dc_unavailable.png';
-        case 'inUse':
+        case 'inuse':
+        case 'in_use':
           return 'assets/icons/dc_inuse.png';
         default:
           return 'assets/icons/dc_available.png';
       }
     } else {
-      // For non-DC stations, use the regular AC icon
-      return 'assets/icons/ac.png';
+      // AC marker icons
+      switch (statusLower) {
+        case 'available':
+          return 'assets/icons/ac.png';
+        case 'unavailable':
+          return 'assets/icons/unavailable.png';
+        case 'inuse':
+        case 'in_use':
+          return 'assets/icons/use.png';
+        default:
+          return 'assets/icons/ac.png';
+      }
     }
   }
 
+  // Update station favorite status in cached lists (called from other cubits)
+  void updateStationFavorite(int id, bool isFav) {
+    // Update nearby stations
+    for (var station in nearbyStations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        break;
+      }
+    }
+    // Update filtered nearby stations
+    for (var station in filteredNearbyStations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        break;
+      }
+    }
+    // Update cached stations
+    for (var station in stations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        break;
+      }
+    }
+    // Update filtered stations
+    for (var station in filteredStations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        break;
+      }
+    }
+    emit(SearchUpdatedState());
+  }
+
   //add station to favouries
-  Future<bool> favStation(bool isFav, int id) async {
+  Future<bool> favStation(bool isFav, int id, {BuildContext? context}) async {
     try {
       bool success = false;
       if (isFav) {
@@ -317,28 +368,18 @@ class SearchCubit extends Cubit<SearchState> {
       }
 
       if (success) {
-        // Update local state for nearby stations
-        for (var station in nearbyStations) {
-          if (station.id == id) {
-            station.isFavourite = isFav;
-            break;
+        // Update local state
+        updateStationFavorite(id, isFav);
+        
+        // Update MapCubit cached list if context is provided
+        if (context != null) {
+          try {
+            MapCubit.get(context).updateStationFavorite(id, isFav);
+          } catch (e) {
+            // MapCubit might not be available, ignore
           }
         }
-        // Update local state for cached stations
-        for (var station in stations) {
-          if (station.id == id) {
-            station.isFavourite = isFav;
-            break;
-          }
-        }
-        // Update filtered stations
-        for (var station in filteredStations) {
-          if (station.id == id) {
-            station.isFavourite = isFav;
-            break;
-          }
-        }
-        emit(SearchUpdatedState());
+        
         return true;
       } else {
         return false;

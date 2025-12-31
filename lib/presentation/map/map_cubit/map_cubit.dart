@@ -156,8 +156,18 @@ class MapCubit extends Cubit<MapState> {
     print("_loadIcons: Finished loading all icons");
   }
 
+  // Normalize status to match icon cache keys (available, unavailable, inUse)
+  String _normalizeStatus(String status) {
+    final statusLower = status.toLowerCase();
+    if (statusLower == 'inuse' || statusLower == 'in_use') {
+      return 'inUse';
+    }
+    return statusLower;
+  }
+
   // Check if station has at least one DC connector
   // DC connectors: CCS2, CCS2 / GB-T, CHAdeMO, Tesla
+  // Used as fallback when ac_compatible is not available
   bool _hasDCConnector(StationResponseModel station) {
     if (station.guns == null || station.guns!.isEmpty) return false;
     return station.guns!.any((gun) {
@@ -366,10 +376,17 @@ class MapCubit extends Cubit<MapState> {
         var station = cluster.stations.first;
         if (station.latitude == null || station.longitude == null) continue;
         
-        // Determine icon based on status and DC connector presence
-        String status = station.status ?? 'available';
+        // Determine icon based on status and ac_compatible
+        String statusRaw = station.status ?? 'available';
+        String status = _normalizeStatus(statusRaw);
+        
+        // Use ac_compatible from API if available, otherwise fallback to checking guns
+        final isDC = station.acCompatible != null 
+            ? !(station.acCompatible ?? false)  // If ac_compatible is true, it's AC (not DC)
+            : _hasDCConnector(station);  // Fallback to checking guns if ac_compatible not available
+        
         String iconKey = status;
-        if (_hasDCConnector(station)) {
+        if (isDC) {
           iconKey = '${status}_dc';
         }
         
@@ -559,6 +576,18 @@ class MapCubit extends Cubit<MapState> {
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
 
+  // Update station favorite status in cached list (called from other cubits)
+  void updateStationFavorite(int id, bool isFav) {
+    for (var station in mapStations) {
+      if (station.id == id) {
+        station.isFavourite = isFav;
+        // Rebuild markers to reflect favorite status (fire and forget)
+        _updateClusters();
+        break;
+      }
+    }
+  }
+
   // Add/remove station from favorites
   Future<bool> favStation(bool isFav, int id) async {
     try {
@@ -583,14 +612,7 @@ class MapCubit extends Cubit<MapState> {
 
       if (success) {
         // Update local state
-        for (var station in mapStations) {
-          if (station.id == id) {
-            station.isFavourite = isFav;
-            break;
-          }
-        }
-        // Rebuild markers to reflect favorite status
-        await _updateClusters();
+        updateStationFavorite(id, isFav);
         return true;
       } else {
         return false;

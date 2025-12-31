@@ -32,7 +32,22 @@ class CacheHelper {
   }
 
   static Future<bool> logout() async {
-    return await _preferences!.clear();
+    // Save onboarding completed flag before clearing
+    final onboardingCompleted = _preferences!.getBool(CacheKeys.onboardingCompleted.name) ?? false;
+    final result = await _preferences!.clear();
+    // Restore onboarding completed flag after logout
+    if (onboardingCompleted) {
+      await _preferences!.setBool(CacheKeys.onboardingCompleted.name, true);
+    }
+    return result;
+  }
+
+  static Future<bool> setOnboardingCompleted() async {
+    return await _preferences!.setBool(CacheKeys.onboardingCompleted.name, true);
+  }
+
+  static bool isOnboardingCompleted() {
+    return _preferences!.getBool(CacheKeys.onboardingCompleted.name) ?? false;
   }
 
   static Future login(UserCacheModel user) async {

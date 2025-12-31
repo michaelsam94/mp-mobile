@@ -20,12 +20,20 @@ class SplashScreen extends StatelessWidget {
       if (context.mounted) {
         switch (CacheHelper.checkLogin()) {
           case 1:
-            context.goOff(
-              BlocProvider(
-                create: (context) => OnBoardingCubit(),
-                child: OnboardingScreen(),
-              ),
-            );
+            // Check if onboarding has been completed
+            // Only show onboarding on first install
+            if (!CacheHelper.isOnboardingCompleted()) {
+              // First time - show onboarding
+              context.goOff(
+                BlocProvider(
+                  create: (context) => OnBoardingCubit(),
+                  child: OnboardingScreen(),
+                ),
+              );
+            } else {
+              // Onboarding already completed - go to login
+              context.goOff(LoginScreen());
+            }
             break;
           case 2:
             bool refreshed = await DioHelper.refreshToken();
