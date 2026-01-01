@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
 
     // Check if user has vehicles
     final vehiclesCubit = VehiclesCubit.get(context);
-    
+
     // Check vehicles list - if empty, show message and navigate to vehicles screen
     if (vehiclesCubit.vehicles.isEmpty) {
       context.showErrorMessage("Please add vehicle");
@@ -86,13 +86,13 @@ class _MainScreenState extends State<MainScreen> {
                   _handleChargeButtonTap(context);
                   return;
                 }
-                
+
                 // Check if user is logged in for other tabs (except map which is index 0)
                 if (index != 0 && CacheHelper.checkLogin() != 3) {
                   GuestBottomSheet.show(context);
                   return;
                 }
-                
+
                 setState(() {
                   _currentIndex = index;
                 });
@@ -164,10 +164,10 @@ class _MainScreenState extends State<MainScreen> {
                 _handleChargeButtonTap(context);
               },
               child: Image.asset(
-                  "assets/icons/ic_charge.png",
-                  width: 62,
-                  height: 62,
-                ),
+                "assets/icons/ic_charge.png",
+                width: 60,
+                height: 60,
+              ),
             ),
           ),
         ],
