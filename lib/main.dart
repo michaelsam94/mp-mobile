@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -38,8 +40,17 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
       showWhen: true,
     );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const DarwinNotificationDetails iosPlatformChannelSpecifics =
+        DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iosPlatformChannelSpecifics,
+    );
 
     await flutterLocalNotificationsPlugin.show(
       message.hashCode,
@@ -68,8 +79,18 @@ void main() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
     const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
@@ -153,7 +174,25 @@ void main() async {
   }
 
   // Get and log Firebase token
+  // On iOS, we need to get APNS token first
   try {
+    if (Platform.isIOS) {
+      // Request APNS token first on iOS
+      final apnsToken = await messaging.getAPNSToken();
+      if (kDebugMode) {
+        print('APNS Token: $apnsToken');
+      }
+      
+      // Wait a bit for APNS token to be set
+      if (apnsToken == null) {
+        if (kDebugMode) {
+          print('Waiting for APNS token...');
+        }
+        // Retry after a short delay
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+    
     final token = await messaging.getToken();
     if (kDebugMode) {
       print('Firebase Token: $token');
