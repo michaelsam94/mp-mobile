@@ -163,25 +163,11 @@ class _MainScreenState extends State<MainScreen> {
               onTap: () {
                 _handleChargeButtonTap(context);
               },
-              child: Container(
-                height: 62,
-                width: 62,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 16,
-                    ),
-                  ],
+              child: Image.asset(
+                  "assets/icons/ic_charge.png",
+                  width: 62,
+                  height: 62,
                 ),
-                child: const Icon(
-                  Icons.flash_on,
-                  color: Colors.white,
-                  size: 36,
-                ),
-              ),
             ),
           ),
         ],

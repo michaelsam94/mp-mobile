@@ -61,7 +61,7 @@ class SplashScreen extends StatelessWidget {
               alignment: AlignmentGeometry.center,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: SvgPicture.asset("assets/icons/icon_black_word.svg"),
+                child: Image.asset("assets/icons/ic_black_word.png"),
               ),
             ),
             Align(
