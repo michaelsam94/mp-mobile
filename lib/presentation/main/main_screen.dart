@@ -72,108 +72,110 @@ class _MainScreenState extends State<MainScreen> {
         index: _currentIndex == 2 ? 0 : _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Stack(
-        alignment: Alignment.bottomCenter,
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            height: 90,
-            alignment: AlignmentDirectional.bottomCenter,
-            padding: const EdgeInsets.only(bottom: 10),
-            child: ClipRect(
-              child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                if (index == 2) {
+      bottomNavigationBar: SafeArea(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              height: 70,
+              alignment: AlignmentDirectional.bottomCenter,
+              padding: const EdgeInsets.only(bottom: 10),
+              child: ClipRect(
+                child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  if (index == 2) {
+                    _handleChargeButtonTap(context);
+                    return;
+                  }
+
+                  // Check if user is logged in for other tabs (except map which is index 0)
+                  if (index != 0 && CacheHelper.checkLogin() != 3) {
+                    GuestBottomSheet.show(context);
+                    return;
+                  }
+
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                type: BottomNavigationBarType.fixed,
+                elevation: 0,
+                backgroundColor: Colors.white,
+                selectedItemColor: AppColors.primary,
+                unselectedItemColor: const Color(0xffB6B6B6),
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: SvgPicture.asset("assets/icons/map_nav.svg"),
+                    label: "Map",
+                    activeIcon: SvgPicture.asset(
+                      "assets/icons/map_nav.svg",
+                      colorFilter: ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SvgPicture.asset("assets/icons/wallet_nav.svg"),
+                    label: "Wallet",
+                    activeIcon: SvgPicture.asset(
+                      "assets/icons/wallet_nav.svg",
+                      colorFilter: ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SizedBox(width: 48), // for spacing (main FAB overlaps)
+                    label: "",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SvgPicture.asset("assets/icons/history_nav.svg"),
+                    label: "History",
+                    activeIcon: SvgPicture.asset(
+                      "assets/icons/history_nav.svg",
+                      colorFilter: ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SvgPicture.asset("assets/icons/profile_nav.svg"),
+                    label: "Profile",
+                    activeIcon: SvgPicture.asset(
+                      "assets/icons/profile_nav.svg",
+                      colorFilter: ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ],
+                ),
+              ),
+            ),
+
+            Positioned(
+              top: -20,
+              child: GestureDetector(
+                onTap: () {
                   _handleChargeButtonTap(context);
-                  return;
-                }
-
-                // Check if user is logged in for other tabs (except map which is index 0)
-                if (index != 0 && CacheHelper.checkLogin() != 3) {
-                  GuestBottomSheet.show(context);
-                  return;
-                }
-
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              type: BottomNavigationBarType.fixed,
-              elevation: 0,
-              backgroundColor: Colors.white,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: const Color(0xffB6B6B6),
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              items: [
-                BottomNavigationBarItem(
-                  icon: SvgPicture.asset("assets/icons/map_nav.svg"),
-                  label: "Map",
-                  activeIcon: SvgPicture.asset(
-                    "assets/icons/map_nav.svg",
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
+                },
+                child: Image.asset(
+                  "assets/icons/ic_charge.png",
+                  width: 60,
+                  height: 60,
                 ),
-                BottomNavigationBarItem(
-                  icon: SvgPicture.asset("assets/icons/wallet_nav.svg"),
-                  label: "Wallet",
-                  activeIcon: SvgPicture.asset(
-                    "assets/icons/wallet_nav.svg",
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-                BottomNavigationBarItem(
-                  icon: SizedBox(width: 48), // for spacing (main FAB overlaps)
-                  label: "",
-                ),
-                BottomNavigationBarItem(
-                  icon: SvgPicture.asset("assets/icons/history_nav.svg"),
-                  label: "History",
-                  activeIcon: SvgPicture.asset(
-                    "assets/icons/history_nav.svg",
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-                BottomNavigationBarItem(
-                  icon: SvgPicture.asset("assets/icons/profile_nav.svg"),
-                  label: "Profile",
-                  activeIcon: SvgPicture.asset(
-                    "assets/icons/profile_nav.svg",
-                    colorFilter: ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ],
               ),
             ),
-          ),
-
-          Positioned(
-            top: -20,
-            child: GestureDetector(
-              onTap: () {
-                _handleChargeButtonTap(context);
-              },
-              child: Image.asset(
-                "assets/icons/ic_charge.png",
-                width: 60,
-                height: 60,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
