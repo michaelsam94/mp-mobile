@@ -35,12 +35,20 @@ extension AddonsFunctions on BuildContext {
 
   // Show error snackbar message
   void showErrorMessage(String message) {
+    final mediaQuery = MediaQuery.of(this);
+    final topMargin = mediaQuery.padding.top + 130;
+    final screenHeight = mediaQuery.size.height;
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red.shade700,
         behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        margin: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: topMargin,
+          bottom: screenHeight - topMargin - 80,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         duration: Duration(seconds: 3),
       ),
@@ -49,12 +57,20 @@ extension AddonsFunctions on BuildContext {
 
   // Show success snackbar message
   void showSuccessMessage(String message) {
+    final mediaQuery = MediaQuery.of(this);
+    final topMargin = mediaQuery.padding.top + 130;
+    final screenHeight = mediaQuery.size.height;
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green.shade600,
         behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        margin: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: topMargin,
+          bottom: screenHeight - topMargin - 80,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         duration: Duration(seconds: 3),
       ),
