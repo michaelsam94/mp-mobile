@@ -74,12 +74,14 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: Stack(
         alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
         children: [
           Container(
-            height: 120,
+            height: 90,
             alignment: AlignmentDirectional.bottomCenter,
-            padding: const EdgeInsets.only(bottom: 20),
-            child: BottomNavigationBar(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: ClipRect(
+              child: BottomNavigationBar(
               currentIndex: _currentIndex,
               onTap: (index) {
                 if (index == 2) {
@@ -154,11 +156,12 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ],
+              ),
             ),
           ),
 
           Positioned(
-            top: 5,
+            top: -30,
             child: GestureDetector(
               onTap: () {
                 _handleChargeButtonTap(context);
