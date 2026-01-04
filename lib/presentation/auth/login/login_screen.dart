@@ -47,17 +47,13 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 16),
-                  IconButton(
-                    icon: SvgPicture.asset("assets/icons/back.svg"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  SizedBox(height: 12),
+                  Image.asset("assets/icons/ic_black_word.png",width: 400,height: 50,),
                   SizedBox(height: 12),
                   Row(
                     children: [
                       Text(
-                        'Hello again',
+                        'Welcome! ',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -70,7 +66,7 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'Welcome back! Log in to continue your charging journey.',
+                    'Welcome to Mega Plug, continue your charging journey.',
                     style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
                   SizedBox(height: 40),

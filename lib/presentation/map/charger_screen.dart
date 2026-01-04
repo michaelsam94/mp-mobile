@@ -21,7 +21,9 @@ import '../../presentation/vehicles/current_vehicle_charging_screen.dart';
 import '../../presentation/vehicles/cubit/current_vehicle_charging_cubit.dart';
 
 class ChargerScreen extends StatefulWidget {
-  const ChargerScreen({super.key});
+  final bool fromHistory;
+  
+  const ChargerScreen({super.key, this.fromHistory = false});
 
   @override
   State<ChargerScreen> createState() => _ChargerScreenState();
@@ -33,7 +35,16 @@ class _ChargerScreenState extends State<ChargerScreen> {
   String? _lastNotificationTitle; // Track last notification to prevent duplicates
   
   void _handleBackPressed() {
-    // Navigate directly to CurrentVehicleChargingScreen and refresh
+    // If opened from history, just pop back to history screen
+    if (widget.fromHistory) {
+      if (kDebugMode) {
+        print('ChargerScreen: Back button pressed, popping back to HistoryScreen');
+      }
+      Navigator.pop(context);
+      return;
+    }
+    
+    // Otherwise, navigate to CurrentVehicleChargingScreen and refresh
     if (kDebugMode) {
       print('ChargerScreen: Back button pressed, navigating to CurrentVehicleChargingScreen');
     }
@@ -99,42 +110,12 @@ class _ChargerScreenState extends State<ChargerScreen> {
                 }
                 isSessionStopped = true;
                 stoppedData = session.stoppedData!;
-              // showDialog(
-              //   context: context,
-              //   barrierDismissible: false,
-              //   builder: (_) => AlertDialog(
-              //     title: Text('Charging Complete'),
-              //     content: Column(
-              //       mainAxisSize: MainAxisSize.min,
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text('Reason: ${stopped.stopReason}'),
-              //         SizedBox(height: 8),
-              //         Text(
-              //           'Energy Delivered: ${stopped.energyDeliveredValue.toStringAsFixed(2)} kWh',
-              //         ),
-              //         Text(
-              //           'Duration: ${(stopped.durationValue / 60).toStringAsFixed(1)} min',
-              //         ),
-              //       ],
-              //     ),
-              //     actions: [
-              //       TextButton(
-              //         onPressed: () {
-              //           Navigator.of(context).pop(); // Close dialog
-              //           Navigator.of(context).pop(); // Go back
-              //         },
-              //         child: Text('OK'),
-              //       ),
-              //     ],
-              //   ),
-              // );
+              }
             }
-          }
 
             if (state is NotificationUpdate) {
               // Only show notification if it's different from the last one (prevent duplicates)
-              final notificationTitle = state.data.title ?? state.data.message ?? '';
+              final notificationTitle = state.data.title.isNotEmpty ? state.data.title : state.data.message;
               if (notificationTitle.isNotEmpty && notificationTitle != _lastNotificationTitle) {
                 _lastNotificationTitle = notificationTitle;
                 // Use the styled success message helper instead of plain SnackBar

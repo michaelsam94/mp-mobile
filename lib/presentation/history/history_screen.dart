@@ -15,7 +15,6 @@ import 'cubit/history_cubit.dart';
 import 'history_model.dart';
 import 'history_repository.dart';
 import '../../core/services/charging_api_service.dart';
-import '../../core/helpers/addons_functions.dart';
 import '../../core/services/websocket_cubit/websocket_cubit.dart';
 import '../map/charger_screen.dart';
 
@@ -643,7 +642,7 @@ class HistoryView extends StatelessWidget {
           }
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ChargerScreen()),
+            MaterialPageRoute(builder: (context) => const ChargerScreen(fromHistory: true)),
           );
           if (kDebugMode) {
             print('HistoryScreen: Returned from ChargerScreen with result: $result');
@@ -731,7 +730,7 @@ class HistoryView extends StatelessWidget {
           }
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ChargerScreen()),
+            MaterialPageRoute(builder: (context) => const ChargerScreen(fromHistory: true)),
           );
           if (kDebugMode) {
             print('HistoryScreen: Returned from ChargerScreen with result: $result');
