@@ -48,21 +48,19 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                 children: [
                   SizedBox(height: 16),
                   SizedBox(height: 12),
-                  Image.asset("assets/icons/ic_black_word.png",width: 400,height: 50,),
+                  Image.asset(
+                    "assets/icons/ic_black_word.png",
+                    width: 400,
+                    height: 50,
+                  ),
                   SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        'Welcome! ',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff121212),
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Text('👋', style: TextStyle(fontSize: 26)),
-                    ],
+                  Text(
+                    'Welcome! ',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff121212),
+                    ),
                   ),
                   SizedBox(height: 16),
                   Text(
