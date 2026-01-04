@@ -76,7 +76,7 @@ class _MainScreenState extends State<MainScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           Container(
-            height: 120,
+            height: 150,
             alignment: AlignmentDirectional.bottomCenter,
             padding: const EdgeInsets.only(bottom: 20),
             child: BottomNavigationBar(
