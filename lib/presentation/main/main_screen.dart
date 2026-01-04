@@ -161,7 +161,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
 
           Positioned(
-            top: -30,
+            top: -20,
             child: GestureDetector(
               onTap: () {
                 _handleChargeButtonTap(context);
