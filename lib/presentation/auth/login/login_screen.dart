@@ -53,7 +53,7 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                     width: 400,
                     height: 50,
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 30),
                   Text(
                     'Welcome! ',
                     style: TextStyle(
