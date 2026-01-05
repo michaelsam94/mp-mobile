@@ -81,47 +81,59 @@ class StartSessionScreen extends StatelessWidget {
                 ),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  Padding(
+                    padding: EdgeInsets.only(top: 60),
+                    child: Image.asset("assets/icons/ic_plug.png",width: 72,height: 72,fit: BoxFit.fill,),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    "Please plug in the connector,\n then tap Start Session",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+                  ),
+                  Spacer(),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 60),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 32),
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        // Get default RFID from ProfileCubit
-                        final defaultRFID = ProfileCubit.get(context).defaultRFID;
-                        if (defaultRFID?.code == null || defaultRFID!.code!.isEmpty) {
-                          context.showErrorMessage("No default RFID card found. Please add an RFID card.");
-                          return;
-                        }
-                        
-                        // Start charging with default RFID
-                        // Navigation will happen in listener on success, error toast on failure
-                        ChargingCubit.get(context).startCharging(
-                          chargerId,
-                          int.parse(connectorId),
-                          defaultRFID.code!,
-                          vehicleId: vehicleId,
-                        );
-                      },
-                      child: Text(
-                        "Start Session",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        onPressed: () {
+                          // Get default RFID from ProfileCubit
+                          final defaultRFID = ProfileCubit.get(context).defaultRFID;
+                          if (defaultRFID?.code == null || defaultRFID!.code!.isEmpty) {
+                            context.showErrorMessage("No default RFID card found. Please add an RFID card.");
+                            return;
+                          }
+                          
+                          // Start charging with default RFID
+                          // Navigation will happen in listener on success, error toast on failure
+                          ChargingCubit.get(context).startCharging(
+                            chargerId,
+                            int.parse(connectorId),
+                            defaultRFID.code!,
+                            vehicleId: vehicleId,
+                          );
+                        },
+                        child: Text(
+                          "Start Session",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 60),
                 ],
               ),
             );
