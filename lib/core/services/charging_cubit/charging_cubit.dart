@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../helpers/network/dio_helper.dart';
 import '../charging_api_service.dart';
 
 part 'charging_state.dart';
@@ -51,6 +52,12 @@ class ChargingCubit extends Cubit<ChargingState> {
         emit(ChargingError(errorMessage));
       }
     } on DioException catch (e) {
+      // Check if it's a network error that's already been handled (dialog shown)
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Network error dialog already shown, don't emit error state to avoid duplicate toasts
+        emit(ChargingInitial());
+        return;
+      }
       if (kDebugMode) {
         print(e.message);
       }
@@ -62,6 +69,13 @@ class ChargingCubit extends Cubit<ChargingState> {
       } else {
         emit(ChargingError('Failed to start charging'));
       }
+    } on NetworkException catch (e) {
+      // Network error dialog already shown, don't emit error state to avoid duplicate toasts
+      if (e.dialogShown) {
+        emit(ChargingInitial());
+        return;
+      }
+      emit(ChargingError('Network error occurred'));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -90,10 +104,23 @@ class ChargingCubit extends Cubit<ChargingState> {
         emit(ChargingError(response.data['message']));
       }
     } on DioException catch (e) {
+      // Check if it's a network error that's already been handled (dialog shown)
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Network error dialog already shown, don't emit error state to avoid duplicate toasts
+        emit(ChargingInitial());
+        return;
+      }
       if (kDebugMode) {
         print(e.message);
       }
       emit(ChargingError('Failed to stop charging'));
+    } on NetworkException catch (e) {
+      // Network error dialog already shown, don't emit error state to avoid duplicate toasts
+      if (e.dialogShown) {
+        emit(ChargingInitial());
+        return;
+      }
+      emit(ChargingError('Network error occurred'));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

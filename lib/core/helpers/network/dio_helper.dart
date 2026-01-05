@@ -14,6 +14,12 @@ class TokenExpiredException implements Exception {
   TokenExpiredException([this.message = "Session expired, please login again"]);
 }
 
+class NetworkException implements Exception {
+  final String message;
+  final bool dialogShown;
+  NetworkException(this.message, {this.dialogShown = true});
+}
+
 class DioHelper {
   static late Dio dio;
   static bool _networkErrorDialogShown = false; // Track if network error dialog is already shown
@@ -80,10 +86,24 @@ class DioHelper {
           return;
         }
         
-        // Check for network errors
-        if (_isNetworkError(error) && !_networkErrorDialogShown) {
-          _networkErrorDialogShown = true;
-          _showNetworkErrorDialog();
+        // Check for network errors - handle centrally
+        if (_isNetworkError(error)) {
+          if (!_networkErrorDialogShown) {
+            _networkErrorDialogShown = true;
+            _showNetworkErrorDialog();
+          }
+          // Reject with NetworkException to prevent error propagation and duplicate toasts
+          handler.reject(
+            DioException(
+              requestOptions: error.requestOptions,
+              error: NetworkException(
+                'Network error: ${error.message ?? "Connection failed"}',
+                dialogShown: true,
+              ),
+              type: error.type,
+            ),
+          );
+          return;
         }
         
         handler.next(error);
@@ -228,9 +248,18 @@ class DioHelper {
         data: data,
       );
     } on DioException catch (e) {
+      // If it's a network error that's already been handled (dialog shown), throw NetworkException
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Re-throw as NetworkException to prevent duplicate error handling
+        throw NetworkException('Network error', dialogShown: true);
+      }
       if (kDebugMode) {
         print(e.message.toString());
       }
+      rethrow;
+    } on NetworkException {
+      // Network error already handled by interceptor (dialog shown)
+      // Re-throw to let caller know it's a network error, but no need to show toast
       rethrow;
     }
   }
@@ -265,9 +294,18 @@ class DioHelper {
         options: options,
       );
     } on DioException catch (e) {
+      // If it's a network error that's already been handled (dialog shown), throw NetworkException
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Re-throw as NetworkException to prevent duplicate error handling
+        throw NetworkException('Network error', dialogShown: true);
+      }
       if (kDebugMode) {
         print(e.message.toString());
       }
+      rethrow;
+    } on NetworkException {
+      // Network error already handled by interceptor (dialog shown)
+      // Re-throw to let caller know it's a network error, but no need to show toast
       rethrow;
     }
   }
@@ -299,9 +337,18 @@ class DioHelper {
         options: options,
       );
     } on DioException catch (e) {
+      // If it's a network error that's already been handled (dialog shown), throw NetworkException
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Re-throw as NetworkException to prevent duplicate error handling
+        throw NetworkException('Network error', dialogShown: true);
+      }
       if (kDebugMode) {
         print(e.message.toString());
       }
+      rethrow;
+    } on NetworkException {
+      // Network error already handled by interceptor (dialog shown)
+      // Re-throw to let caller know it's a network error, but no need to show toast
       rethrow;
     }
   }
@@ -333,9 +380,18 @@ class DioHelper {
         options: options,
       );
     } on DioException catch (e) {
+      // If it's a network error that's already been handled (dialog shown), throw NetworkException
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Re-throw as NetworkException to prevent duplicate error handling
+        throw NetworkException('Network error', dialogShown: true);
+      }
       if (kDebugMode) {
         print(e.message.toString());
       }
+      rethrow;
+    } on NetworkException {
+      // Network error already handled by interceptor (dialog shown)
+      // Re-throw to let caller know it's a network error, but no need to show toast
       rethrow;
     }
   }
@@ -361,9 +417,18 @@ class DioHelper {
     try {
       return await dio.delete(url, queryParameters: query, options: options,data: data);
     } on DioException catch (e) {
+      // If it's a network error that's already been handled (dialog shown), throw NetworkException
+      if (e.error is NetworkException && (e.error as NetworkException).dialogShown) {
+        // Re-throw as NetworkException to prevent duplicate error handling
+        throw NetworkException('Network error', dialogShown: true);
+      }
       if (kDebugMode) {
         print(e.message.toString());
       }
+      rethrow;
+    } on NetworkException {
+      // Network error already handled by interceptor (dialog shown)
+      // Re-throw to let caller know it's a network error, but no need to show toast
       rethrow;
     }
   }
