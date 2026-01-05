@@ -52,56 +52,65 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
-              Text(
-                'Delete Your account ?',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF212121),
-                ),
-              ),
-              SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        'Delete Your account ?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF212121),
+                        ),
+                      ),
+                      SizedBox(height: 16),
 
-              // Description
-              Text(
-                'Can you please share to us what was not working? We are fixing bugs as soon as we spot them. If something slipped through our fingers, we\'d be so grateful to be aware of it and fix it.',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF757575),
-                  height: 1.5,
-                ),
-              ),
-              SizedBox(height: 24),
+                      // Description
+                      Text(
+                        'Can you please share to us what was not working? We are fixing bugs as soon as we spot them. If something slipped through our fingers, we\'d be so grateful to be aware of it and fix it.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF757575),
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: 24),
 
-              // Text Field
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Color(0xFFE0E0E0), width: 1),
-                ),
-                child: TextField(
-                  controller: reasonController,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: TextStyle(fontSize: 14, color: Color(0xFF212121)),
-                  decoration: InputDecoration(
-                    hintText: 'Your explanation is entirely optional...',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFFBDBDBD),
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(16),
+                      // Text Field
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Color(0xFFE0E0E0), width: 1),
+                        ),
+                        child: TextField(
+                          controller: reasonController,
+                          maxLines: null,
+                          expands: true,
+                          textAlignVertical: TextAlignVertical.top,
+                          style: TextStyle(fontSize: 14, color: Color(0xFF212121)),
+                          decoration: InputDecoration(
+                            hintText: 'Your explanation is entirely optional...',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.all(16),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              Spacer(),
+              SizedBox(height: 24),
 
               // Continue Button
               SizedBox(

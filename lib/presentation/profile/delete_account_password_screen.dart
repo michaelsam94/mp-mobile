@@ -59,82 +59,91 @@ class _DeleteAccountPasswordScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
-              Text(
-                'Enter your Password',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF212121),
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // Description
-              Text(
-                'Confirm your identity by entering your password. You can\'t recover your account once it\'s deleted.',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF757575),
-                  height: 1.5,
-                ),
-              ),
-              SizedBox(height: 32),
-
-              // Password Label
-              Text(
-                'Password',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF212121),
-                ),
-              ),
-              SizedBox(height: 8),
-
-              // Password Field
-              Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Color(0xFFE0E0E0), width: 1),
-                ),
-                child: TextField(
-                  controller: passwordController,
-                  obscureText: obscurePassword,
-                  style: TextStyle(fontSize: 14, color: Color(0xFF212121)),
-                  decoration: InputDecoration(
-                    hintText: '••••••••••••',
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFFBDBDBD),
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          obscurePassword = !obscurePassword;
-                        });
-                      },
-                      icon: Icon(
-                        obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: Color(0xFFBDBDBD),
-                        size: 20,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        'Enter your Password',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF212121),
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 16),
+
+                      // Description
+                      Text(
+                        'Confirm your identity by entering your password. You can\'t recover your account once it\'s deleted.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF757575),
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: 32),
+
+                      // Password Label
+                      Text(
+                        'Password',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF212121),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+
+                      // Password Field
+                      Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Color(0xFFE0E0E0), width: 1),
+                        ),
+                        child: TextField(
+                          controller: passwordController,
+                          obscureText: obscurePassword,
+                          style: TextStyle(fontSize: 14, color: Color(0xFF212121)),
+                          decoration: InputDecoration(
+                            hintText: '••••••••••••',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFFBDBDBD),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  obscurePassword = !obscurePassword;
+                                });
+                              },
+                              icon: Icon(
+                                obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: Color(0xFFBDBDBD),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              Spacer(),
+              SizedBox(height: 24),
 
               // Delete Account Button
               BlocConsumer<ProfileCubit, ProfileState>(

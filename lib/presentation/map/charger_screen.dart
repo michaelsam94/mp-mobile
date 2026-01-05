@@ -9,7 +9,6 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -33,6 +32,8 @@ class _ChargerScreenState extends State<ChargerScreen> {
   SessionStoppedData? stoppedData;
   bool? isSessionStopped;
   String? _lastNotificationTitle; // Track last notification to prevent duplicates
+  bool _networkErrorDialogShown = false; // Track if network error dialog is already shown
+  bool _isDialogOpen = false; // Track if network error dialog is currently open
   
   void _handleBackPressed() {
     // If opened from history, just pop back to history screen
@@ -89,7 +90,10 @@ class _ChargerScreenState extends State<ChargerScreen> {
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: _handleBackPressed,
           ),
-          title: Text("Charging", style: TextStyle(color: Colors.black)),
+          title: Text(
+            (isSessionStopped == true) ? "Charged" : "Charging",
+            style: TextStyle(color: Colors.black),
+          ),
           centerTitle: true,
           backgroundColor: Colors.white,
           elevation: 1,
@@ -99,6 +103,30 @@ class _ChargerScreenState extends State<ChargerScreen> {
       body: BlocConsumer<WebSocketCubit, WebSocketState>(
         listener: (context, state) {
           try {
+            // Handle network errors
+            if (state is WebSocketError || state is WebSocketDisconnected) {
+              if (!_networkErrorDialogShown && context.mounted && !_isDialogOpen) {
+                _networkErrorDialogShown = true;
+                _isDialogOpen = true;
+                _showNetworkErrorDialog(context);
+              }
+              return;
+            }
+
+            // Reset network error flag when connection is restored
+            if (state is WebSocketConnected) {
+              _networkErrorDialogShown = false;
+              // Close dialog if it's still open
+              if (_isDialogOpen && context.mounted) {
+                _isDialogOpen = false;
+                try {
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  // Dialog might already be closed, ignore
+                }
+              }
+            }
+
             if (state is SessionUpdate) {
               final session = state.data;
 
@@ -108,8 +136,12 @@ class _ChargerScreenState extends State<ChargerScreen> {
                   // Only refresh history when session is first stopped
                   _refreshChargingHistory();
                 }
-                isSessionStopped = true;
-                stoppedData = session.stoppedData!;
+                if (context.mounted) {
+                  setState(() {
+                    isSessionStopped = true;
+                    stoppedData = session.stoppedData!;
+                  });
+                }
               }
             }
 
@@ -163,9 +195,13 @@ class _ChargerScreenState extends State<ChargerScreen> {
             }
           }
 
-          // Show shimmer if no meter data yet (initial loading state)
+          // Show loading if no meter data yet (initial loading state)
           if (meterData == null) {
-            return _buildShimmerLoading();
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            );
           }
 
           return SingleChildScrollView(
@@ -191,247 +227,6 @@ class _ChargerScreenState extends State<ChargerScreen> {
     );
   }
 
-  Widget _buildShimmerLoading() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            // Station info shimmer
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ShimmerWidget(
-                    width: 32,
-                    height: 40,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ShimmerWidget(
-                          width: double.infinity,
-                          height: 18,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        SizedBox(height: 8),
-                        ShimmerWidget(
-                          width: 150,
-                          height: 14,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  ShimmerWidget(
-                    width: 80,
-                    height: 28,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 24),
-            // Charge progress shimmer (circular)
-            Center(
-              child: ShimmerWidget(
-                width: 280,
-                height: 280,
-                borderRadius: BorderRadius.circular(140),
-              ),
-            ),
-            SizedBox(height: 28),
-            // Info tiles shimmer
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerWidget(
-                              width: double.infinity,
-                              height: 12,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: [
-                                ShimmerWidget(
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                SizedBox(width: 6),
-                                Expanded(
-                                  child: ShimmerWidget(
-                                    width: double.infinity,
-                                    height: 18,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerWidget(
-                              width: double.infinity,
-                              height: 12,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: [
-                                ShimmerWidget(
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                SizedBox(width: 6),
-                                Expanded(
-                                  child: ShimmerWidget(
-                                    width: double.infinity,
-                                    height: 18,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerWidget(
-                              width: double.infinity,
-                              height: 12,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: [
-                                ShimmerWidget(
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                SizedBox(width: 6),
-                                Expanded(
-                                  child: ShimmerWidget(
-                                    width: double.infinity,
-                                    height: 18,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ShimmerWidget(
-                              width: double.infinity,
-                              height: 12,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            SizedBox(height: 12),
-                            Row(
-                              children: [
-                                ShimmerWidget(
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                SizedBox(width: 6),
-                                Expanded(
-                                  child: ShimmerWidget(
-                                    width: double.infinity,
-                                    height: 18,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 24),
-            // Button shimmer
-            ShimmerWidget(
-              width: double.infinity,
-              height: 56,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildActionButton(BuildContext context, WebSocketState state, MeterValueData? meterData, String? transactionId) {
     final webSocketCubit = context.read<WebSocketCubit>();
@@ -922,6 +717,79 @@ class _ChargerScreenState extends State<ChargerScreen> {
       }
       // Silently fail - this is a background refresh
     }
+  }
+
+  void _showNetworkErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.wifi_off, color: Colors.red, size: 28),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Network Issue',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Connection lost. Please check your internet connection and try again.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[700],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _isDialogOpen = false;
+              Navigator.of(context).pop();
+              // Don't reset flag here - let it reset when connection succeeds
+              // Try to reconnect
+              context.read<WebSocketCubit>().connect();
+            },
+            child: Text(
+              'Retry',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _isDialogOpen = false;
+              Navigator.of(context).pop();
+              // Reset flag when user dismisses with OK
+              _networkErrorDialogShown = false;
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    ).then((_) {
+      // Reset dialog open flag when dialog is closed
+      _isDialogOpen = false;
+    });
   }
 
   Widget _infoTile(String title, String value, String icon) {

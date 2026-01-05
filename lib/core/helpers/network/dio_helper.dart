@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mega_plus/app_root.dart';
+import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import '../cache/cache_helper.dart';
 import '../cache/cache_keys.dart';
@@ -14,6 +16,7 @@ class TokenExpiredException implements Exception {
 
 class DioHelper {
   static late Dio dio;
+  static bool _networkErrorDialogShown = false; // Track if network error dialog is already shown
 
   static void init() {
     dio = Dio(
@@ -46,6 +49,9 @@ class DioHelper {
     // Add unauthorized interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
+        // Reset network error flag on successful response
+        _networkErrorDialogShown = false;
+        
         // Check if response indicates unauthorized
         if (response.statusCode == 401 || 
             (response.data is Map && 
@@ -74,6 +80,12 @@ class DioHelper {
           return;
         }
         
+        // Check for network errors
+        if (_isNetworkError(error) && !_networkErrorDialogShown) {
+          _networkErrorDialogShown = true;
+          _showNetworkErrorDialog();
+        }
+        
         handler.next(error);
       },
     ));
@@ -86,6 +98,92 @@ class DioHelper {
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
+  }
+
+  static bool _isNetworkError(DioException error) {
+    // Check for network-related errors
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.connectionError) {
+      return true;
+    }
+
+    // Check for SocketException (no internet connection)
+    if (error.error is SocketException) {
+      return true;
+    }
+
+    // Check for network-related error messages
+    final errorMessage = error.message?.toLowerCase() ?? '';
+    if (errorMessage.contains('network') ||
+        errorMessage.contains('connection') ||
+        errorMessage.contains('internet') ||
+        errorMessage.contains('socket') ||
+        errorMessage.contains('timeout') ||
+        errorMessage.contains('failed host lookup') ||
+        errorMessage.contains('no address associated with hostname')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static void _showNetworkErrorDialog() {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.wifi_off, color: Colors.red, size: 28),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Network Issue',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Connection lost. Please check your internet connection and try again.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[700],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _networkErrorDialogShown = false;
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    ).then((_) {
+      // Reset flag when dialog is closed
+      _networkErrorDialogShown = false;
+    });
   }
 
   static Future<Map<String, String>?> getAuthHeaders() async {
