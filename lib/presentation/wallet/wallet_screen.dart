@@ -219,16 +219,19 @@ class WalletScreen extends StatelessWidget {
                     right: 8,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          const Color(0xFF07C355),
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          "assets/images/logo.png",
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.contain,
+                      child: Opacity(
+                        opacity: 0.4,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            const Color(0xFF07C355),
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            "assets/icons/ic_charge.png",
+                            width: 50,
+                            height: 50,            
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
