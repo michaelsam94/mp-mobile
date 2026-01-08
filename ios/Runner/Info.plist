@@ -30,6 +30,8 @@
 	<string>This app needs camera access to scan QR codes</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs location access to show your position on the map and help you find nearby stations</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to show your position on the map and help you find nearby charging stations</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
