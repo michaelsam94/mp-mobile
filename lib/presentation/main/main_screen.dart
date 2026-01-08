@@ -162,15 +162,16 @@ class _MainScreenState extends State<MainScreen> {
             ),
 
             Positioned(
-              top: -20,
+              top: -30,
               child: GestureDetector(
                 onTap: () {
                   _handleChargeButtonTap(context);
                 },
                 child: Image.asset(
-                  "assets/icons/ic_charge.png",
-                  width: 60,
-                  height: 60,
+                  "assets/icons/ic_charge_middle.png",
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
