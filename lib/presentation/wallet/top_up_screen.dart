@@ -20,6 +20,14 @@ class _TopUpScreenState extends State<TopUpScreen> {
   int selectedAmount = 50;
   List<int> amounts = [50, 100, 150, 200];
   TextEditingController _customAmount = TextEditingController();
+  String? selectedCardToken; // null means "New Card"
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved cards when screen opens
+    WalletCubit.get(context).getSavedCards();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -277,6 +285,182 @@ class _TopUpScreenState extends State<TopUpScreen> {
             //     ),
             //   ),
             // ),
+            SizedBox(height: 17),
+
+            // Payment card select
+            BlocBuilder<WalletCubit, WalletState>(
+              builder: (context, state) {
+                final savedCards = WalletCubit.get(context).savedCards;
+
+                // Only show if there are saved cards
+                if (savedCards.isEmpty) {
+                  return SizedBox.shrink();
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 2,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Color(0xFFE9E9E9)),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Select Payment Method",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+
+                        // New Card option
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCardToken = null;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: selectedCardToken == null
+                                  ? bgGreen
+                                  : Colors.white,
+                              border: Border.all(
+                                color: selectedCardToken == null
+                                    ? green
+                                    : Color(0xFFE9E9E9),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 20,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.add_card,
+                                  color: selectedCardToken == null
+                                      ? green
+                                      : Colors.grey,
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  'New Card',
+                                  style: TextStyle(
+                                    color: selectedCardToken == null
+                                        ? green
+                                        : Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 12),
+
+                        // Saved cards
+                        ...savedCards.map((card) {
+                          bool isSelected = selectedCardToken == card.token;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCardToken = card.token;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isSelected ? bgGreen : Colors.white,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? green
+                                        : Color(0xFFE9E9E9),
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 18,
+                                  horizontal: 20,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          card.cardType ?? 'Card',
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? green
+                                                : Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          card.maskedPan ?? '****',
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? green
+                                                : Colors.grey[700],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    if (card.isDefault == 1)
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: green.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Default',
+                                          style: TextStyle(
+                                            color: green,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+
             SizedBox(height: 40),
             // Submit button
             BlocConsumer<WalletCubit, WalletState>(
@@ -290,6 +474,25 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   // Refresh balance and go back to wallet screen
                   WalletCubit.get(context).getWallet();
                   Navigator.pop(context);
+                } else if (state is SuccessPayWithSavedCardRedirectState) {
+                  // Payment requires 3DS - open redirection URL
+                  await context.goTo(
+                    PayWithUrlScreen(
+                      checkoutUrl: WalletCubit.get(context).redirectionUrl ?? "",
+                    ),
+                  );
+                  // Refresh balance and go back to wallet screen
+                  WalletCubit.get(context).getWallet();
+                  Navigator.pop(context);
+                } else if (state is SuccessPayWithSavedCardState) {
+                  // Payment with saved card successful (no redirect needed)
+                  context.showSuccessMessage("Payment successful!");
+                  // Refresh balance and go back to wallet screen
+                  WalletCubit.get(context).getWallet();
+                  Navigator.pop(context);
+                } else if (state is ErrorPayWithSavedCardState) {
+                  // Payment with saved card failed
+                  context.showErrorMessage(state.message);
                 }
               },
               builder: (context, state) {
@@ -300,7 +503,16 @@ class _TopUpScreenState extends State<TopUpScreen> {
                     height: 58,
                     child: ElevatedButton(
                       onPressed: () {
-                        WalletCubit.get(context).getPayUrl(selectedAmount);
+                        // If a saved card is selected, use it
+                        if (selectedCardToken != null) {
+                          WalletCubit.get(context).payWithSavedCard(
+                            selectedAmount,
+                            selectedCardToken!,
+                          );
+                        } else {
+                          // Otherwise, use new card (iframe)
+                          WalletCubit.get(context).getPayUrl(selectedAmount);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -308,14 +520,18 @@ class _TopUpScreenState extends State<TopUpScreen> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: state is LoadingPayWalletState
+                      child:
+                          state is LoadingPayWalletState ||
+                              state is LoadingPayWithSavedCardState
                           ? Center(
                               child: CircularProgressIndicator(
                                 color: Colors.white,
                               ),
                             )
                           : Text(
-                              'Top-Up $selectedAmount EGP',
+                              selectedCardToken != null
+                                  ? 'Pay $selectedAmount EGP'
+                                  : 'Top-Up $selectedAmount EGP',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

@@ -26,6 +26,7 @@ class EndPoints {
   static const String getTopUpTransactions = "/api/payments/transactions/topup";
   static const String getWalletBalance = "/api/customer/wallet";
   static const String getPayUrl = "/api/payments/generatePaymentIframe";
+  static const String payWithSavedCard = "/api/payments/savedCards";
   static const String rfidCards = "/api/customer/rfid";
   static const String addVehicle = "/api/customer/vehicleSetUp";
   static const String getVehicles = "/api/customer/vehicles";

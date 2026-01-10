@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
@@ -122,18 +123,30 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
             Expanded(
-              child: BlocConsumer<MapCubit, MapState>(
+              child: BlocListener<WebSocketCubit, WebSocketState>(
                 listener: (context, state) {
-                  if (state is MarkerTappedState) {
-                    // Show bottom sheet first, then fetch data
-                    showStationDetails(context);
-                    // Fetch station details after bottom sheet is shown
-                    Future.microtask(() {
-                      StationDetailsCubit.get(context).getStationDetails(state.stationId);
-                    });
+                  if (state is StatusNotificationUpdate) {
+                    // Update MapCubit with new station/connector status
+                    MapCubit.get(context).updateStationFromWebSocket(
+                      state.data.stationId,
+                      state.data.stationStatus,
+                      state.data.connectorId,
+                      state.data.connectorStatus,
+                    );
                   }
                 },
-                builder: (context, state) {
+                child: BlocConsumer<MapCubit, MapState>(
+                  listener: (context, state) {
+                    if (state is MarkerTappedState) {
+                      // Show bottom sheet first, then fetch data
+                      showStationDetails(context);
+                      // Fetch station details after bottom sheet is shown
+                      Future.microtask(() {
+                        StationDetailsCubit.get(context).getStationDetails(state.stationId);
+                      });
+                    }
+                  },
+                  builder: (context, state) {
                   final cubit = MapCubit.get(context);
 
                   if (state is LoadingMapState) {
@@ -397,6 +410,7 @@ class _MapScreenState extends State<MapScreen> {
                 },
               ),
             ),
+              ),
           ],
         ),
       ),

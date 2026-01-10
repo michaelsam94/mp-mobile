@@ -73,7 +73,7 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
           currentStation!.isFavourite = isFav;
           emit(SuccessStationDetailsState(currentStation!));
         }
-        
+
         // Update cached lists in MapCubit and SearchCubit if context is provided
         if (context != null) {
           try {
@@ -87,13 +87,57 @@ class StationDetailsCubit extends Cubit<StationDetailsState> {
             // SearchCubit might not be available, ignore
           }
         }
-        
+
         return true;
       } else {
         return false;
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  // Normalize OCPP status to app format
+  String _normalizeOcppStatus(String status) {
+    final statusLower = status.toLowerCase();
+
+    // Map OCPP statuses to app format
+    switch (statusLower) {
+      case 'available':
+        return 'available';
+      case 'charging':
+      case 'preparing':
+      case 'finishing':
+        return 'inUse';
+      case 'unavailable':
+      case 'faulted':
+      case 'suspendedevse':
+      case 'suspendedev':
+      case 'reserved':
+        return 'unavailable';
+      default:
+        return statusLower;
+    }
+  }
+
+  // Update station and connector status from WebSocket
+  void updateFromWebSocket(int stationId, String stationStatus, int connectorId, String connectorStatus) {
+    if (currentStation != null && currentStation!.id == stationId) {
+      // Normalize and update station status
+      currentStation!.status = _normalizeOcppStatus(stationStatus);
+
+      // Update connector (gun) status
+      if (currentStation!.guns != null) {
+        for (var gun in currentStation!.guns!) {
+          if (gun.id == connectorId) {
+            gun.status = _normalizeOcppStatus(connectorStatus);
+            break;
+          }
+        }
+      }
+
+      // Emit updated state
+      emit(SuccessStationDetailsState(currentStation!));
     }
   }
 }

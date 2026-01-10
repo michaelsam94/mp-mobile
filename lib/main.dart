@@ -32,20 +32,21 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
   try {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'high_importance_channel', // channel id
-      'High Importance Notifications', // channel name
-      channelDescription: 'This channel is used for important notifications.',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
+          'high_importance_channel', // channel id
+          'High Importance Notifications', // channel name
+          channelDescription:
+              'This channel is used for important notifications.',
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iosPlatformChannelSpecifics =
         DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -81,16 +82,16 @@ void main() async {
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
@@ -112,7 +113,8 @@ void main() async {
 
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
   } catch (e) {
     if (kDebugMode) {
@@ -167,7 +169,9 @@ void main() async {
   RemoteMessage? initialMessage = await messaging.getInitialMessage();
   if (initialMessage != null) {
     if (kDebugMode) {
-      print('App opened from terminated state via notification: ${initialMessage.messageId}');
+      print(
+        'App opened from terminated state via notification: ${initialMessage.messageId}',
+      );
       print('Message data: ${initialMessage.data}');
     }
     // Handle navigation based on notification data
@@ -182,7 +186,7 @@ void main() async {
       if (kDebugMode) {
         print('APNS Token: $apnsToken');
       }
-      
+
       // Wait a bit for APNS token to be set
       if (apnsToken == null) {
         if (kDebugMode) {
@@ -192,7 +196,7 @@ void main() async {
         await Future.delayed(const Duration(seconds: 1));
       }
     }
-    
+
     final token = await messaging.getToken();
     if (kDebugMode) {
       print('Firebase Token: $token');

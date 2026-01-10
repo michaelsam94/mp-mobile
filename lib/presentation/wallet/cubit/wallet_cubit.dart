@@ -75,6 +75,41 @@ class WalletCubit extends Cubit<WalletState> {
     }
   }
 
+  String? redirectionUrl;
+
+  // Pay with saved card
+  void payWithSavedCard(num amount, String token) async {
+    emit(LoadingPayWithSavedCardState());
+    try {
+      var response = await DioHelper.postData(
+        url: EndPoints.payWithSavedCard,
+        data: {"amount": amount, "cardToken": token},
+      );
+      print(response.data.toString());
+      if (response.statusCode == 200) {
+        var data = response.data;
+
+        // Check if 3DS redirection is required
+        if (data["use_redirection"] == true) {
+          redirectionUrl = data["redirection_url"];
+          emit(SuccessPayWithSavedCardRedirectState());
+        } else {
+          // Payment completed without redirection
+          emit(SuccessPayWithSavedCardState());
+        }
+      } else {
+        emit(
+          ErrorPayWithSavedCardState(
+            response.data["message"] ?? "Payment failed",
+          ),
+        );
+      }
+    } catch (e) {
+      print(e.toString());
+      emit(ErrorPayWithSavedCardState("Payment failed. Please try again."));
+    }
+  }
+
   List<SavedCardResponseModel> savedCards = [];
   void getSavedCards() async {
     emit(LoadingGetSavedCardsState());
@@ -111,13 +146,12 @@ class WalletCubit extends Cubit<WalletState> {
     }
   }
 
-  
   void deactivateCard(int id) async {
     emit(LoadingGetSavedCardsState());
     try {
       var response = await DioHelper.patchData(
         url: EndPoints.deactivateSavedCards(id),
-        data: {}
+        data: {},
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
         getSavedCards();
@@ -128,13 +162,13 @@ class WalletCubit extends Cubit<WalletState> {
       emit(ErrorDeactivateSavedCardsState());
     }
   }
-  
+
   void setDefaultCard(int id) async {
     emit(LoadingGetSavedCardsState());
     try {
       var response = await DioHelper.patchData(
         url: EndPoints.setDefaultSavedCards(id),
-        data: {}
+        data: {},
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
         getSavedCards();

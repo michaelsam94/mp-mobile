@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 import '../models/notification_update_model.dart';
 import '../models/session_update_model.dart';
+import '../models/status_notification_model.dart';
 import '../models/websocket_response.dart';
 import '../websocket_service.dart';
 
@@ -137,6 +138,8 @@ class WebSocketCubit extends Cubit<WebSocketState> {
         // This allows the UI to show final values for PDF download
         // Meter data will be cleared when starting a new session
         emit(SessionUpdate(parsedMessage));
+      } else if (parsedMessage is StatusNotificationModel) {
+        emit(StatusNotificationUpdate(parsedMessage));
       } else {
         emit(WebSocketMessage(parsedMessage));
       }

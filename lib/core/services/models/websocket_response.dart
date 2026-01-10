@@ -1,5 +1,6 @@
 import 'notification_update_model.dart';
 import 'session_update_model.dart';
+import 'status_notification_model.dart';
 
 abstract class WebSocketResponse {
   final String type;
@@ -16,6 +17,8 @@ abstract class WebSocketResponse {
           return NotificationUpdateModel.fromJson(json);
         case 'session_update':
           return SessionUpdateModel.fromJson(json);
+        case 'status_notification':
+          return StatusNotificationModel.fromJson(json);
         // case 'active_session_update':
         //   return ActiveSessionUpdateModel.fromJson(json);
         // case 'charger_status_update':

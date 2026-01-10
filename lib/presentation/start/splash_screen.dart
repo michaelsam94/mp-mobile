@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
@@ -18,6 +19,28 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 2), () async {
       if (context.mounted) {
+        // Check if user chose "Remember Me"
+        final rememberMe = CacheHelper.getBool(CacheKeys.rememberMe.name) ?? false;
+
+        // If user is logged in but didn't check "Remember Me", force logout
+        if (!rememberMe && CacheHelper.checkLogin() != 1) {
+          await CacheHelper.logout();
+          // Go to login or onboarding based on onboarding status
+          if (!CacheHelper.isOnboardingCompleted()) {
+            if (context.mounted) {
+              context.goOff(
+                BlocProvider(
+                  create: (context) => OnBoardingCubit(),
+                  child: OnboardingScreen(),
+                ),
+              );
+            }
+          } else {
+            if (context.mounted) context.goOff(LoginScreen());
+          }
+          return;
+        }
+
         switch (CacheHelper.checkLogin()) {
           case 1:
             // Check if onboarding has been completed

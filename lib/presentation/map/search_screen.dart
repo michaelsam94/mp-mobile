@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
@@ -192,9 +193,21 @@ class _SearchScreenState extends State<SearchScreen> {
                   ],
                 ),
               ),
-              BlocBuilder<SearchCubit, SearchState>(
-                builder: (context, state) {
-                  if (state is LoadingGetStationsSearchState) {
+              BlocListener<WebSocketCubit, WebSocketState>(
+                listener: (context, state) {
+                  if (state is StatusNotificationUpdate) {
+                    // Update SearchCubit with new station/connector status
+                    SearchCubit.get(context).updateStationFromWebSocket(
+                      state.data.stationId,
+                      state.data.stationStatus,
+                      state.data.connectorId,
+                      state.data.connectorStatus,
+                    );
+                  }
+                },
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    if (state is LoadingGetStationsSearchState) {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -699,6 +712,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   );
                 },
+              ),
               ),
             ],
           ),

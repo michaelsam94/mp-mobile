@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
@@ -11,8 +12,20 @@ class StationDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StationDetailsCubit, StationDetailsState>(
-      builder: (context, state) {
+    return BlocListener<WebSocketCubit, WebSocketState>(
+      listener: (context, state) {
+        if (state is StatusNotificationUpdate) {
+          // Update StationDetailsCubit with new station/connector status
+          StationDetailsCubit.get(context).updateFromWebSocket(
+            state.data.stationId,
+            state.data.stationStatus,
+            state.data.connectorId,
+            state.data.connectorStatus,
+          );
+        }
+      },
+      child: BlocBuilder<StationDetailsCubit, StationDetailsState>(
+        builder: (context, state) {
         if (state is LoadingStationDetailsState) {
           return Container(
             constraints: BoxConstraints(
@@ -357,6 +370,7 @@ class StationDetailsSheet extends StatelessWidget {
 
         return SizedBox.shrink();
       },
+    ),
     );
   }
 

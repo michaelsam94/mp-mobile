@@ -370,7 +370,7 @@ class SearchCubit extends Cubit<SearchState> {
       if (success) {
         // Update local state
         updateStationFavorite(id, isFav);
-        
+
         // Update MapCubit cached list if context is provided
         if (context != null) {
           try {
@@ -379,13 +379,98 @@ class SearchCubit extends Cubit<SearchState> {
             // MapCubit might not be available, ignore
           }
         }
-        
+
         return true;
       } else {
         return false;
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  // Normalize OCPP status to app format
+  String _normalizeOcppStatus(String status) {
+    final statusLower = status.toLowerCase();
+
+    // Map OCPP statuses to app format
+    switch (statusLower) {
+      case 'available':
+        return 'available';
+      case 'charging':
+      case 'preparing':
+      case 'finishing':
+        return 'inUse';
+      case 'unavailable':
+      case 'faulted':
+      case 'suspendedevse':
+      case 'suspendedev':
+      case 'reserved':
+        return 'unavailable';
+      default:
+        return statusLower;
+    }
+  }
+
+  // Update station and connector status from WebSocket
+  void updateStationFromWebSocket(int stationId, String stationStatus, int connectorId, String connectorStatus) {
+    bool updated = false;
+
+    // Update in nearbyStations (MapStationResponseModel - only has status, no guns)
+    for (var station in nearbyStations) {
+      if (station.id == stationId) {
+        station.status = _normalizeOcppStatus(stationStatus);
+        updated = true;
+        break;
+      }
+    }
+
+    // Update in filteredNearbyStations (MapStationResponseModel - only has status, no guns)
+    for (var station in filteredNearbyStations) {
+      if (station.id == stationId) {
+        station.status = _normalizeOcppStatus(stationStatus);
+        updated = true;
+        break;
+      }
+    }
+
+    // Update in cached stations
+    for (var station in stations) {
+      if (station.id == stationId) {
+        station.status = _normalizeOcppStatus(stationStatus);
+        if (station.guns != null) {
+          for (var gun in station.guns!) {
+            if (gun.id == connectorId) {
+              gun.status = _normalizeOcppStatus(connectorStatus);
+              break;
+            }
+          }
+        }
+        updated = true;
+        break;
+      }
+    }
+
+    // Update in filteredStations
+    for (var station in filteredStations) {
+      if (station.id == stationId) {
+        station.status = _normalizeOcppStatus(stationStatus);
+        if (station.guns != null) {
+          for (var gun in station.guns!) {
+            if (gun.id == connectorId) {
+              gun.status = _normalizeOcppStatus(connectorStatus);
+              break;
+            }
+          }
+        }
+        updated = true;
+        break;
+      }
+    }
+
+    // Emit state if any update occurred
+    if (updated) {
+      emit(SearchUpdatedState());
     }
   }
 }

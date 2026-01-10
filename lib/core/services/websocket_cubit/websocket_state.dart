@@ -43,3 +43,8 @@ final class NotificationUpdate extends WebSocketState {
   final NotificationUpdateModel data;
   NotificationUpdate(this.data);
 }
+
+final class StatusNotificationUpdate extends WebSocketState {
+  final StatusNotificationModel data;
+  StatusNotificationUpdate(this.data);
+}

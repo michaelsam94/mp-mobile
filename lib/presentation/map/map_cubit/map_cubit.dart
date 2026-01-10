@@ -588,6 +588,54 @@ class MapCubit extends Cubit<MapState> {
     }
   }
 
+  // Normalize OCPP status to app format
+  String _normalizeOcppStatus(String status) {
+    final statusLower = status.toLowerCase();
+
+    // Map OCPP statuses to app format
+    switch (statusLower) {
+      case 'available':
+        return 'available';
+      case 'charging':
+      case 'preparing':
+      case 'finishing':
+        return 'inUse';
+      case 'unavailable':
+      case 'faulted':
+      case 'suspendedevse':
+      case 'suspendedev':
+      case 'reserved':
+        return 'unavailable';
+      default:
+        return statusLower;
+    }
+  }
+
+  // Update station and connector status from WebSocket
+  void updateStationFromWebSocket(int stationId, String stationStatus, int connectorId, String connectorStatus) {
+    for (var station in mapStations) {
+      if (station.id == stationId) {
+        // Normalize and update station status
+        station.status = _normalizeOcppStatus(stationStatus);
+
+        // Update connector (gun) status
+        if (station.guns != null) {
+          for (var gun in station.guns!) {
+            if (gun.id == connectorId) {
+              gun.status = _normalizeOcppStatus(connectorStatus);
+              break;
+            }
+          }
+        }
+
+        // Rebuild markers to reflect new status
+        _updateClusters();
+        emit(LoadedMapState());
+        break;
+      }
+    }
+  }
+
   // Add/remove station from favorites
   Future<bool> favStation(bool isFav, int id) async {
     try {

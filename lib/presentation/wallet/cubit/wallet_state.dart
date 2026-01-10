@@ -19,6 +19,14 @@ final class WalletInitial extends WalletState {}
  class SuccessPayWalletState extends WalletState {}
  class ErrorPayWalletState extends WalletState {}
 
+ class LoadingPayWithSavedCardState extends WalletState {}
+ class SuccessPayWithSavedCardState extends WalletState {}
+ class SuccessPayWithSavedCardRedirectState extends WalletState {}
+ class ErrorPayWithSavedCardState extends WalletState {
+  final String message;
+  ErrorPayWithSavedCardState(this.message);
+ }
+
  class LoadingGetSavedCardsState extends WalletState {}
  class SuccessGetSavedCardsState extends WalletState {}
  class ErrorGetSavedCardsState extends WalletState {}

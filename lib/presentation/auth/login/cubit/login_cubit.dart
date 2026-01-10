@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/helpers/cache/user_cache_model.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
@@ -79,6 +80,8 @@ class LoginCubit extends Cubit<LoginState> {
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
         await CacheHelper.login(UserCacheModel.fromJson(response.data["data"]));
+        // Save remember me preference
+        await CacheHelper.setBool(CacheKeys.rememberMe.name, checked);
         emit(SuccessLoginState());
       } else {
         emit(ErrorLoginState(response.data["message"]));
