@@ -206,144 +206,170 @@ class _MapScreenState extends State<MapScreen> {
                       Positioned(
                         top: 8,
                         right: 8,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          width: _isStatusCardCollapsed ? 50 : 170,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: _isStatusCardCollapsed ? 0 : 12,
-                            vertical: 15,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 16,
+                        child: ClipRect(
+                          child: AnimatedSize(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              width: _isStatusCardCollapsed ? 50 : 170,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: _isStatusCardCollapsed ? 0 : 12,
+                                vertical: 15,
                               ),
-                            ],
-                          ),
-                          child: _isStatusCardCollapsed
-                              ? Center(
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.chevron_left,
-                                      color: Color(0xff242426),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _isStatusCardCollapsed = false;
-                                      });
-                                    },
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 16,
                                   ),
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: const Text(
-                                            "Station Status",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 14,
-                                              color: Color(0xff242426),
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: BoxConstraints(
-                                            minWidth: 24,
-                                            minHeight: 24,
-                                          ),
+                                ],
+                              ),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 250),
+                                transitionBuilder: (Widget child, Animation<double> animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(0.1, 0),
+                                        end: Offset.zero,
+                                      ).animate(CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeOut,
+                                      )),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _isStatusCardCollapsed
+                                    ? Center(
+                                        key: const ValueKey('collapsed'),
+                                        child: IconButton(
                                           icon: Icon(
-                                            Icons.chevron_right,
-                                            size: 20,
+                                            Icons.chevron_left,
                                             color: Color(0xff242426),
                                           ),
                                           onPressed: () {
                                             setState(() {
-                                              _isStatusCardCollapsed = true;
+                                              _isStatusCardCollapsed = false;
                                             });
                                           },
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          "assets/icons/ac.png",
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: const Text(
-                                            "Available",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xff606060),
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
+                                      )
+                                    : Column(
+                                        key: const ValueKey('expanded'),
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: const Text(
+                                                  "Status",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14,
+                                                    color: Color(0xff242426),
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                padding: EdgeInsets.zero,
+                                                constraints: BoxConstraints(
+                                                  minWidth: 24,
+                                                  minHeight: 24,
+                                                ),
+                                                icon: Icon(
+                                                  Icons.chevron_right,
+                                                  size: 20,
+                                                  color: Color(0xff242426),
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _isStatusCardCollapsed = true;
+                                                  });
+                                                },
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          "assets/icons/unavailable.png",
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: const Text(
-                                            "Unavailable",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xff606060),
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                "assets/icons/ac.png",
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: const Text(
+                                                  "Available",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff606060),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          "assets/icons/use.png",
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: const Text(
-                                            "In Use",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xff606060),
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                "assets/icons/unavailable.png",
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: const Text(
+                                                  "Unavailable",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff606060),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                "assets/icons/use.png",
+                                                width: 30,
+                                                height: 30,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: const Text(
+                                                  "In Use",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff606060),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
 
