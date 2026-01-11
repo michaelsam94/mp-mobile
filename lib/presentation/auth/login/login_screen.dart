@@ -64,7 +64,7 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    'Welcome to Mega Plug, continue your charging journey.',
+                    'Welcome to Mega Plug charging journey.',
                     style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
                   SizedBox(height: 40),
