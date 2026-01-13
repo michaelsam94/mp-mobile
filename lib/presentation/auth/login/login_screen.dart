@@ -98,11 +98,28 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                         return 'Please enter your phone or email';
                       }
                       if (text.contains('@')) {
+                        // Email validation
                         final emailRegex = RegExp(
                           r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,4}$',
                         );
                         if (!emailRegex.hasMatch(text)) {
                           return 'Please enter a valid email';
+                        }
+                      } else {
+                        // Phone number validation
+                        // Remove any non-digit characters for validation
+                        final digitsOnly = text.replaceAll(RegExp(r'[^\d]'), '');
+                        
+                        // Check if it's exactly 11 digits
+                        if (digitsOnly.length != 11) {
+                          return 'Enter valid number';
+                        }
+                        
+                        // Check if it starts with 010, 012, 015, or 011
+                        final validPrefixes = ['010', '012', '015', '011'];
+                        final prefix = digitsOnly.substring(0, 3);
+                        if (!validPrefixes.contains(prefix)) {
+                          return 'Enter valid number';
                         }
                       }
                       return null;

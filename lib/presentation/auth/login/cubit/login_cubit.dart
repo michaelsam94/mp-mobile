@@ -71,6 +71,7 @@ class LoginCubit extends Cubit<LoginState> {
         "login": email,
         "password": pass,
         "device_token": (deviceToken != null && deviceToken.isNotEmpty) ? deviceToken : "device_token",
+        "is_remember_me": checked ? 1 : 0,
       };
       
       var response = await DioHelper.postData(
