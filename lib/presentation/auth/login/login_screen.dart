@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/auth/forgetPassword/forget_password_screen.dart';
 import 'package:mega_plus/presentation/auth/login/cubit/login_cubit.dart';
@@ -34,8 +36,25 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Load saved credentials if remember me was checked
+    final savedEmailPhone = CacheHelper.getString(CacheKeys.savedEmailPhone.name);
+    final savedPassword = CacheHelper.getString(CacheKeys.savedPassword.name);
+    
+    if (savedEmailPhone != null && savedPassword != null) {
+      emailController.text = savedEmailPhone;
+      passwordController.text = savedPassword;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cubit = LoginCubit.get(context);
+    // Initialize saved credentials state in cubit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cubit.initializeSavedCredentials();
+    });
     return Scaffold(
       body: SafeArea(
         child: Padding(

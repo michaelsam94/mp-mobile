@@ -32,13 +32,26 @@ class CacheHelper {
   }
 
   static Future<bool> logout() async {
-    // Save onboarding completed flag before clearing
+    // Save flags and credentials before clearing
     final onboardingCompleted = _preferences!.getBool(CacheKeys.onboardingCompleted.name) ?? false;
+    final rememberMe = _preferences!.getBool(CacheKeys.rememberMe.name) ?? false;
+    final savedEmailPhone = _preferences!.getString(CacheKeys.savedEmailPhone.name);
+    final savedPassword = _preferences!.getString(CacheKeys.savedPassword.name);
+    
     final result = await _preferences!.clear();
+    
     // Restore onboarding completed flag after logout
     if (onboardingCompleted) {
       await _preferences!.setBool(CacheKeys.onboardingCompleted.name, true);
     }
+    
+    // Restore saved credentials if remember me was checked
+    if (rememberMe && savedEmailPhone != null && savedPassword != null) {
+      await _preferences!.setBool(CacheKeys.rememberMe.name, true);
+      await _preferences!.setString(CacheKeys.savedEmailPhone.name, savedEmailPhone);
+      await _preferences!.setString(CacheKeys.savedPassword.name, savedPassword);
+    }
+    
     return result;
   }
 

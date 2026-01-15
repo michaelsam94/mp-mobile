@@ -1,1 +1,1 @@
-enum CacheKeys { token, login, onboardingCompleted, rememberMe }
+enum CacheKeys { token, login, onboardingCompleted, rememberMe, savedEmailPhone, savedPassword }

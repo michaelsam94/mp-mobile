@@ -26,6 +26,22 @@ class LoginCubit extends Cubit<LoginState> {
     emit(ChangeCheckRememberMeLoginState(checked));
   }
 
+  void initializeSavedCredentials() {
+    final rememberMe = CacheHelper.getBool(CacheKeys.rememberMe.name) ?? false;
+    if (rememberMe) {
+      checked = true;
+      emit(ChangeCheckRememberMeLoginState(checked));
+    }
+  }
+
+  String? getSavedEmailPhone() {
+    return CacheHelper.getString(CacheKeys.savedEmailPhone.name);
+  }
+
+  String? getSavedPassword() {
+    return CacheHelper.getString(CacheKeys.savedPassword.name);
+  }
+
   void login(String email, String pass) async {
     emit(LoadingLoginState());
     String? deviceToken;
@@ -83,6 +99,17 @@ class LoginCubit extends Cubit<LoginState> {
         await CacheHelper.login(UserCacheModel.fromJson(response.data["data"]));
         // Save remember me preference
         await CacheHelper.setBool(CacheKeys.rememberMe.name, checked);
+        
+        // Save email/phone and password if remember me is checked
+        if (checked) {
+          await CacheHelper.setString(CacheKeys.savedEmailPhone.name, email);
+          await CacheHelper.setString(CacheKeys.savedPassword.name, pass);
+        } else {
+          // Clear saved credentials if remember me is unchecked
+          await CacheHelper.remove(CacheKeys.savedEmailPhone.name);
+          await CacheHelper.remove(CacheKeys.savedPassword.name);
+        }
+        
         emit(SuccessLoginState());
       } else {
         emit(ErrorLoginState(response.data["message"]));
