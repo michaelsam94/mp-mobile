@@ -188,14 +188,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    CacheHelper.getUserData()?.user?.fullName ??
-                                        "",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          CacheHelper.getUserData()?.user?.fullName ??
+                                              "",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          context.goTo(EditProfileScreen());
+                                        },
+                                        icon: Icon(
+                                          Icons.mode_edit_outlined,
+                                          color: green,
+                                          size: 18,
+                                        ),
+                                        label: Text(
+                                          'Edit',
+                                          style: TextStyle(
+                                            color: green,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xffB2ECCA),
+                                          elevation: 0,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 13,
+                                            vertical: 8,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(50),
+                                            side: BorderSide(color: bgGreen, width: 2),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(height: 3),
                                   Text(
@@ -216,37 +253,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                 ],
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                context.goTo(EditProfileScreen());
-                              },
-                              icon: Icon(
-                                Icons.mode_edit_outlined,
-                                color: green,
-                                size: 18,
-                              ),
-                              label: Text(
-                                'Edit',
-                                style: TextStyle(
-                                  color: green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffB2ECCA),
-                                elevation: 0,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 13,
-                                  vertical: 8,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                  side: BorderSide(color: bgGreen, width: 2),
-                                ),
                               ),
                             ),
                           ],
@@ -411,7 +417,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 100),
               ],
             );
           },

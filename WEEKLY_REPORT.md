@@ -1,144 +1,133 @@
 # Weekly Development Report
-**Project:** MP Mobile Application  
-**Week:** January 1-7, 2026  
-**Branch:** alpha
+**Period:** January 10, 2026 - January 15, 2026 (Last 7 Days)
 
 ---
 
-## Executive Summary
+## Summary Statistics
 
-This week focused on significant UI/UX improvements, network error handling enhancements, and code refactoring. The team made substantial progress on the bottom navigation bar, main screen updates, and overall application stability.
-
----
-
-## Key Accomplishments
-
-### 1. UI/UX Improvements
-
-#### Bottom Navigation Bar Enhancements
-- **Multiple iterations** to optimize bottom navigation bar height and positioning
-- Added SafeArea support to prevent overlap with system UI
-- Adjusted charge button positioning to extend above navigation bar
-- Implemented clipping for middle button to improve visual design
-- Final height set to 150px for optimal user experience
-
-#### Main Screen Updates
-- Updated main screen layout and functionality
-- Replaced flat icon with charge icon (`ic_charge_middle.png`)
-- Improved icon positioning and visual hierarchy
-
-#### Screen-Specific Improvements
-- **Start Session Screen**: Centered text, adjusted icon size and spacing
-- **Wallet Screen**: Updated icon opacity to 40% for better visual consistency
-- **Auth Screens**: General updates and improvements
-- **Charger Screens**: UI fixes and enhancements
-
-### 2. Network & Error Handling
-
-#### Centralized Error Handling
-- Implemented centralized network error handling in Dio interceptor
-- Improved error handling across charger screens
-- Enhanced application stability and user feedback
-
-### 3. Code Refactoring
-
-- Refactored login screen code for better maintainability
-- Cleaned up charger screens and settings model
-- Improved code organization and structure
-
-### 4. User Experience Enhancements
-
-- **Logout Functionality**: Changed from direct action to dialog popup for better UX
-- **SnackBar Positioning**: Positioned messages at top of screen for better visibility
-- **Profile Screens**: Updates and improvements
-
-### 5. Platform Configuration
-
-#### iOS Configuration
-- Added comprehensive iOS project configuration
-- Updated iOS project settings and assets
-
-#### Assets & Icons
-- Updated launcher icons for both Android and iOS
-- Added new charge icon (`ic_charge_middle.png`)
-- Replaced existing icons with updated versions
+- **Total Commits:** 5
+- **Contributors:** 2 (asmaaabozied, Eslam Fareed)
+- **Files Changed:** 30+ files
+- **Lines Added:** ~1,000+ lines
+- **Lines Removed:** ~370+ lines
 
 ---
 
-## Technical Details
+## Commits Breakdown
 
-### Files Modified
+### 1. **Add remember me functionality to save and restore login credentials**
+   - **Commit:** `90ebf00`
+   - **Author:** asmaaabozied
+   - **Date:** January 15, 2026 (6 hours ago)
+   - **Changes:**
+     - Modified `cache_helper.dart` - Added logic to preserve saved credentials after logout
+     - Updated `cache_keys.dart` - Added keys for saved email/phone and password
+     - Enhanced `login_cubit.dart` - Implemented save/restore functionality for credentials
+     - Updated `login_screen.dart` - Added auto-fill functionality from cache
+     - **Files Changed:** 5 files, 64 insertions(+), 2 deletions(-)
 
-#### Core Application Files
-- `lib/presentation/main/main_screen.dart` - Multiple updates
-- `lib/presentation/map/start_session_screen.dart` - UI improvements
-- `lib/presentation/profile/models/settings_response_model.dart` - Model updates
-- Various charger screen files
-- Auth screen files
+### 2. **Add phone/email validation and remember me functionality to login**
+   - **Commit:** `91a17a1`
+   - **Author:** asmaaabozied
+   - **Date:** January 13, 2026 (2 days ago)
+   - **Changes:**
+     - Added phone number validation (11 digits, must start with 010, 012, 015, or 011)
+     - Added email validation
+     - Integrated `is_remember_me` parameter in login request
+     - **Files Changed:** 3 files, 20 insertions(+)
 
-#### Configuration Files
-- iOS project configuration files
-- Android launcher icon assets
-- iOS launcher icon assets
+### 3. **Update login screen welcome message and format settings model**
+   - **Commit:** `3994e17`
+   - **Author:** asmaaabozied
+   - **Date:** January 11, 2026 (4 days ago)
+   - **Changes:**
+     - Updated welcome message text
+     - Formatting improvements in settings response model
+     - **Files Changed:** 2 files, 4 insertions(+), 1 deletion(-)
 
-### New Assets Added
-- `assets/icons/ic_charge_middle.png` - New charge icon
+### 4. **Major Feature Update: Payment, Remember Me, and Status Notifications**
+   - **Commit:** `a730112`
+   - **Author:** Eslam Fareed
+   - **Date:** January 11, 2026 (5 days ago)
+   - **Features Added:**
+     - ✅ Pay with Card functionality
+     - ✅ Remember me functionality
+     - ✅ Status Notification on Map
+     - ✅ Status Notification in Station Details
+     - ✅ Status Notification in Search Screen
+   - **Changes:**
+     - Added status notification model and websocket integration
+     - Enhanced map screen with status notifications
+     - Updated search screen with notification support
+     - Improved station details with real-time status
+     - Wallet top-up screen enhancements
+     - **Files Changed:** 19 files, 796 insertions(+), 243 deletions(-)
 
----
-
-## Commit Summary
-
-| Commit Hash | Description | Date |
-|------------|-------------|------|
-| 8836988 | Update main screen and settings model, add charge icon | 3 hours ago |
-| 9ee77d5 | Centralize network error handling in Dio interceptor | 3 days ago |
-| bdf6f3c | Add network error handling, fix UI issues, and improve charger screen | 3 days ago |
-| 77dee7e | Update start session screen: center text, adjust icon size and spacing | 3 days ago |
-| 8508b24 | Update auth screens and settings model | 3 days ago |
-| 431124f | Update wallet screen icon opacity to 40% | 3 days ago |
-| 298a5e3 | Add SafeArea to bottom navigation bar and adjust height | 4 days ago |
-| 384e023 | Position SnackBar messages at top of screen | 4 days ago |
-| 9c206da | Update bottom navigation bar height and charge button position, change logout to dialog popup | 4 days ago |
-| f49483f | Adjust bottom navigation bar: reduce height, clip middle button, allow charge button to extend above | 4 days ago |
-| 40f13e1 | Update main screen | 4 days ago |
-| 32c2d83 | Increase bottom navigation bar height to 150 | 4 days ago |
-| 649af38 | Refactor: update login screen code | 4 days ago |
-| 51daed8 | Refactor: clean up charger screens and settings model | 4 days ago |
-| ce3fc18 | Replace flat icon with charge icon in main screen | 4 days ago |
-| 0bfb134 | Add comprehensive iOS project configuration | 4 days ago |
-| 942bdbb | Update profile screens, update launcher icons | 4 days ago |
-
----
-
-## Statistics
-
-- **Total Commits**: 17+ commits
-- **Files Modified**: Multiple core application files, configuration files, and assets
-- **New Assets**: 1 new icon file
-- **Major Features**: 
-  - Centralized error handling
-  - Bottom navigation bar redesign
-  - Multiple UI/UX improvements
-
----
-
-## Next Steps & Recommendations
-
-1. **Testing**: Comprehensive testing of the new bottom navigation bar across different devices
-2. **Error Handling**: Monitor the centralized error handling in production
-3. **UI Polish**: Continue refining UI elements based on user feedback
-4. **Performance**: Review and optimize any performance impacts from recent changes
+### 5. **Add smooth expand/collapse animation to status card in map screen**
+   - **Commit:** `71337fe`
+   - **Author:** asmaaabozied
+   - **Date:** January 10, 2026 (5 days ago)
+   - **Changes:**
+     - Improved UX with smooth animations for status card
+     - Refactored map screen code
+     - **Files Changed:** 1 file, 151 insertions(+), 125 deletions(-)
 
 ---
 
-## Notes
+## Key Features Implemented
 
-- The bottom navigation bar went through multiple iterations to achieve the desired design
-- Network error handling was centralized to improve maintainability
-- Multiple UI improvements were made based on design requirements and user experience considerations
+### 🔐 Authentication & Security
+- Phone/Email validation with specific rules
+- Remember me functionality with credential persistence
+- Auto-fill login credentials from cache
+
+### 💳 Payment Features
+- Pay with Card functionality
+- Enhanced wallet top-up screen
+
+### 🔔 Real-time Notifications
+- Status notifications on Map screen
+- Status notifications in Station Details
+- Status notifications in Search screen
+- WebSocket integration for real-time updates
+
+### 🎨 User Experience
+- Smooth expand/collapse animations
+- Improved welcome messages
+- Better form validation feedback
 
 ---
 
-**Report Generated:** January 7, 2026  
-**Generated By:** Development Team
+## Technical Improvements
 
+1. **Cache Management:**
+   - Enhanced cache helper to preserve user preferences
+   - Added new cache keys for credential storage
+
+2. **WebSocket Integration:**
+   - Added status notification model
+   - Integrated real-time updates across multiple screens
+
+3. **Code Quality:**
+   - Refactored map screen for better maintainability
+   - Improved code organization and structure
+
+---
+
+## Contributors
+
+- **asmaaabozied** - 4 commits (Login features, validation, animations)
+- **Eslam Fareed** - 1 commit (Major feature update: payments and notifications)
+
+---
+
+## Next Steps Recommendations
+
+1. Continue testing the remember me functionality across different scenarios
+2. Monitor WebSocket connection stability for status notifications
+3. Consider adding unit tests for validation logic
+4. Review and optimize the payment flow
+
+---
+
+*Report generated on January 15, 2026*

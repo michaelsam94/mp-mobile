@@ -66,7 +66,7 @@ class WalletScreen extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(26),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 26),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: BlocBuilder<WalletCubit, WalletState>(
                       builder: (context, state) {
                         return Column(
