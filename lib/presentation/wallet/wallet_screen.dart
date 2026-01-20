@@ -66,7 +66,7 @@ class WalletScreen extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(26),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     child: BlocBuilder<WalletCubit, WalletState>(
                       builder: (context, state) {
                         return Column(
@@ -80,12 +80,12 @@ class WalletScreen extends StatelessWidget {
                             color: Colors.black,
                           ),
                         ),
-                        SizedBox(height: 19),
+                        SizedBox(height: 6),
                         Text(
-                          "BALANCE IN ${WalletCubit.get(context).currency ?? ""}",
+                          "Available Balance""",
                           style: TextStyle(
                             color: AppColors.primary,
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1.0,
                           ),
@@ -95,12 +95,12 @@ class WalletScreen extends StatelessWidget {
                           "${WalletCubit.get(context).currency ?? ""} ${WalletCubit.get(context).balance ?? ""}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 41,
+                            fontSize: 34,
                             color: Colors.black,
                             letterSpacing: 1,
                           ),
                         ),
-                        SizedBox(height: 22),
+                        SizedBox(height: 6),
                         // Top Up button
                         SizedBox(
                           width: double.infinity,
@@ -108,19 +108,19 @@ class WalletScreen extends StatelessWidget {
                             icon: Icon(
                               Icons.add,
                               color: Colors.white,
-                              size: 26,
+                              size: 22,
                             ),
                             label: Text(
-                              'Top-Up',
+                              'Add Credit',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 16,
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
-                              minimumSize: Size(0, 55),
+                              minimumSize: Size(0, 48),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(11),
                               ),
@@ -130,7 +130,7 @@ class WalletScreen extends StatelessWidget {
                             },
                           ),
                         ),
-                        SizedBox(height: 13),
+                        SizedBox(height: 7),
                         // Add Card button
                         Container(
                           width: double.infinity,
@@ -141,6 +141,7 @@ class WalletScreen extends StatelessWidget {
                             ),
                             borderRadius: BorderRadius.circular(11),
                             color: Colors.white.withOpacity(0.12),
+                            
                           ),
                           child: Material(
                             color: Colors.transparent,
@@ -150,18 +151,20 @@ class WalletScreen extends StatelessWidget {
                                 context.goTo(ManageCardsScreen());
                               },
                               child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 15),
+                                padding: EdgeInsets.symmetric(vertical: 12),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     SvgPicture.asset(
                                       "assets/icons/add_card.svg",
+                                      width: 22,
+                                      height: 22,
                                     ),
                                     SizedBox(width: 8),
                                     Text(
                                       "Manage Cards",
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.black,
                                       ),
@@ -172,7 +175,7 @@ class WalletScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        
 
                         // Manage Cards button
                         // Container(
@@ -353,7 +356,7 @@ class WalletScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Top up",
+                                    "Credit Added",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
@@ -377,7 +380,7 @@ class WalletScreen extends StatelessWidget {
                               child: Text(
                                 "${item.amount} ${item.currency}",
                                 style: TextStyle(
-                                  color: green,
+                                  color: Color(0xFF52996D),
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
                                 ),
