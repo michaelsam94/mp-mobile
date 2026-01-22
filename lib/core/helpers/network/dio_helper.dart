@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mega_plus/app_root.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
-import 'package:mega_plus/presentation/auth/login/login_screen.dart';
+import 'package:mega_plus/presentation/start/splash_screen.dart';
 import '../cache/cache_helper.dart';
 import '../cache/cache_keys.dart';
 import 'end_points.dart';
@@ -112,10 +112,10 @@ class DioHelper {
   }
 
   static void _handleUnauthorized() {
-    // Clear cache and navigate to login
+    // Clear cache and navigate to splash screen so onboarding shows again after logout
     CacheHelper.logout();
     navigatorKey.currentState?.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      MaterialPageRoute(builder: (context) => const SplashScreen()),
       (route) => false,
     );
   }

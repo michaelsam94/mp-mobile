@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
-import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
+import 'package:mega_plus/presentation/start/splash_screen.dart';
 import 'package:mega_plus/presentation/profile/edit_profile_screen.dart';
 import 'package:mega_plus/presentation/profile/rfid_cards_screen.dart';
 import 'package:mega_plus/presentation/profile/settings_screen.dart';
@@ -126,8 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (state is SuccessLogoutProfileState) {
               CacheHelper.logout().then((_) {
                 if (context.mounted) {
-                  // Navigate to login screen after logout, not splash/onboarding
-                  context.goOffAll(LoginScreen());
+                  // Navigate to splash screen after logout so onboarding shows again
+                  context.goOffAll(SplashScreen());
                 }
               });
             }

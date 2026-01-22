@@ -800,7 +800,9 @@ class ConnectorCard extends StatelessWidget {
                   style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                 ),
                 Text(
-                  gun.price != null ? "${gun.price} EGP/KW" : "Price not available",
+                  gun.price != null 
+                    ? "${double.tryParse(gun.price!)?.toStringAsFixed(2) ?? gun.price} EGP/KW" 
+                    : "Price not available",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.green[700],

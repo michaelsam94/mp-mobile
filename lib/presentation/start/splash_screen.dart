@@ -64,7 +64,19 @@ class SplashScreen extends StatelessWidget {
               if (context.mounted) context.goOff(MainScreen());
             } else {
               await CacheHelper.logout();
-              if (context.mounted) context.goOff(LoginScreen());
+              // After logout, onboarding flag is reset, so show onboarding
+              if (context.mounted) {
+                if (!CacheHelper.isOnboardingCompleted()) {
+                  context.goOff(
+                    BlocProvider(
+                      create: (context) => OnBoardingCubit(),
+                      child: OnboardingScreen(),
+                    ),
+                  );
+                } else {
+                  context.goOff(LoginScreen());
+                }
+              }
             }
             break;
           case 3:
