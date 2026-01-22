@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
-import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
@@ -25,38 +23,27 @@ class SplashScreen extends StatelessWidget {
         // If user is logged in but didn't check "Remember Me", force logout
         if (!rememberMe && CacheHelper.checkLogin() != 1) {
           await CacheHelper.logout();
-          // Go to login or onboarding based on onboarding status
-          if (!CacheHelper.isOnboardingCompleted()) {
-            if (context.mounted) {
-              context.goOff(
-                BlocProvider(
-                  create: (context) => OnBoardingCubit(),
-                  child: OnboardingScreen(),
-                ),
-              );
-            }
-          } else {
-            if (context.mounted) context.goOff(LoginScreen());
+          // Always show onboarding when user is not logged in
+          if (context.mounted) {
+            context.goOff(
+              BlocProvider(
+                create: (context) => OnBoardingCubit(),
+                child: OnboardingScreen(),
+              ),
+            );
           }
           return;
         }
 
         switch (CacheHelper.checkLogin()) {
           case 1:
-            // Check if onboarding has been completed
-            // Only show onboarding on first install
-            if (!CacheHelper.isOnboardingCompleted()) {
-              // First time - show onboarding
-              context.goOff(
-                BlocProvider(
-                  create: (context) => OnBoardingCubit(),
-                  child: OnboardingScreen(),
-                ),
-              );
-            } else {
-              // Onboarding already completed - go to login
-              context.goOff(LoginScreen());
-            }
+            // User is not logged in - always show onboarding
+            context.goOff(
+              BlocProvider(
+                create: (context) => OnBoardingCubit(),
+                child: OnboardingScreen(),
+              ),
+            );
             break;
           case 2:
             bool refreshed = await DioHelper.refreshToken();
@@ -64,18 +51,14 @@ class SplashScreen extends StatelessWidget {
               if (context.mounted) context.goOff(MainScreen());
             } else {
               await CacheHelper.logout();
-              // After logout, onboarding flag is reset, so show onboarding
+              // After logout, always show onboarding when user is not logged in
               if (context.mounted) {
-                if (!CacheHelper.isOnboardingCompleted()) {
-                  context.goOff(
-                    BlocProvider(
-                      create: (context) => OnBoardingCubit(),
-                      child: OnboardingScreen(),
-                    ),
-                  );
-                } else {
-                  context.goOff(LoginScreen());
-                }
+                context.goOff(
+                  BlocProvider(
+                    create: (context) => OnBoardingCubit(),
+                    child: OnboardingScreen(),
+                  ),
+                );
               }
             }
             break;
