@@ -46,5 +46,6 @@ class EndPoints {
   static const String currentCharging = '/api/customer/vehicles/charging';
   static String currentChargingWithSession(int sessionId) => '/api/charging/$sessionId/current';
   static const String updateProfile = "/api/profile";
+  static const String deleteAccount = "/api/profile/delete";
   static const String getSettings = "/api/settings";
 }

@@ -391,7 +391,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     try {
       var response = await DioHelper.deleteData(
-        url: "/api/profile/delete",
+        url: EndPoints.deleteAccount,
         data: FormData.fromMap({"delete_reason": reason}),
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
