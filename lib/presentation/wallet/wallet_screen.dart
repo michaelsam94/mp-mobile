@@ -350,7 +350,7 @@ class WalletScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SvgPicture.asset("assets/icons/charger.svg"),
+                            Image.asset("assets/icons/ic_topup.png",width: 40,height: 40,),
                             SizedBox(width: 14),
                             Expanded(
                               child: Column(
@@ -381,7 +381,7 @@ class WalletScreen extends StatelessWidget {
                               child: Text(
                                 "${item.amount} ${item.currency}",
                                 style: TextStyle(
-                                  color: Color(0xFF52996D),
+                                  color: Color(0xFF07C355),
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
                                 ),
