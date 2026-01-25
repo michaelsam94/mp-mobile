@@ -6,6 +6,7 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/manage_cards_screen.dart';
+import 'package:mega_plus/presentation/wallet/models/wallet_transaction_model.dart';
 import 'package:mega_plus/presentation/wallet/top_up_screen.dart';
 
 import '../../core/helpers/cache/cache_helper.dart';
@@ -329,6 +330,7 @@ class WalletScreen extends StatelessWidget {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final item = WalletCubit.get(context).transactions[index];
+                    final isTopUp = item.type == TransactionType.topup;
                     return Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 11,
@@ -350,14 +352,20 @@ class WalletScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Image.asset("assets/icons/ic_topup.png",width: 40,height: 40,),
+                            Image.asset(
+                              isTopUp 
+                                ? "assets/icons/ic_topup.png"
+                                : "assets/icons/ic_charging_session.png",
+                              width: 40,
+                              height: 40,
+                            ),
                             SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Credit Added",
+                                    isTopUp ? "Credit Added" : "Charging Session",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,

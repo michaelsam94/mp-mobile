@@ -2,8 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
+import 'package:mega_plus/presentation/wallet/models/charging_transaction_response_model.dart';
 import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
 import 'package:mega_plus/presentation/wallet/models/top_up_response_model.dart';
+import 'package:mega_plus/presentation/wallet/models/wallet_transaction_model.dart';
 import 'package:meta/meta.dart';
 
 part 'wallet_state.dart';
@@ -13,7 +15,7 @@ class WalletCubit extends Cubit<WalletState> {
 
   static WalletCubit get(context) => BlocProvider.of(context);
 
-  List<TopUpTransactionResponseModel> transactions = [];
+  List<WalletTransactionModel> transactions = [];
   void getTransactions() async {
     emit(LoadingGetTransactionsWalletState());
     try {
@@ -21,10 +23,36 @@ class WalletCubit extends Cubit<WalletState> {
         url: EndPoints.getTopUpTransactions,
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
-        var data = response.data["data"] as List;
-        transactions = data
-            .map((e) => TopUpTransactionResponseModel.fromJson(e))
-            .toList();
+        var data = response.data["data"];
+        List<WalletTransactionModel> allTransactions = [];
+        
+        // Parse topup transactions
+        if (data["topup_transactions"] != null) {
+          var topupList = data["topup_transactions"] as List;
+          allTransactions.addAll(
+            topupList.map((e) => WalletTransactionModel.fromTopUp(
+              TopUpTransactionResponseModel.fromJson(e),
+            )),
+          );
+        }
+        
+        // Parse charging transactions
+        if (data["charging_transactions"] != null) {
+          var chargingList = data["charging_transactions"] as List;
+          allTransactions.addAll(
+            chargingList.map((e) => WalletTransactionModel.fromCharging(
+              ChargingTransactionResponseModel.fromJson(e),
+            )),
+          );
+        }
+        
+        // Sort by date (most recent first) - assuming createdAt is in format that can be compared
+        allTransactions.sort((a, b) {
+          // Simple string comparison - you might want to parse dates properly
+          return (b.createdAt ?? '').compareTo(a.createdAt ?? '');
+        });
+        
+        transactions = allTransactions;
         emit(SuccessGetTransactionsWalletState());
       } else {
         emit(ErrorGetTransactionsWalletState());
