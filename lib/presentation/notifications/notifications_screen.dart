@@ -221,8 +221,8 @@ class NotificationsView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: notification.isRead == false 
-            ? const Color(0xFFF8F9FF) 
-            : Colors.white,
+            ? const Color(0xFFF6F6F6) 
+            : const Color(0xFFFBFBFB),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: notification.isRead == false 
@@ -231,55 +231,61 @@ class NotificationsView extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              if (notification.isRead == false)
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4CAF50),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              if (notification.isRead == false) const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  notification.title ?? '',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: notification.isRead == false 
-                        ? FontWeight.w600 
-                        : FontWeight.w500,
-                    color: const Color(0xff212121),
-                  ),
-                ),
-              ),
-              Text(
-                formattedDate,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xff9E9E9E),
-                ),
-              ),
-            ],
+          // Notification icon
+          Image.asset(
+            "assets/icons/ic_notification.png",
+            width: 40,
+            height: 40,
           ),
-          if (notification.body != null && notification.body!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              notification.body!,
-              style: TextStyle(
-                fontSize: 14,
-                color: const Color(0xff606060),
-                fontWeight: notification.isRead == false 
-                    ? FontWeight.w400 
-                    : FontWeight.w300,
-              ),
+          const SizedBox(width: 12),
+          // Content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        notification.title ?? '',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: notification.isRead == false 
+                              ? FontWeight.w600 
+                              : FontWeight.w500,
+                          color: const Color(0xff212121),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      formattedDate,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xff9E9E9E),
+                      ),
+                    ),
+                    
+                  ],
+                ),
+                if (notification.body != null && notification.body!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    notification.body!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: const Color(0xff606060),
+                      fontWeight: notification.isRead == false 
+                          ? FontWeight.w400 
+                          : FontWeight.w300,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );
