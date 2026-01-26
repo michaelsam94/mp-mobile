@@ -17,41 +17,15 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 2), () async {
       if (context.mounted) {
-        // Check if user chose "Remember Me"
-        final rememberMe = CacheHelper.getBool(CacheKeys.rememberMe.name) ?? false;
-
-        // If user is logged in but didn't check "Remember Me", force logout
-        if (!rememberMe && CacheHelper.checkLogin() != 1) {
-          await CacheHelper.logout();
-          // Always show onboarding when user is not logged in
-          if (context.mounted) {
-            context.goOff(
-              BlocProvider(
-                create: (context) => OnBoardingCubit(),
-                child: OnboardingScreen(),
-              ),
-            );
-          }
-          return;
-        }
-
-        switch (CacheHelper.checkLogin()) {
-          case 1:
-            // User is not logged in - always show onboarding
-            context.goOff(
-              BlocProvider(
-                create: (context) => OnBoardingCubit(),
-                child: OnboardingScreen(),
-              ),
-            );
-            break;
-          case 2:
-            bool refreshed = await DioHelper.refreshToken();
-            if (refreshed) {
-              if (context.mounted) context.goOff(MainScreen());
-            } else {
+        // First, check if there's a token in cache
+        final token = CacheHelper.getString(CacheKeys.token.name);
+        
+        // If token exists, check login status and navigate accordingly
+        if (token != null && token.isNotEmpty) {
+          switch (CacheHelper.checkLogin()) {
+            case 1:
+              // Token exists but login data is missing - clear and show onboarding
               await CacheHelper.logout();
-              // After logout, always show onboarding when user is not logged in
               if (context.mounted) {
                 context.goOff(
                   BlocProvider(
@@ -60,11 +34,40 @@ class SplashScreen extends StatelessWidget {
                   ),
                 );
               }
-            }
-            break;
-          case 3:
-            if (context.mounted) context.goOff(MainScreen());
-            break;
+              break;
+            case 2:
+              // Token expired - try to refresh
+              bool refreshed = await DioHelper.refreshToken();
+              if (refreshed) {
+                if (context.mounted) context.goOff(MainScreen());
+              } else {
+                await CacheHelper.logout();
+                // After logout, show onboarding when user is not logged in
+                if (context.mounted) {
+                  context.goOff(
+                    BlocProvider(
+                      create: (context) => OnBoardingCubit(),
+                      child: OnboardingScreen(),
+                    ),
+                  );
+                }
+              }
+              break;
+            case 3:
+              // Valid token - go to home screen
+              if (context.mounted) context.goOff(MainScreen());
+              break;
+          }
+        } else {
+          // No token in cache - show onboarding
+          if (context.mounted) {
+            context.goOff(
+              BlocProvider(
+                create: (context) => OnBoardingCubit(),
+                child: OnboardingScreen(),
+              ),
+            );
+          }
         }
       }
     });

@@ -250,7 +250,7 @@ class RFIDCardsScreen extends StatelessWidget {
               padding: EdgeInsets.only(
                 left: 16,
                 right: 16,
-                bottom: bottomInset, // عشان الكيبورد
+                bottom: bottomInset + 50, // عشان الكيبورد + 50px margin
                 top: 12,
               ),
               child: Form(

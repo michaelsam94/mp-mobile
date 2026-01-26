@@ -48,4 +48,5 @@ class EndPoints {
   static const String updateProfile = "/api/profile";
   static const String deleteAccount = "/api/profile/delete";
   static const String getSettings = "/api/settings";
+  static const String notifications = "/api/notifications";
 }
