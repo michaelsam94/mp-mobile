@@ -38,7 +38,6 @@ class AppThemes {
       primary: AppColors.primary,
       secondary: AppColors.accent,
       error: AppColors.error,
-      background: AppColors.background,
       surface: AppColors.secondary,
     ),
     inputDecorationTheme: InputDecorationTheme(

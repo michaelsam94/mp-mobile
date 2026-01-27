@@ -250,7 +250,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     required bool obscureText,
     required VoidCallback onToggle,
   }) {
-    return Container(
+    return SizedBox(
       height: 56,
 
       child: TextField(

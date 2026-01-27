@@ -11,21 +11,21 @@ class UserCacheModel {
     tokenType = json['token_type'];
     accessToken = json['access_token'];
     expiresIn = json['expires_in'];
-    user = json['user'] != null ? new UserData.fromJson(json['user']) : null;
+    user = json['user'] != null ? UserData.fromJson(json['user']) : null;
     expireDateTime = json["expireDateTime"] != null
         ? DateTime.parse(json["expireDateTime"].toString())
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['token_type'] = this.tokenType;
-    data['access_token'] = this.accessToken;
-    data['expires_in'] = this.expiresIn;
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['token_type'] = tokenType;
+    data['access_token'] = accessToken;
+    data['expires_in'] = expiresIn;
+    if (user != null) {
+      data['user'] = user!.toJson();
     }
-    data["expireDateTime"] = this.expireDateTime.toString();
+    data["expireDateTime"] = expireDateTime.toString();
     return data;
   }
 }
@@ -74,18 +74,18 @@ class UserData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['full_name'] = this.fullName;
-    data['country_code'] = this.countryCode;
-    data['mobile_number'] = this.mobileNumber;
-    data['email'] = this.email;
-    data['created_at'] = this.createdAt;
-    data['birthday'] = this.birthday;
-    data['gender'] = this.gender;
-    data['total_charges'] = this.totalCharges;
-    data['media'] = this.media;
-    data['media_url'] = this.mediaUrl;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['full_name'] = fullName;
+    data['country_code'] = countryCode;
+    data['mobile_number'] = mobileNumber;
+    data['email'] = email;
+    data['created_at'] = createdAt;
+    data['birthday'] = birthday;
+    data['gender'] = gender;
+    data['total_charges'] = totalCharges;
+    data['media'] = media;
+    data['media_url'] = mediaUrl;
     return data;
   }
 }

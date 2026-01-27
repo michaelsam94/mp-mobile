@@ -12,10 +12,10 @@ class TopUpTransactionResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['amount'] = this.amount;
-    data['currency'] = this.currency;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['amount'] = amount;
+    data['currency'] = currency;
+    data['created_at'] = createdAt;
     return data;
   }
 }

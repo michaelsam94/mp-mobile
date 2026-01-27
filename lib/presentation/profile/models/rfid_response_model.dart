@@ -16,12 +16,12 @@ class RFIDResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['customer_id'] = this.customerId;
-    data['code'] = this.code;
-    data['status'] = this.status;
-    data['is_default'] = this.isDefault;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['customer_id'] = customerId;
+    data['code'] = code;
+    data['status'] = status;
+    data['is_default'] = isDefault;
     return data;
   }
 }

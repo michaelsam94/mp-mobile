@@ -926,7 +926,7 @@ class DashedCircularProgress extends StatelessWidget {
   final Color inactiveColor;
   final Widget child;
 
-  const DashedCircularProgress({
+  const DashedCircularProgress({super.key, 
     required this.percent,
     required this.totalTicks,
     required this.diameter,

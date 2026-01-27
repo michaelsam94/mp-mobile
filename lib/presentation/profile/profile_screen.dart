@@ -12,7 +12,7 @@ import 'package:mega_plus/presentation/profile/support_screen.dart';
 import 'package:mega_plus/presentation/profile/terms_conditions_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({super.key});
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();

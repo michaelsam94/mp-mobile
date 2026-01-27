@@ -24,7 +24,7 @@ Future<void> showVehicleAddedBottomSheet(BuildContext context) async {
 }
 
 class VehicleAddedSheet extends StatelessWidget {
-  const VehicleAddedSheet({Key? key}) : super(key: key);
+  const VehicleAddedSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +248,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 fontSize: 12,
                                 color: Color(0xff121212),
                               ),
-                              value: cubit.selectedBrand,
+                              initialValue: cubit.selectedBrand,
                               isExpanded: true,
                               decoration: InputDecoration(
                                 hintText: 'Select Vehicle Brand',
@@ -506,7 +506,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 fontSize: 12,
                                 color: Color(0xff121212),
                               ),
-                              value: cubit.selectedModel,
+                              initialValue: cubit.selectedModel,
                               isExpanded: true,
                               decoration: InputDecoration(
                                 hintText: 'Select Vehicle Model',
@@ -567,7 +567,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 fontSize: 12,
                                 color: Color(0xff121212),
                               ),
-                              value: cubit.selectedConnector,
+                              initialValue: cubit.selectedConnector,
                               isExpanded: true,
                               decoration: InputDecoration(
                                 hintText: 'Select Connectors',

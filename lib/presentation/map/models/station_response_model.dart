@@ -51,8 +51,9 @@ class StationResponseModel {
               .map((e) {
                 if (e is String) return e;
                 if (e is Map && e['url'] != null) return e['url'].toString();
-                if (e is Map && e['media_url'] != null)
+                if (e is Map && e['media_url'] != null) {
                   return e['media_url'].toString();
+                }
                 return e.toString();
               })
               .toList()
@@ -74,8 +75,9 @@ class StationResponseModel {
             .map((e) {
               if (e is String) return e;
               if (e is Map && e['url'] != null) return e['url'].toString();
-              if (e is Map && e['media_url'] != null)
+              if (e is Map && e['media_url'] != null) {
                 return e['media_url'].toString();
+              }
               return e.toString();
             })
             .toList()
@@ -86,26 +88,26 @@ class StationResponseModel {
     if (json['guns'] != null) {
       guns = <Guns>[];
       json['guns'].forEach((v) {
-        guns!.add(new Guns.fromJson(v));
+        guns!.add(Guns.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['address'] = this.address;
-    data['city'] = this.city;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['status'] = this.status;
-    data['media_url'] = this.mediaUrl;
-    data['media_urls'] = this.mediaUrls;
-    data['is_favourite'] = this.isFavourite;
-    data['ac_compatible'] = this.acCompatible;
-    if (this.guns != null) {
-      data['guns'] = this.guns!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['address'] = address;
+    data['city'] = city;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['status'] = status;
+    data['media_url'] = mediaUrl;
+    data['media_urls'] = mediaUrls;
+    data['is_favourite'] = isFavourite;
+    data['ac_compatible'] = acCompatible;
+    if (guns != null) {
+      data['guns'] = guns!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -152,14 +154,14 @@ class Guns {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['charger_id'] = this.chargerId;
-    data['status'] = this.status;
-    data['name'] = this.name;
-    data['max_power'] = this.maxPower;
-    data['type'] = this.type;
-    data['price'] = this.price;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['charger_id'] = chargerId;
+    data['status'] = status;
+    data['name'] = name;
+    data['max_power'] = maxPower;
+    data['type'] = type;
+    data['price'] = price;
     return data;
   }
 }

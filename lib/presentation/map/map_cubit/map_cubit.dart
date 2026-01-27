@@ -3,11 +3,8 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -287,14 +284,18 @@ class MapCubit extends Cubit<MapState> {
     double maxLng = mapStations.first.longitude ?? 0.0;
 
     for (var station in mapStations) {
-      if (station.latitude != null && station.latitude! < minLat)
+      if (station.latitude != null && station.latitude! < minLat) {
         minLat = station.latitude!;
-      if (station.latitude != null && station.latitude! > maxLat)
+      }
+      if (station.latitude != null && station.latitude! > maxLat) {
         maxLat = station.latitude!;
-      if (station.longitude != null && station.longitude! < minLng)
+      }
+      if (station.longitude != null && station.longitude! < minLng) {
         minLng = station.longitude!;
-      if (station.longitude != null && station.longitude! > maxLng)
+      }
+      if (station.longitude != null && station.longitude! > maxLng) {
         maxLng = station.longitude!;
+      }
     }
 
     mapController!.animateCamera(

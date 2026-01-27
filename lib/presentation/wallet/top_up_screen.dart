@@ -19,7 +19,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
   final Color bgGreen = Color(0xFFE6F9EE);
   int selectedAmount = 50;
   List<int> amounts = [50, 100, 150, 200];
-  TextEditingController _customAmount = TextEditingController();
+  final TextEditingController _customAmount = TextEditingController();
   String? selectedCardToken; // null means "New Card"
 
   @override
@@ -453,7 +453,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                               ),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

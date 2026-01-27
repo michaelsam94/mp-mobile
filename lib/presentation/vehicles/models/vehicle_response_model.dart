@@ -33,22 +33,22 @@ class VehicleResponseModel {
     color = json['color'];
     createdAt = json['created_at'];
     brandModel = json['brand_model'] != null
-        ? new ModelResponseModel.fromJson(json['brand_model'])
+        ? ModelResponseModel.fromJson(json['brand_model'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['customer_id'] = this.customerId;
-    data['brand_model_id'] = this.brandModelId;
-    data['connector_type'] = this.connectorType;
-    data['plate_number'] = this.plateNumber;
-    data['year'] = this.year;
-    data['color'] = this.color;
-    data['created_at'] = this.createdAt;
-    if (this.brandModel != null) {
-      data['brand_model'] = this.brandModel!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['customer_id'] = customerId;
+    data['brand_model_id'] = brandModelId;
+    data['connector_type'] = connectorType;
+    data['plate_number'] = plateNumber;
+    data['year'] = year;
+    data['color'] = color;
+    data['created_at'] = createdAt;
+    if (brandModel != null) {
+      data['brand_model'] = brandModel!.toJson();
     }
     return data;
   }

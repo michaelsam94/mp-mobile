@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -10,7 +9,6 @@ import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/helpers/cache/user_cache_model.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
-import 'package:meta/meta.dart';
 
 part 'login_state.dart';
 

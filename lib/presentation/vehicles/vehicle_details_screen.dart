@@ -230,7 +230,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.only(bottom: 13),
                     child: DropdownButtonFormField<String>(
-                      value: "CCS2",
+                      initialValue: "CCS2",
                       decoration: InputDecoration(
                         labelText: "Charging Type",
                         filled: true,

@@ -21,18 +21,18 @@ class ModelResponseModel {
     name = json['name'];
     createdAt = json['created_at'];
     brand = json['brand'] != null
-        ? new BrandResponseModel.fromJson(json['brand'])
+        ? BrandResponseModel.fromJson(json['brand'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['brand_id'] = this.brandId;
-    data['name'] = this.name;
-    data['created_at'] = this.createdAt;
-    if (this.brand != null) {
-      data['brand'] = this.brand!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['brand_id'] = brandId;
+    data['name'] = name;
+    data['created_at'] = createdAt;
+    if (brand != null) {
+      data['brand'] = brand!.toJson();
     }
     return data;
   }

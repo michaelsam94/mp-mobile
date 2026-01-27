@@ -350,7 +350,7 @@ class StationDetailsSheet extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     children: [
                       if (station.guns != null && station.guns!.isNotEmpty)
-                        ...station.guns!.map((gun) => ConnectorCard(gun: gun)).toList()
+                        ...station.guns!.map((gun) => ConnectorCard(gun: gun))
                       else
                         Padding(
                           padding: const EdgeInsets.all(16),

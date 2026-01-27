@@ -1,8 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
 
 import '../../../core/helpers/network/dio_helper.dart';
 import '../../../core/helpers/network/end_points.dart';

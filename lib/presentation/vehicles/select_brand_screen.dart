@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 
 class SelectBrandScreen extends StatefulWidget {
-  const SelectBrandScreen({Key? key}) : super(key: key);
+  const SelectBrandScreen({super.key});
 
   @override
   State<SelectBrandScreen> createState() => _SelectBrandScreenState();

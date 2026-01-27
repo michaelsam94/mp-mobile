@@ -322,7 +322,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${durationMin} min  (${distanceKm.toStringAsFixed(1)} km)",
+                        "$durationMin min  (${distanceKm.toStringAsFixed(1)} km)",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

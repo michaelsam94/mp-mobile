@@ -368,7 +368,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           )
           .toList(),
       onChanged: onChanged,
-      value: value ?? items.first,
+      initialValue: value ?? items.first,
     );
   }
 

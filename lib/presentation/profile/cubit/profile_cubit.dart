@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +8,6 @@ import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
 import 'package:mega_plus/presentation/profile/models/settings_response_model.dart';
-import 'package:meta/meta.dart';
 
 import '../models/content_page_model.dart';
 

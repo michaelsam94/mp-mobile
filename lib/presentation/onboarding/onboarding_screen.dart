@@ -8,7 +8,7 @@ import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  OnboardingScreen({super.key});
+  const OnboardingScreen({super.key});
   
   void _goNext(BuildContext context, int currentIndex, int totalTips) {
     if (currentIndex < totalTips - 1) {

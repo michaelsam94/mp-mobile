@@ -1,13 +1,11 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/helpers/network/end_points.dart';
-import 'package:meta/meta.dart';
 
 import '../../../../core/helpers/cache/cache_helper.dart';
 import '../../../../core/helpers/cache/user_cache_model.dart';

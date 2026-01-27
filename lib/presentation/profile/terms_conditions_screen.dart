@@ -135,7 +135,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                             term.title,
                             term.description,
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   );

@@ -226,7 +226,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Charging Status Icon
-                Container(
+                SizedBox(
                   width: 40,
                   height: 40,
                   child: Stack(
@@ -296,7 +296,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                 ),
                 
                 // Vehicle Image
-                Container(
+                SizedBox(
                   width: 120,
                   height: 80,
                   child: Image.asset(

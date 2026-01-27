@@ -30,15 +30,15 @@ class SavedCardResponseModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['customer_id'] = this.customerId;
-    data['token'] = this.token;
-    data['masked_pan'] = this.maskedPan;
-    data['status'] = this.status;
-    data['card_type'] = this.cardType;
-    data['is_default'] = this.isDefault;
-    data['created_at'] = this.createdAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['customer_id'] = customerId;
+    data['token'] = token;
+    data['masked_pan'] = maskedPan;
+    data['status'] = status;
+    data['card_type'] = cardType;
+    data['is_default'] = isDefault;
+    data['created_at'] = createdAt;
     return data;
   }
 }
