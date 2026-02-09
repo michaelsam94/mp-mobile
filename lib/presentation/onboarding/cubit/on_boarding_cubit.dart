@@ -34,6 +34,13 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
 
         var tipsData = data["tips"] as List;
         tips = tipsData.map((e) => TipResponseModel.fromJson(e)).toList();
+        
+        // If tips is empty, skip onboarding
+        if (tips.isEmpty) {
+          emit(OnBoardingNotVisibleState());
+          return;
+        }
+        
         // Sort tips by sort field
         tips.sort((a, b) => (a.sort ?? 0).compareTo(b.sort ?? 0));
         // Reset to first tip
