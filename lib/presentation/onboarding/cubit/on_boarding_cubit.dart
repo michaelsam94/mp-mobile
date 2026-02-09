@@ -12,6 +12,8 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
   static OnBoardingCubit get(context) => BlocProvider.of(context);
 
   List<TipResponseModel> tips = [];
+  bool isVisible = true;
+
   void getData() async {
     emit(LoadingOnBoardingState());
     try {
@@ -21,8 +23,17 @@ class OnBoardingCubit extends Cubit<OnBoardingState> {
       );
 
       if (response.statusCode == 200 && response.data["success"] == true) {
-        var data = response.data["data"]["tips"] as List;
-        tips = data.map((e) => TipResponseModel.fromJson(e)).toList();
+        var data = response.data["data"];
+        isVisible = data["is_visible"] ?? true;
+        
+        // If onboarding is not visible, emit state to skip it
+        if (!isVisible) {
+          emit(OnBoardingNotVisibleState());
+          return;
+        }
+
+        var tipsData = data["tips"] as List;
+        tips = tipsData.map((e) => TipResponseModel.fromJson(e)).toList();
         // Sort tips by sort field
         tips.sort((a, b) => (a.sort ?? 0).compareTo(b.sort ?? 0));
         // Reset to first tip

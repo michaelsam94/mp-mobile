@@ -1,5 +1,5 @@
 class EndPoints {
-  static const String baseUrl = "https://dev-megaplag.tadafuq.ae";
+  static const String baseUrl = "https://mega-plug.com";
 
   //! End Points
   //! Auth End Points

@@ -9,6 +9,8 @@ class LoadingOnBoardingState extends OnBoardingState {}
 
 class SuccessOnBoardingState extends OnBoardingState {}
 
+class OnBoardingNotVisibleState extends OnBoardingState {}
+
 class ErrorOnBoardingState extends OnBoardingState {}
 
 class ChangeOnBoardingState extends OnBoardingState {

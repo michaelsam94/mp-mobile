@@ -26,30 +26,51 @@ class OnboardingScreen extends StatelessWidget {
     cubit.getData();
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<OnBoardingCubit, OnBoardingState>(
-          builder: (context, state) {
-            if (state is LoadingOnBoardingState) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ShimmerWidget(
-                      width: 50,
-                      height: 50,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ],
-                ),
-              );
+        child: BlocListener<OnBoardingCubit, OnBoardingState>(
+          listener: (context, state) {
+            // If onboarding is not visible, navigate to login
+            if (state is OnBoardingNotVisibleState) {
+              // Mark onboarding as completed since we're skipping it
+              CacheHelper.setOnboardingCompleted();
+              context.goTo(LoginScreen());
             }
-            if (cubit.tips.isEmpty) {
-              return Center(
-                child: Text(
-                  'No onboarding data available',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              );
-            }
+          },
+          child: BlocBuilder<OnBoardingCubit, OnBoardingState>(
+            builder: (context, state) {
+              if (state is LoadingOnBoardingState) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ShimmerWidget(
+                        width: 50,
+                        height: 50,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              
+              // If not visible, show loading while navigating
+              if (state is OnBoardingNotVisibleState) {
+                return Center(
+                  child: ShimmerWidget(
+                    width: 50,
+                    height: 50,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                );
+              }
+
+              if (cubit.tips.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No onboarding data available',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                );
+              }
 
             final currentTip = cubit.tips[cubit.currentIndex];
             
@@ -188,7 +209,8 @@ class OnboardingScreen extends StatelessWidget {
                 ],
               ),
             );
-          },
+            },
+          ),
         ),
       ),
     );
