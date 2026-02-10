@@ -62,7 +62,7 @@ class PersonalizeProfileScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         onPressed: () {
-                          context.goTo(MainScreen());
+                          context.goOffAll(MainScreen());
                         },
                         child: const Text(
                           'Add Later',
