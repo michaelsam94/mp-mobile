@@ -1,4 +1,4 @@
-package com.example.mega_plus
+package com.mega.plug
 
 import io.flutter.embedding.android.FlutterActivity
 
