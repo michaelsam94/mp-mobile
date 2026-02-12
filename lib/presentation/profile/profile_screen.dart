@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
@@ -22,13 +23,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final Color green = Color(0xFF19C37D);
   final Color bgGreen = Color(0xFFECFDF3);
+  String appVersion = '';
+  String buildNumber = '';
 
   @override
   void initState() {
     super.initState();
+    _getAppVersion();
     // Load profile data when screen is first opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ProfileCubit.get(context).getProfile();
+    });
+  }
+
+  Future<void> _getAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
     });
   }
 
@@ -412,9 +424,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 18),
                 Center(
-                  child: Text(
-                    "Version 4.4.2 (102)",
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Powered by Tadafuq",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        appVersion.isNotEmpty && buildNumber.isNotEmpty
+                            ? "Version $appVersion ($buildNumber)"
+                            : "Version",
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 100),

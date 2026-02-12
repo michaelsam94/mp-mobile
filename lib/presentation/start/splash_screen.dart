@@ -89,10 +89,24 @@ class SplashScreen extends StatelessWidget {
               alignment: AlignmentGeometry.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 50),
-                child: CircularProgressIndicator(
-                  strokeWidth: 7,
-                  strokeCap: StrokeCap.round,
-                  backgroundColor: AppColors.primary.withValues(alpha: .2),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      strokeWidth: 7,
+                      strokeCap: StrokeCap.round,
+                      backgroundColor: AppColors.primary.withValues(alpha: .2),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'powered by Tadafuq',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xff9E9E9E),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
