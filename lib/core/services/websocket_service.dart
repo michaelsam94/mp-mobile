@@ -31,10 +31,10 @@ class WebSocketService {
       
       String url;
       if (isLoggedIn && token != null && token.isNotEmpty) {
-        url = 'ws://34.38.50.190:7070?token=$token';
+        url = 'ws://35.195.65.178:7070?token=$token';
       } else {
         // Guest mode - connect without token
-        url = 'ws://34.38.50.190:7070';
+        url = 'ws://35.195.65.178:7070';
       }
       
       channel = WebSocketChannel.connect(
