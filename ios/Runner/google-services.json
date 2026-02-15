@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "878803204865",
+    "firebase_url": "https://mega-plug-default-rtdb.firebaseio.com",
+    "project_id": "mega-plug",
+    "storage_bucket": "mega-plug.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878803204865:android:db3d713b240b69f4d0b900",
+        "android_client_info": {
+          "package_name": "com.mega.plug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxoHzRn-_KVoEsI-jiOjsNUoacqVSpWQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

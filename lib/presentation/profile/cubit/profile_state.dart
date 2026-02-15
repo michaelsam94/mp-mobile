@@ -1,0 +1,77 @@
+part of 'profile_cubit.dart';
+
+@immutable
+sealed class ProfileState {}
+
+final class ProfileInitial extends ProfileState {}
+
+class LoadingLogoutProfileState extends ProfileState {}
+
+class SuccessLogoutProfileState extends ProfileState {}
+
+class LoadingGetRFIDState extends ProfileState {}
+
+class ErrorGetRFIDState extends ProfileState {
+  final String message;
+  ErrorGetRFIDState({this.message = 'Failed to process RFID card'});
+}
+
+class SuccessGetRFIDState extends ProfileState {}
+
+class SuccessAddRFIDState extends ProfileState {}
+
+class ChangeAgreePrivacyState extends ProfileState {
+  final bool agree;
+  ChangeAgreePrivacyState(this.agree);
+}
+
+class SelectComplaintCategoryState extends ProfileState {
+  final String? category;
+  SelectComplaintCategoryState(this.category);
+}
+
+class LoadingGetCategoriesComplaintsState extends ProfileState {}
+
+class ErrorGetCategoriesComplaintsState extends ProfileState {}
+
+class SuccessGetCategoriesComplaintsState extends ProfileState {}
+
+class LoadingMakeComplaintsState extends ProfileState {}
+class SuccessMakeComplaintsState extends ProfileState {}
+class LoadingChangePasswordState extends ProfileState {}
+
+class SuccessChangePasswordState extends ProfileState {}
+
+class ErrorChangePasswordState extends ProfileState {
+  final String? message;
+  ErrorChangePasswordState({this.message});
+}
+// Add these to your existing states
+class LoadingGetTermsState extends ProfileState {}
+
+class SuccessGetTermsState extends ProfileState {}
+
+class ErrorGetTermsState extends ProfileState {
+  final String message;
+  ErrorGetTermsState({this.message = 'Failed to load terms'});
+}
+
+class LoadingUpdateProfileState extends ProfileState {}
+
+class SuccessUpdateProfileState extends ProfileState {}
+
+class ErrorUpdateProfileState extends ProfileState {
+  final String message;
+  ErrorUpdateProfileState({this.message = 'Failed to update profile'});
+}
+
+class ProfileReloadedState extends ProfileState {}
+
+class LoadingGetSettingsState extends ProfileState {}
+
+class SuccessGetSettingsState extends ProfileState {}
+
+class ErrorGetSettingsState extends ProfileState {
+  final String message;
+  ErrorGetSettingsState({this.message = 'Failed to load settings'});
+}

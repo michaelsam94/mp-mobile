@@ -1,0 +1,16 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 27.5999C22.8 27.5999 28.8 21.5999 28.8 14.7999C28.8 14.4159 28.7846 14.0268 28.7535 13.6358L28.7272 13.3423C28.6979 13.0485 28.6597 12.7542 28.6124 12.4607L28.562 12.1675V12.1675L28.5056 11.8751C27.712 7.9839 25.28 4.3999 20.8 4.3999H11.2C6.71995 4.3999 4.28795 7.9839 3.49435 11.8751L3.4379 12.1675V12.1675L3.38755 12.4607C3.26139 13.2434 3.19995 14.0319 3.19995 14.7999C3.19995 21.5999 9.19995 27.5999 16 27.5999Z" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M11.1999 7.6001H20.7999C23.5999 7.6001 25.5999 10.4001 25.5999 14.8001C25.5999 20.0001 21.1999 24.4001 15.9999 24.4001C10.7999 24.4001 6.3999 20.0001 6.3999 14.8001C6.3999 10.4001 8.3999 7.6001 11.1999 7.6001Z" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="19.2" cy="19.6002" r="2.4" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="19.1999" cy="19.5998" r="0.8" fill="#121212"/>
+<circle cx="12.7999" cy="19.6002" r="2.4" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="12.8" cy="19.5998" r="0.8" fill="#121212"/>
+<circle cx="22.4" cy="14.0001" r="2.4" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="22.4001" cy="14.0002" r="0.8" fill="#121212"/>
+<circle cx="16.0001" cy="14.0001" r="2.4" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="16" cy="14.0002" r="0.8" fill="#121212"/>
+<circle cx="9.59995" cy="14.0001" r="2.4" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="9.60005" cy="14.0002" r="0.8" fill="#121212"/>
+<circle cx="19.2" cy="9.9998" r="1.2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="12.8001" cy="9.9998" r="1.2" stroke="#121212" stroke-width="0.266667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

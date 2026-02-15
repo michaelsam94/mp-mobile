@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
+import 'package:mega_plus/core/helpers/cache/user_cache_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
@@ -27,7 +31,110 @@ class CacheHelper {
     return await _preferences!.remove(key);
   }
 
-  static Future<bool> clear() async {
-    return await _preferences!.clear();
+  static Future<bool> logout() async {
+    // Save credentials before clearing (but NOT onboarding flag - reset it so onboarding shows again)
+    final rememberMe = _preferences!.getBool(CacheKeys.rememberMe.name) ?? false;
+    final savedEmailPhone = _preferences!.getString(CacheKeys.savedEmailPhone.name);
+    final savedPassword = _preferences!.getString(CacheKeys.savedPassword.name);
+    
+    final result = await _preferences!.clear();
+    
+    // Do NOT restore onboarding completed flag - let it reset so onboarding shows after logout
+    
+    // Restore saved credentials if remember me was checked
+    if (rememberMe && savedEmailPhone != null && savedPassword != null) {
+      await _preferences!.setBool(CacheKeys.rememberMe.name, true);
+      await _preferences!.setString(CacheKeys.savedEmailPhone.name, savedEmailPhone);
+      await _preferences!.setString(CacheKeys.savedPassword.name, savedPassword);
+    }
+    
+    return result;
+  }
+
+  static Future<bool> setOnboardingCompleted() async {
+    return await _preferences!.setBool(CacheKeys.onboardingCompleted.name, true);
+  }
+
+  static bool isOnboardingCompleted() {
+    return _preferences!.getBool(CacheKeys.onboardingCompleted.name) ?? false;
+  }
+
+  static Future login(UserCacheModel user) async {
+    user.expireDateTime = DateTime.now().add(
+      Duration(seconds: user.expiresIn!),
+    );
+
+    await _preferences!.setString(CacheKeys.token.name, user.accessToken!);
+    await _preferences!.setString(
+      CacheKeys.login.name,
+      jsonEncode(user.toJson()),
+    );
+  }
+
+  //? 1 -> need login
+  //? 2 -> need refresh token
+  //? 3 -> true
+  static int checkLogin() {
+    var login = _preferences!.getString(CacheKeys.login.name);
+    var token = _preferences!.getString(CacheKeys.token.name);
+    //? Check 1
+    if (login == null && token == null) {
+      return 1;
+    }
+
+    //? Check 2
+    var loginData = UserCacheModel.fromJson(jsonDecode(login!));
+
+    if (loginData.expireDateTime!.isBefore(DateTime.now())) {
+      return 2;
+    }
+    return 3;
+  }
+
+  static UserCacheModel? getUserData() {
+    var login = _preferences!.getString(CacheKeys.login.name);
+    if (login == null) return null;
+
+    var loginData = UserCacheModel.fromJson(jsonDecode(login));
+
+    return loginData;
+  }
+
+  static Future<void> refreshToken(String newToken, int newExpiresIn) async {
+    var login = _preferences!.getString(CacheKeys.login.name);
+    var loginData = UserCacheModel.fromJson(jsonDecode(login!));
+
+    loginData.accessToken = newToken;
+    loginData.expiresIn = newExpiresIn;
+    loginData.expireDateTime = DateTime.now().add(
+      Duration(seconds: loginData.expiresIn!),
+    );
+
+    await _preferences!.setString(CacheKeys.token.name, loginData.accessToken!);
+    await _preferences!.setString(
+      CacheKeys.login.name,
+      jsonEncode(loginData.toJson()),
+    );
+  }
+
+  static Future<void> updateUserData(Map<String, dynamic> userDataJson) async {
+    var login = _preferences!.getString(CacheKeys.login.name);
+    if (login == null) return;
+
+    var loginData = UserCacheModel.fromJson(jsonDecode(login));
+    
+    // Update user data - merge with existing data to preserve fields not in response
+    if (loginData.user != null) {
+      // Create new UserData from JSON, which will include all fields from response
+      loginData.user = UserData.fromJson(userDataJson);
+    } else {
+      // If user is null, create new user data
+      loginData.user = UserData.fromJson(userDataJson);
+    }
+
+    await _preferences!.setString(
+      CacheKeys.login.name,
+      jsonEncode(loginData.toJson()),
+    );
   }
 }
