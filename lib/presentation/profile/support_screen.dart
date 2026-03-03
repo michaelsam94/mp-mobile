@@ -146,6 +146,52 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     );
   }
 
+  String _formatSettingLabel(String key) {
+    if (key.isEmpty) return key;
+    final lower = key.toLowerCase();
+    return lower.length > 1
+        ? '${lower[0].toUpperCase()}${lower.substring(1)}'
+        : key.toUpperCase();
+  }
+
+  IconData _iconForSettingKey(String key) {
+    final k = key.toLowerCase();
+    if (k.contains('phone') || k.contains('tel')) return Icons.phone_outlined;
+    if (k.contains('email') || k.contains('mail')) return Icons.email_outlined;
+    return Icons.link;
+  }
+
+  Future<void> _openSupportLink(BuildContext context, String key, String value) async {
+    try {
+      final k = key.toLowerCase();
+      final v = value.trim();
+      Uri uri;
+      if (k.contains('phone') || k.contains('tel')) {
+        uri = Uri.parse('tel:$v');
+        await launchUrl(uri);
+      } else if (k.contains('email') || k.contains('mail')) {
+        uri = Uri.parse('mailto:$v');
+        await launchUrl(uri);
+      } else {
+        String url = v;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://$url';
+        }
+        uri = Uri.parse(url);
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open ${_formatSettingLabel(key)}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildSupportTab() {
     final cubit = ProfileCubit.get(context);
     
@@ -172,156 +218,26 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           );
         }
         
-        // Build support cards from API data
+        // Build support cards from all settings (key-value pairs)
         List<Widget> supportCards = [];
-        
-        // Phone Support
-        final phone = cubit.getSettingValue('phone');
-        if (phone != null && phone.isNotEmpty) {
+
+        for (final setting in cubit.settings) {
+          final key = setting.key?.trim() ?? '';
+          final value = setting.value?.trim() ?? '';
+          if (key.isEmpty || value.isEmpty) continue;
+
+          final label = _formatSettingLabel(key);
+          final icon = _iconForSettingKey(key);
           supportCards.add(
             _buildSupportCard(
-              "Phone Support",
-              phone,
-              Icons.phone_outlined,
-              onTap: () async {
-                try {
-                  final uri = Uri.parse('tel:${phone.trim()}');
-                  await launchUrl(uri);
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Could not open phone dialer'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
+              label,
+              value,
+              icon,
+              onTap: () => _openSupportLink(context, key, value),
             ),
           );
         }
-        
-        // Email Support
-        final email = cubit.getSettingValue('email');
-        if (email != null && email.isNotEmpty) {
-          supportCards.add(
-            _buildSupportCard(
-              "Email Support",
-              email,
-              Icons.email_outlined,
-              onTap: () async {
-                try {
-                  final uri = Uri.parse('mailto:${email.trim()}');
-                  await launchUrl(uri);
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Could not open email app'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          );
-        }
-        
-        // Facebook
-        final facebook = cubit.getSettingValue('facebook');
-        if (facebook != null && facebook.isNotEmpty) {
-          supportCards.add(
-            _buildSupportCard(
-              "Facebook",
-              facebook,
-              Icons.link,
-              onTap: () async {
-                try {
-                  String url = facebook.trim();
-                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    url = 'https://$url';
-                  }
-                  final uri = Uri.parse(url);
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Could not open Facebook'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          );
-        }
-        
-        // TikTok
-        final tiktok = cubit.getSettingValue('tiktok');
-        if (tiktok != null && tiktok.isNotEmpty) {
-          supportCards.add(
-            _buildSupportCard(
-              "TikTok",
-              tiktok,
-              Icons.video_library_outlined,
-              onTap: () async {
-                try {
-                  String url = tiktok.trim();
-                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    url = 'https://$url';
-                  }
-                  final uri = Uri.parse(url);
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Could not open TikTok'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          );
-        }
-        
-        // Twitter
-        final twitter = cubit.getSettingValue('twitter');
-        if (twitter != null && twitter.isNotEmpty) {
-          supportCards.add(
-            _buildSupportCard(
-              "Twitter",
-              twitter,
-              Icons.link,
-              onTap: () async {
-                try {
-                  String url = twitter.trim();
-                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    url = 'https://$url';
-                  }
-                  final uri = Uri.parse(url);
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Could not open Twitter'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          );
-        }
-        
+
         if (supportCards.isEmpty) {
           return Center(
             child: Padding(
