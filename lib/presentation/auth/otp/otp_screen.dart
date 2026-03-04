@@ -124,7 +124,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          "We've sent a 6-digit code to your ${widget.phone != null ? "mobile\nnumber +20 XXXXX X${widget.phone?.substring(8)}" : "email \n ${widget.email?.substring(0, 2)}XXXXXXX${widget.email![widget.email!.length - 3]}${widget.email![widget.email!.length - 2]}${widget.email![widget.email!.length - 1]}"} ",
+                          "We've sent a 5-digit code to your ${widget.phone != null ? "mobile\nnumber +20 XXXXX X${widget.phone?.substring(8)}" : "email \n ${widget.email?.substring(0, 2)}XXXXXXX${widget.email![widget.email!.length - 3]}${widget.email![widget.email!.length - 2]}${widget.email![widget.email!.length - 1]}"} ",
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xff606060),

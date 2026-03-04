@@ -235,6 +235,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         auth: false,
       );
       if (response.statusCode == 200 && response.data["success"] == true) {
+        // Save token and user data so login state is preserved when app is reopened
         await CacheHelper.login(UserCacheModel.fromJson(response.data["data"]));
         emit(SuccessCreateAccountState());
       } else {
