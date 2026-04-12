@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/change_password_screen.dart';
 import 'package:mega_plus/presentation/vehicles/my_vehicles_screen.dart';
 
@@ -69,6 +70,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -96,7 +98,7 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      "Settings",
+                      l10n.setting,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -112,7 +114,7 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 7, bottom: 1),
               child: Text(
-                "My Account",
+                l10n.myAccount,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -122,7 +124,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             settingsItem(
               icon: Icons.directions_car,
-              title: "My Vehicle",
+              title: l10n.myVehicle,
               subtitle: "Tesla Model 3 • ABC 1234",
               iconColor: green,
               onTap: () {
@@ -141,15 +143,15 @@ class SettingsScreen extends StatelessWidget {
             settingsItem(
               icon:
                   Icons.military_tech, // Use medallion or gift icon for loyalty
-              title: "Loyalty Points 🏅",
-              subtitle: "0 Points",
+              title: l10n.loyaltyPoints,
+              subtitle: "0 ${l10n.points}",
               iconColor: green,
               showTrailing: false,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),
               child: Text(
-                "Security",
+                l10n.security,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -159,14 +161,14 @@ class SettingsScreen extends StatelessWidget {
             ),
             settingsItem(
               icon: Icons.lock_outline,
-              title: "Change Password",
+              title: l10n.changePasswordTitle,
               onTap: () {
                 context.goTo(ChangePasswordScreen());
               },
             ),
             settingsItem(
               icon: Icons.delete_outline,
-              title: "Delete Account",
+              title: l10n.deleteAccountTitle,
               isDanger: true,
               textColor: Colors.red,
               onTap: () {

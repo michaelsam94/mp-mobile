@@ -3,58 +3,59 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/otp/otp_screen.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
+import 'package:mega_plus/core/widgets/phone_input_row.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
 
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
-class SignUpScreen extends StatelessWidget {
-  TextEditingController phoneController = TextEditingController();
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController phoneController = TextEditingController();
 
   final List<Map<String, String>> countryList = [
-    {'code': '+2', 'flag': '🇪🇬'},
+    {'code': '+20', 'flag': '🇪🇬'},
   ];
 
   void _changeCountry(BuildContext context) async {
-    // Popup menu for selecting country
     String? selectedCode = await showModalBottomSheet<String>(
       backgroundColor: Colors.white,
       context: context,
-      builder: (context) {
+      builder: (ctx) {
         return ListView(
           children: countryList.map((country) {
             return ListTile(
-              leading: Text(country['flag']!, style: TextStyle(fontSize: 28)),
+              leading: Text(country['flag']!, style: const TextStyle(fontSize: 28)),
               title: Text(country['code']!),
-              onTap: () => Navigator.pop(context, country['code']),
+              onTap: () => Navigator.pop(ctx, country['code']),
             );
           }).toList(),
         );
       },
     );
-
-    if (selectedCode != null) {
+    if (selectedCode != null && context.mounted) {
       SignUpCubit.get(context).changeCountryCode(selectedCode);
-      // setState(() {
-      //   countryCode = selectedCode;
-      //   flag = countryList.firstWhere(
-      //     (c) => c['code'] == selectedCode,
-      //   )['flag']!;
-      // });
     }
   }
 
-  SignUpScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is ErrorSignUpState) {
             context.showErrorMessage(state.message);
           } else if (state is SuccessSignUpState) {
-            context.showSuccessMessage("OTP Sent Successfully");
+            context.showSuccessMessage(l10n.otpSentSuccess);
             context.goTo(
               OTPVerificationScreen(phone: phoneController.text, signUp: true),
             );
@@ -63,162 +64,73 @@ class SignUpScreen extends StatelessWidget {
         builder: (context, state) {
           return SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     // Back button
                     IconButton(
+                      padding: EdgeInsets.zero,
                       icon: SvgPicture.asset("assets/icons/back.svg"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => Navigator.pop(context),
                     ),
-                    SizedBox(height: 12),
-                    // Title and emoji
-                    Row(
-                      children: [
-                        Text(
-                          'Hello there',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff121212),
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Text('👋', style: TextStyle(fontSize: 26)),
-                      ],
+                    const SizedBox(height: 24),
+                    // MegaPlug Logo
+                    Image.asset(
+                      "assets/images/logo.png",
+                      height: 36,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     // Subtitle
                     Text(
-                      'Enter your phone number and we’ll send you an OTP code to verify your account.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      l10n.signUpSubtitle,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 32),
+                    // Label
                     Text(
-                      'Enter Your Mobile Number',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
+                      l10n.enterMobileNumber,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
                         fontSize: 14,
                         color: Color(0xff121212),
                       ),
                     ),
-                    SizedBox(height: 8),
-
-                    // Phone input field
-                    Row(
-                      spacing: 8,
-                      children: [
-                        Container(
-                          height: 56,
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Color(0xffFBFBFB),
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              _changeCountry(context);
-                            },
-                            child: Row(
-                              children: [
-                                Text(
-                                  SignUpCubit.get(context).countryCode,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xff212427),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Icon(Icons.arrow_drop_down, size: 24),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 56,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[300]!),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/images/eg_flag.png",
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                SizedBox(width: 10),
-                                Expanded(
-                                  child: TextField(
-                                    onChanged: (value) {
-                                      if (value.isNotEmpty) {
-                                        SignUpCubit.get(
-                                          context,
-                                        ).changeConWord(true);
-                                      } else {
-                                        SignUpCubit.get(
-                                          context,
-                                        ).changeConWord(false);
-                                      }
-                                    },
-                                    controller: phoneController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      focusedErrorBorder: InputBorder.none,
-                                      hintText: 'XXXXXXXXXX',
-                                      hintStyle: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 14,
-                                        color: Color(0xffDCDCDC),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    // Phone input
+                    PhoneInputRow(
+                      controller: phoneController,
+                      countryCode: SignUpCubit.get(context).countryCode,
+                      onCountryTap: () => _changeCountry(context),
+                      onChanged: (v) =>
+                          SignUpCubit.get(context).changeConWord(v.isNotEmpty),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 28),
                     // Sign up button
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 52,
                       child: state is LoadingSignUpState
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
+                                disabledBackgroundColor: AppColors.primary,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                               onPressed: SignUpCubit.get(context).conWord
-                                  ? () {
-                                      SignUpCubit.get(
-                                        context,
-                                      ).sendOTP(phoneController.text);
-                                    }
+                                  ? () => SignUpCubit.get(context)
+                                      .sendOTP(phoneController.text)
                                   : null,
                               child: Text(
                                 SignUpCubit.get(context).conWord
-                                    ? "Continue"
-                                    : 'Sign up',
-                                style: TextStyle(
+                                    ? l10n.continueText
+                                    : l10n.signUp,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -226,38 +138,39 @@ class SignUpScreen extends StatelessWidget {
                               ),
                             ),
                     ),
-                    SizedBox(height: 16),
-                    // Continue as guest button
-                    if (!SignUpCubit.get(context).conWord)
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Color(0xffE6F9EE),
-                            side: BorderSide(color: AppColors.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                    const SizedBox(height: 12),
+                    // Continue as guest
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: const Color(0xffE6F9EE),
+                          side: BorderSide(color: AppColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
-                            'Continue as a guest',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
+                        ),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const MainScreen(),
                             ),
+                            (route) => false,
+                          );
+                        },
+                        child: Text(
+                          l10n.continueAsGuest,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (context) => const MainScreen()),
-                              (route) => false,
-                            );
-                          },
                         ),
                       ),
-                    SizedBox(height: 8),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -268,3 +181,4 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/start/splash_screen.dart';
 
@@ -44,7 +45,7 @@ class _DeleteAccountPasswordScreenState
           ),
         ),
         title: Text(
-          'Delete account',
+          AppLocalizations.of(context)!.deleteAccountTitle,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -66,7 +67,7 @@ class _DeleteAccountPasswordScreenState
                     children: [
                       // Title
                       Text(
-                        'Enter your Password',
+                        AppLocalizations.of(context)!.enterYourPassword,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
@@ -77,7 +78,7 @@ class _DeleteAccountPasswordScreenState
 
                       // Description
                       Text(
-                        'Confirm your identity by entering your password. You can\'t recover your account once it\'s deleted.',
+                        AppLocalizations.of(context)!.deleteAccountPasswordDesc,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -152,7 +153,7 @@ class _DeleteAccountPasswordScreenState
                     await CacheHelper.logout();
                     if (context.mounted) {
                       context.showSuccessMessage(
-                        "Account Deleted Successfully",
+                        AppLocalizations.of(context)!.accountDeletedSuccessfully,
                       );
                       context.goOffAll(SplashScreen());
                     }
@@ -169,7 +170,7 @@ class _DeleteAccountPasswordScreenState
                       onPressed: () {
                         if (passwordController.text.isEmpty) {
                           context.showErrorMessage(
-                            "Please enter your password",
+                            AppLocalizations.of(context)!.pleaseEnterOldPassword,
                           );
                           return;
                         }
@@ -178,25 +179,20 @@ class _DeleteAccountPasswordScreenState
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: Text('Delete Account'),
-                            content: Text(
-                              'Are you sure you want to delete your account? This action cannot be undone.',
-                            ),
+                            title: Text(AppLocalizations.of(context)!.deleteAccountTitle),
+                            content: Text(AppLocalizations.of(context)!.areYouSureDeleteAccount),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('Cancel'),
+                                child: Text(AppLocalizations.of(context)!.cancel),
                               ),
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  // Call delete account API
-                                  ProfileCubit.get(
-                                    context,
-                                  ).deleteAccount(widget.reason);
+                                  ProfileCubit.get(context).deleteAccount(widget.reason);
                                 },
                                 child: Text(
-                                  'Delete',
+                                  AppLocalizations.of(context)!.delete,
                                   style: TextStyle(color: Colors.red),
                                 ),
                               ),
@@ -213,7 +209,7 @@ class _DeleteAccountPasswordScreenState
                         elevation: 0,
                       ),
                       child: Text(
-                        'Delete Account',
+                        AppLocalizations.of(context)!.deleteAccountTitle,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

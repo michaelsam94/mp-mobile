@@ -9,6 +9,9 @@ environment:
 
 dependencies:
   bloc: ^9.0.1
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
   cupertino_icons: ^1.0.8
   dio: ^5.9.0
   dotted_border: ^3.1.0
@@ -39,6 +42,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  generate: true
   uses-material-design: true
 
   assets:

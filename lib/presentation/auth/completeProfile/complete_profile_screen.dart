@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
 
 import '../personalizeProfile/personalize_profile_screen.dart';
@@ -31,16 +32,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
+      setState(() { _imageFile = File(pickedFile.path); });
     }
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      // Success: All data is valid
-      // context.goTo(PersonalizeProfileScreen());
       SignUpCubit.get(context).createAccount(
         _emailController.text,
         _nameController.text,
@@ -60,12 +57,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is SuccessCreateAccountState) {
-            context.showSuccessMessage("Created Account Successfully");
+            context.showSuccessMessage(l10n.createdAccountSuccessfully);
             context.goTo(PersonalizeProfileScreen());
           } else if (state is ErrorCreateAccountState) {
             context.showErrorMessage(state.message);
@@ -90,23 +88,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   SizedBox(height: 16),
                   IconButton(
                     icon: SvgPicture.asset("assets/icons/back.svg"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () { Navigator.pop(context); },
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Complete your profile',
-                    style: TextStyle(
+                  Text(
+                    l10n.completeProfile,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 32,
                       color: Color(0xff121212),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Only you have access to your personal data,\nit’s fully protected.',
-                    style: TextStyle(
+                  Text(
+                    l10n.profileDataProtected,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color(0xff606060),
                       fontWeight: FontWeight.w400,
@@ -128,9 +124,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           right: 0,
                           child: InkWell(
                             onTap: _pickImage,
-                            child: SvgPicture.asset(
-                              "assets/icons/edit_image.svg",
-                            ),
+                            child: SvgPicture.asset("assets/icons/edit_image.svg"),
                           ),
                         ),
                       ],
@@ -142,9 +136,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Full Name',
-                          style: TextStyle(
+                        Text(
+                          l10n.fullName,
+                          style: const TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
@@ -154,25 +148,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
-                            hintText: 'Full name',
+                            hintText: l10n.fullNameHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
-                              borderSide: const BorderSide(
-                                color: Colors.black12,
-                              ),
+                              borderSide: const BorderSide(color: Colors.black12),
                             ),
                             fillColor: Color(0xffFBFBFB),
                             filled: true,
                           ),
                           validator: (val) =>
-                              (val == null || val.trim().isEmpty)
-                              ? 'Please enter your full name'
-                              : null,
+                              (val == null || val.trim().isEmpty) ? l10n.pleaseEnterFullName : null,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Email',
-                          style: TextStyle(
+                        Text(
+                          l10n.email,
+                          style: const TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
@@ -182,33 +172,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
-                            hintText: 'email',
+                            hintText: l10n.emailHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
-                              borderSide: const BorderSide(
-                                color: Colors.black12,
-                              ),
+                              borderSide: const BorderSide(color: Colors.black12),
                             ),
                             fillColor: Color(0xffFBFBFB),
                             filled: true,
                           ),
                           validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Please enter your email';
-                            }
+                            if (val == null || val.isEmpty) return l10n.pleaseEnterEmail;
                             final emailRegex = RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                             );
-                            if (!emailRegex.hasMatch(val)) {
-                              return 'Enter a valid email';
-                            }
+                            if (!emailRegex.hasMatch(val)) return l10n.enterValidEmail;
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Password',
-                          style: TextStyle(
+                        Text(
+                          l10n.password,
+                          style: const TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
@@ -219,38 +203,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           keyboardType: TextInputType.text,
-                        
                           decoration: InputDecoration(
-                            hintText: 'Password',
+                            hintText: l10n.password,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
-                              borderSide: const BorderSide(
-                                color: Colors.black12,
-                              ),
+                              borderSide: const BorderSide(color: Colors.black12),
                             ),
                             fillColor: Color(0xffFBFBFB),
                             filled: true,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
                                 color: Colors.grey,
                               ),
                               onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
+                                setState(() { _obscurePassword = !_obscurePassword; });
                               },
                             ),
                           ),
                           validator: (val) {
-                            if (val == null || val.trim().isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            if (val.length < 6) {
-                              return 'Password must be at least 6 digits';
-                            }
+                            if (val == null || val.trim().isEmpty) return l10n.pleaseEnterPassword;
+                            if (val.length < 6) return l10n.passwordMustBe6Digits;
                             return null;
                           },
                         ),
@@ -267,9 +240,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               elevation: 0,
                             ),
                             onPressed: _submit,
-                            child: const Text(
-                              'Continue',
-                              style: TextStyle(
+                            child: Text(
+                              l10n.continueText,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class RFIDQrScannerScreen extends StatefulWidget {
@@ -101,7 +102,7 @@ class _RFIDQrScannerScreenState extends State<RFIDQrScannerScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  isProcessing ? "Processing..." : "Scan RFID Card QR Code",
+                  isProcessing ? AppLocalizations.of(context)!.processing : AppLocalizations.of(context)!.scanRfidQrCode,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

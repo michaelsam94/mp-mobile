@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/services/charging_api_service.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
@@ -59,7 +60,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                   ),
                   Center(
                     child: Text(
-                      "Current Vehicle Charging",
+                      AppLocalizations.of(context)!.currentVehicleCharging,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -173,7 +174,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
             ),
             SizedBox(height: 16),
             Text(
-              'No vehicles found',
+              AppLocalizations.of(context)!.noVehiclesFound,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -182,7 +183,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
             ),
             SizedBox(height: 8),
             Text(
-              'Add a vehicle to start charging',
+              AppLocalizations.of(context)!.pleaseAddVehicle,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -316,7 +317,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
           BlocListener<ChargingCubit, ChargingState>(
             listener: (context, state) {
               if (state is StopChargingSuccess) {
-                context.showSuccessMessage("Charging stopped successfully");
+                context.showSuccessMessage(AppLocalizations.of(context)!.chargingStoppedSuccessfully);
                 // Don't clear meter data here - it will be cleared when starting a new session
                 // Refresh the list
                 CurrentVehicleChargingCubit.get(context).getVehiclesCharging();
@@ -356,7 +357,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
                     ),
                     SizedBox(width: 8),
                     Text(
-                      isCharging ? "Stop Charging" : "Start Charging",
+                      isCharging ? AppLocalizations.of(context)!.stopCharging : AppLocalizations.of(context)!.startCharging,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -383,7 +384,7 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
     final sessionId = session.id;
 
     if (sessionId == null) {
-      context.showErrorMessage("Session ID not available");
+      context.showErrorMessage(AppLocalizations.of(context)!.sessionIdNotAvailable);
       return;
     }
 
@@ -460,24 +461,24 @@ class _CurrentVehicleChargingScreenState extends State<CurrentVehicleChargingScr
     final connectorId = session.connectorId ?? "";
 
     if (chargerId.isEmpty || transactionId.isEmpty || connectorId.isEmpty) {
-      context.showErrorMessage("Missing charging session data");
+      context.showErrorMessage(AppLocalizations.of(context)!.missingChargingSessionData);
       return;
     }
 
     // Show confirmation dialog
     final bool? confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Stop Charging?'),
-        content: Text('Are you sure you want to stop charging?'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(AppLocalizations.of(dialogContext)!.stopChargingTitle),
+        content: Text(AppLocalizations.of(dialogContext)!.areYouSureStopCharging),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(AppLocalizations.of(dialogContext)!.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text('Stop', style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(AppLocalizations.of(dialogContext)!.stopCharging, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -196,7 +197,7 @@ class StationDetailsSheet extends StatelessWidget {
                   SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('Close'),
+                    child: Text(AppLocalizations.of(context)!.close),
                   ),
                 ],
               ),
@@ -239,7 +240,7 @@ class StationDetailsSheet extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Station Details',
+                          AppLocalizations.of(context)!.stationDetails,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
@@ -264,7 +265,7 @@ class StationDetailsSheet extends StatelessWidget {
                           _statusBadge(_formatStatus(station.status ?? 'available')),
                           SizedBox(width: 12),
                           Text(
-                            'Opens 24 hours',
+                            AppLocalizations.of(context)!.opens24Hours,
                             style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.w500,
@@ -331,7 +332,7 @@ class StationDetailsSheet extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Connectors Types',
+                          AppLocalizations.of(context)!.connectorsTypes,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -355,7 +356,7 @@ class StationDetailsSheet extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Text(
-                            'No connectors available',
+                            AppLocalizations.of(context)!.noConnectorsAvailable,
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
@@ -403,7 +404,7 @@ class StationDetailsSheet extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not open Google Maps'),
+          content: Text(AppLocalizations.of(context)!.couldNotOpenGoogleMaps),
           backgroundColor: Colors.red,
         ),
       );
@@ -800,9 +801,9 @@ class ConnectorCard extends StatelessWidget {
                   style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                 ),
                 Text(
-                  gun.price != null 
-                    ? "${double.tryParse(gun.price!)?.toStringAsFixed(2) ?? gun.price} EGP/KW" 
-                    : "Price not available",
+                  gun.price != null
+                    ? "${double.tryParse(gun.price!)?.toStringAsFixed(2) ?? gun.price} EGP/KW"
+                    : AppLocalizations.of(context)!.priceNotAvailable,
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.green[700],

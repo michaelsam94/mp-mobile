@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
 import 'package:mega_plus/presentation/auth/signup/cubit/sign_up_cubit.dart';
 
@@ -23,12 +24,13 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: BlocConsumer<SignUpCubit, SignUpState>(
         listener: (context, state) {
           if (state is SuccessChangePasswordState) {
-            context.showSuccessMessage("Password Changed Successfully");
+            context.showSuccessMessage(l10n.passwordChangedSuccessfully);
             context.goOffAll(LoginScreen());
           } else if (state is ErrorChangePasswordState) {
             context.showErrorMessage(state.message);
@@ -54,7 +56,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     ),
                     SizedBox(height: 32),
                     Text(
-                      'Set New Password',
+                      l10n.setNewPassword,
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w700,
@@ -63,13 +65,13 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      "Create a strong password to secure your account.",
+                      l10n.createStrongPassword,
                       style: TextStyle(fontSize: 16, color: Color(0xff606060)),
                     ),
                     SizedBox(height: 40),
 
                     Text(
-                      'Create Password',
+                      l10n.createPassword,
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -83,7 +85,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       keyboardType: TextInputType.text,
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
-                        hintText: 'Password',
+                        hintText: l10n.password,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(11),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -92,25 +94,17 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         filled: true,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                            _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                             color: Colors.grey,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
+                            setState(() { _obscurePassword = !_obscurePassword; });
                           },
                         ),
                       ),
                       validator: (val) {
-                        if (val == null || val.trim().isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (val.length < 8) {
-                          return 'Enter a valid password';
-                        }
+                        if (val == null || val.trim().isEmpty) return l10n.pleaseEnterPassword;
+                        if (val.length < 8) return l10n.enterValidPassword;
                         return null;
                       },
                     ),
@@ -118,7 +112,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     SizedBox(height: 16),
 
                     Text(
-                      'Confirm Password',
+                      l10n.confirmPasswordLabel,
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -132,7 +126,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       keyboardType: TextInputType.text,
                       obscureText: _obscureConfirmPassword,
                       decoration: InputDecoration(
-                        hintText: 'Confirm Password',
+                        hintText: l10n.confirmPasswordLabel,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(11),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -141,26 +135,18 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         filled: true,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                            _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                             color: Colors.grey,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
-                            });
+                            setState(() { _obscureConfirmPassword = !_obscureConfirmPassword; });
                           },
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please Enter Confirm Password";
-                        } else if (value.length < 8) {
-                          return "Please enter valid Confirm password";
-                        } else if (value != controller.text) {
-                          return "Password not same as confirm password";
-                        }
+                        if (value == null || value.isEmpty) return l10n.pleaseEnterConfirmPassword;
+                        if (value.length < 8) return l10n.pleaseEnterValidConfirmPassword;
+                        if (value != controller.text) return l10n.passwordNotSame;
                         return null;
                       },
                     ),
@@ -179,13 +165,11 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                         onPressed: () {
                           if (_globalKey.currentState!.validate()) {
-                            SignUpCubit.get(
-                              context,
-                            ).resetPassword(controller.text);
+                            SignUpCubit.get(context).resetPassword(controller.text);
                           }
                         },
                         child: Text(
-                          'Continue',
+                          l10n.continueText,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

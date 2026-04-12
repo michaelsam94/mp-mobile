@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/start/splash_screen.dart';
 
 class ConfirmSetNewPasswordScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _ConfirmSetNewPasswordScreenState
               ),
               SizedBox(height: 32),
               Text(
-                'Confirm Password',
+                AppLocalizations.of(context)!.confirmPasswordLabel,
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -41,13 +42,13 @@ class _ConfirmSetNewPasswordScreenState
               ),
               SizedBox(height: 16),
               Text(
-                "Create a strong password to secure your account.",
+                AppLocalizations.of(context)!.createStrongPassword,
                 style: TextStyle(fontSize: 16, color: Color(0xff606060)),
               ),
               SizedBox(height: 40),
 
               Text(
-                'Confirm Password',
+                AppLocalizations.of(context)!.confirmPasswordLabel,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
@@ -99,7 +100,7 @@ class _ConfirmSetNewPasswordScreenState
                     context.goOffAll(SplashScreen());
                   },
                   child: Text(
-                    'Continue',
+                    AppLocalizations.of(context)!.continueText,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

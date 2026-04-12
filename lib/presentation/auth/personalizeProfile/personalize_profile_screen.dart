@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
 
 import '../../vehicles/vehicle_setup_screen.dart';
@@ -11,6 +12,7 @@ class PersonalizeProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -21,23 +23,21 @@ class PersonalizeProfileScreen extends StatelessWidget {
             children: [
               IconButton(
                 icon: SvgPicture.asset("assets/icons/back.svg"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () { Navigator.pop(context); },
               ),
               const SizedBox(height: 10),
-              const Text(
-                'Personalize your charging with your vehicle info',
-                style: TextStyle(
+              Text(
+                l10n.personalizeTitle,
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 32,
                   color: Color(0xff121212),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Adding your car ensures accurate charging station recommendations.',
-                style: TextStyle(
+              Text(
+                l10n.personalizeSubtitle,
+                style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xff606060),
                   fontWeight: FontWeight.w400,
@@ -61,12 +61,10 @@ class PersonalizeProfileScreen extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () {
-                          context.goOffAll(MainScreen());
-                        },
-                        child: const Text(
-                          'Add Later',
-                          style: TextStyle(
+                        onPressed: () { context.goOffAll(MainScreen()); },
+                        child: Text(
+                          l10n.addLater,
+                          style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
@@ -86,12 +84,10 @@ class PersonalizeProfileScreen extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () {
-                          context.goTo(VehicleSetupScreen(isFromSignUp: true));
-                        },
-                        child: const Text(
-                          'Add Vehicle',
-                          style: TextStyle(
+                        onPressed: () { context.goTo(VehicleSetupScreen(isFromSignUp: true)); },
+                        child: Text(
+                          l10n.addVehicle,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 16,

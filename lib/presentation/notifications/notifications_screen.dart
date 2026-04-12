@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/notifications/cubit/notifications_cubit.dart';
 import 'package:mega_plus/presentation/notifications/models/notification_model.dart';
 
@@ -47,9 +48,9 @@ class NotificationsView extends StatelessWidget {
                       child: SvgPicture.asset("assets/icons/back.svg"),
                     ),
                   ),
-                  const Center(
+                  Center(
                     child: Text(
-                      "Notifications",
+                      AppLocalizations.of(context)!.notifications,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -75,7 +76,7 @@ class NotificationsView extends StatelessWidget {
                     final notifications = NotificationsCubit.get(context).notifications;
                     
                     if (notifications.isEmpty) {
-                      return _buildEmptyState();
+                      return _buildEmptyState(context);
                     }
 
                     return RefreshIndicator(
@@ -92,7 +93,7 @@ class NotificationsView extends StatelessWidget {
                     );
                   }
 
-                  return _buildEmptyState();
+                  return _buildEmptyState(context);
                 },
               ),
             ),
@@ -182,27 +183,27 @@ class NotificationsView extends StatelessWidget {
             onPressed: () {
               NotificationsCubit.get(context).getNotifications();
             },
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.notifications_none,
             size: 64,
             color: Colors.grey,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
-            "No notifications available",
-            style: TextStyle(
+            AppLocalizations.of(context)!.noNotificationsAvailable,
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.grey,
             ),
@@ -214,7 +215,7 @@ class NotificationsView extends StatelessWidget {
 
   Widget _buildNotificationItem(BuildContext context, NotificationModel notification) {
     // Format date
-    String formattedDate = _formatDate(notification.sentAt ?? notification.createdAt ?? '');
+    String formattedDate = _formatDate(notification.sentAt ?? notification.createdAt ?? '', context);
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -291,7 +292,7 @@ class NotificationsView extends StatelessWidget {
     );
   }
 
-  String _formatDate(String dateString) {
+  String _formatDate(String dateString, BuildContext context) {
     if (dateString.isEmpty) return '';
     
     try {
@@ -303,13 +304,13 @@ class NotificationsView extends StatelessWidget {
       if (difference.inDays == 0) {
         if (difference.inHours == 0) {
           if (difference.inMinutes == 0) {
-            return 'Just now';
+            return AppLocalizations.of(context)!.justNow;
           }
           return '${difference.inMinutes}m ago';
         }
         return '${difference.inHours}h ago';
       } else if (difference.inDays == 1) {
-        return 'Yesterday';
+        return AppLocalizations.of(context)!.yesterday;
       } else if (difference.inDays < 7) {
         return '${difference.inDays}d ago';
       } else {

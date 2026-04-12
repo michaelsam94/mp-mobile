@@ -6,6 +6,7 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/guest_bottom_sheet.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/search_screen.dart';
@@ -35,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(CacheHelper.getString("token"));
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -58,7 +59,7 @@ class _MapScreenState extends State<MapScreen> {
                         child: TextField(
                           enabled: false,
                           decoration: InputDecoration(
-                            hintText: 'Search your Model',
+                            hintText: l10n.searchYourModel,
                             hintStyle: const TextStyle(
                               fontSize: 14,
                               color: Color(0xffB6B6B6),
@@ -185,7 +186,7 @@ class _MapScreenState extends State<MapScreen> {
                           SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => cubit.initData(),
-                            child: Text('Retry'),
+                            child: Text(l10n.retry),
                           ),
                         ],
                       ),
@@ -283,8 +284,8 @@ class _MapScreenState extends State<MapScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Expanded(
-                                                child: const Text(
-                                                  "Status",
+                                                child: Text(
+                                                  l10n.status,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 14,
@@ -322,8 +323,8 @@ class _MapScreenState extends State<MapScreen> {
                                               ),
                                               const SizedBox(width: 6),
                                               Expanded(
-                                                child: const Text(
-                                                  "Available",
+                                                child: Text(
+                                                  l10n.available,
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Color(0xff606060),
@@ -344,8 +345,8 @@ class _MapScreenState extends State<MapScreen> {
                                               ),
                                               const SizedBox(width: 6),
                                               Expanded(
-                                                child: const Text(
-                                                  "Unavailable",
+                                                child: Text(
+                                                  l10n.unavailable,
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Color(0xff606060),
@@ -366,8 +367,8 @@ class _MapScreenState extends State<MapScreen> {
                                               ),
                                               const SizedBox(width: 6),
                                               Expanded(
-                                                child: const Text(
-                                                  "In Use",
+                                                child: Text(
+                                                  l10n.inUse,
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Color(0xff606060),

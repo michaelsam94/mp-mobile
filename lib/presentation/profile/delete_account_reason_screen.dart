@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'delete_account_password_screen.dart';
 
 class DeleteAccountReasonScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
           ),
         ),
         title: Text(
-          'Delete account',
+          AppLocalizations.of(context)!.deleteAccountTitle,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -59,7 +60,7 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
                     children: [
                       // Title
                       Text(
-                        'Delete Your account ?',
+                        AppLocalizations.of(context)!.deleteYourAccount,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
@@ -70,7 +71,7 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
 
                       // Description
                       Text(
-                        'Can you please share to us what was not working? We are fixing bugs as soon as we spot them. If something slipped through our fingers, we\'d be so grateful to be aware of it and fix it.',
+                        AppLocalizations.of(context)!.deleteAccountDesc,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -95,7 +96,7 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
                           textAlignVertical: TextAlignVertical.top,
                           style: TextStyle(fontSize: 14, color: Color(0xFF212121)),
                           decoration: InputDecoration(
-                            hintText: 'Your explanation is entirely optional...',
+                            hintText: AppLocalizations.of(context)!.explanationOptional,
                             hintStyle: TextStyle(
                               fontSize: 14,
                               color: Color(0xFFBDBDBD),

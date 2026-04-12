@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -54,7 +55,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: Text(
-                  "Support",
+                  AppLocalizations.of(context)!.support,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
@@ -79,7 +80,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: Text(
-                  "Complain",
+                  AppLocalizations.of(context)!.complain,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
@@ -211,7 +212,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Text(
-                'Failed to load settings',
+                AppLocalizations.of(context)!.failedToLoadSettings,
                 style: TextStyle(color: Colors.grey),
               ),
             ),
@@ -243,7 +244,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Text(
-                'No support information available',
+                AppLocalizations.of(context)!.noSupportInfoAvailable,
                 style: TextStyle(color: Colors.grey),
               ),
             ),
@@ -303,7 +304,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           TextField(
             controller: titleController,
             decoration: InputDecoration(
-              hintText: "Complaint Title",
+              hintText: AppLocalizations.of(context)!.complaintTitle,
               filled: true,
               fillColor: Color(0xFFF7F7F7),
               border: OutlineInputBorder(
@@ -327,7 +328,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             controller: descController,
 
             decoration: InputDecoration(
-              hintText: "Description of the complaint",
+              hintText: AppLocalizations.of(context)!.complaintDescription,
               filled: true,
               fillColor: Color(0xFFF7F7F7),
               border: OutlineInputBorder(
@@ -494,7 +495,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                 ),
               ),
               child: Text(
-                "Send Complain",
+                AppLocalizations.of(context)!.sendComplain,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -548,7 +549,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                       ),
                       Center(
                         child: Text(
-                          "Support and complain",
+                          AppLocalizations.of(context)!.supportAndComplain,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,

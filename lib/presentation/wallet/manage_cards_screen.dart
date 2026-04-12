@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
 
@@ -89,7 +90,7 @@ class ManageCardsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Default',
+                            AppLocalizations.of(context)!.defaultText,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 11,
@@ -111,7 +112,7 @@ class ManageCardsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Deactivated',
+                            AppLocalizations.of(context)!.deactivated,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 11,
@@ -202,7 +203,7 @@ class ManageCardsScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      "Payment Methods",
+                      AppLocalizations.of(context)!.paymentMethods,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
 import 'package:mega_plus/presentation/vehicles/vehicle_setup_screen.dart';
 
@@ -38,7 +39,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      "My Vehicle",
+                      AppLocalizations.of(context)!.myVehicleTitle,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -55,7 +56,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        "Edit",
+                        AppLocalizations.of(context)!.edit,
                         style: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -127,7 +128,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                     Divider(color: Color(0xffE6ECEF)),
                     SizedBox(height: 6),
                     Text(
-                      "License Plate",
+                      AppLocalizations.of(context)!.licensePlate,
                       style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                     Text(
@@ -147,7 +148,7 @@ class VehicleDetailsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 17.0),
               child: Text(
-                "Vehicle Specifications",
+                AppLocalizations.of(context)!.vehicleSpecifications,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -158,26 +159,26 @@ class VehicleDetailsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Make
-                  _buildTextField(label: "Make", value: "Tesla"),
+                  _buildTextField(label: AppLocalizations.of(context)!.brand, value: "Tesla"),
                   // Model
-                  _buildTextField(label: "Model", value: "Model 3"),
+                  _buildTextField(label: AppLocalizations.of(context)!.modelLabel, value: "Model 3"),
                   // Year & Color Row
                   Row(
                     children: [
                       Expanded(
-                        child: _buildTextField(label: "Year", value: "2023"),
+                        child: _buildTextField(label: AppLocalizations.of(context)!.yearLabel, value: "2023"),
                       ),
                       SizedBox(width: 14),
                       Expanded(
                         child: _buildTextField(
-                          label: "Color",
+                          label: AppLocalizations.of(context)!.colorLabel,
                           value: "Pearl White",
                         ),
                       ),
                     ],
                   ),
                   // License Plate
-                  _buildTextField(label: "License Plate", value: "ABC 1234"),
+                  _buildTextField(label: AppLocalizations.of(context)!.licensePlate, value: "ABC 1234"),
                   // Plate Number with Loyalty
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +186,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "Plate number",
+                            AppLocalizations.of(context)!.plateNumber2,
                             style: TextStyle(
                               color: Colors.grey[700],
                               fontWeight: FontWeight.w500,
@@ -232,7 +233,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                     child: DropdownButtonFormField<String>(
                       initialValue: "CCS2",
                       decoration: InputDecoration(
-                        labelText: "Charging Type",
+                        labelText: AppLocalizations.of(context)!.connectorType,
                         filled: true,
                         fillColor: Color(0xFFF7F7F7),
                         border: OutlineInputBorder(

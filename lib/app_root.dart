@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/services/websocket_service.dart';
@@ -13,6 +15,7 @@ import 'package:mega_plus/presentation/vehicles/cubit/current_vehicle_charging_c
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'core/style/app_themes.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'presentation/start/splash_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -24,6 +27,7 @@ class AppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => LocaleCubit()),
         BlocProvider(create: (context) => SearchCubit()),
         BlocProvider(create: (context) => MapCubit()),
         BlocProvider(create: (context) => StationDetailsCubit()),
@@ -35,22 +39,37 @@ class AppRoot extends StatelessWidget {
         BlocProvider(create: (context) => ChargingCubit()),
         BlocProvider(create: (context) => WebSocketCubit(WebSocketService())),
       ],
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: const TextScaler.linear(1.0)),
-            child: child!,
+      child: BlocBuilder<LocaleCubit, Locale>(
+        builder: (context, locale) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            builder: (context, child) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(1.0),
+                ),
+                child: Directionality(
+                  textDirection: locale.languageCode == 'ar'
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  child: child!,
+                ),
+              );
+            },
+            debugShowCheckedModeBanner: false,
+            theme: AppThemes.lightTheme,
+            themeMode: ThemeMode.light,
+            locale: locale,
+            supportedLocales: const [Locale('en'), Locale('ar')],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: kDebugMode ? SplashScreen() : SplashScreen(),
           );
         },
-        debugShowCheckedModeBanner: false,
-        theme: AppThemes.lightTheme,
-        themeMode: ThemeMode.light,
-        locale: const Locale('en', ''),
-        supportedLocales: const [Locale('en', '')],
-        home: kDebugMode ? SplashScreen() : SplashScreen(),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/pay_url_screen.dart';
@@ -57,7 +58,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Top-up Balance",
+                      AppLocalizations.of(context)!.topUpBalance,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 18,
@@ -87,7 +88,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Select Amount",
+                      AppLocalizations.of(context)!.selectAmount,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
@@ -154,7 +155,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Custom Amount",
+                      AppLocalizations.of(context)!.customAmount,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
@@ -182,7 +183,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          hintText: "Enter amount",
+                          hintText: AppLocalizations.of(context)!.enterAmount,
                           border: InputBorder.none,
                           // suffixIcon: Container(
                           //   margin: EdgeInsets.only(right: 8),
@@ -313,7 +314,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Select Payment Method",
+                          AppLocalizations.of(context)!.selectPaymentMethod,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
@@ -356,7 +357,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                 ),
                                 SizedBox(width: 12),
                                 Text(
-                                  'New Card',
+                                  AppLocalizations.of(context)!.newCard,
                                   style: TextStyle(
                                     color: selectedCardToken == null
                                         ? green
@@ -440,7 +441,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                           ),
                                         ),
                                         child: Text(
-                                          'Default',
+                                          AppLocalizations.of(context)!.defaultText,
                                           style: TextStyle(
                                             color: green,
                                             fontSize: 12,
@@ -486,7 +487,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   Navigator.pop(context);
                 } else if (state is SuccessPayWithSavedCardState) {
                   // Payment with saved card successful (no redirect needed)
-                  context.showSuccessMessage("Payment successful!");
+                  context.showSuccessMessage(AppLocalizations.of(context)!.paymentSuccessful);
                   // Refresh balance and go back to wallet screen
                   WalletCubit.get(context).getWallet();
                   Navigator.pop(context);

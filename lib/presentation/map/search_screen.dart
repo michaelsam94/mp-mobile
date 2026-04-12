@@ -12,6 +12,7 @@ import 'package:mega_plus/presentation/map/models/map_station_response_model.dar
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/search_cubit/search_cubit.dart';
 import 'package:mega_plus/presentation/map/station_details_bottom_sheet.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -89,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           controller: _searchController,
                           onChanged: _onSearchChanged,
                           decoration: InputDecoration(
-                            hintText: 'Search stations, cities, addresses...',
+                            hintText: AppLocalizations.of(context)!.searchStationsHint,
                             hintStyle: const TextStyle(
                               fontSize: 14,
                               color: Color(0xffB6B6B6),
@@ -370,8 +371,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             SizedBox(height: 16),
                             Text(
                               cubit.searchQuery.isEmpty
-                                  ? 'No stations available'
-                                  : 'No stations found for "${cubit.searchQuery}"',
+                                  ? AppLocalizations.of(context)!.noStationsAvailable
+                                  : AppLocalizations.of(context)!.noStationsFound(cubit.searchQuery),
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
@@ -448,17 +449,20 @@ class _SearchScreenState extends State<SearchScreen> {
                                     if (CacheHelper.checkLogin() == 3)
                                       InkWell(
                                         onTap: () async {
+                                          final l10n = AppLocalizations.of(context)!;
+                                          final removedMsg = l10n.removedFromFavorites;
+                                          final addedMsg = l10n.addedToFavorites;
+                                          final failedMsg = l10n.failedToUpdateFavorite;
                                           var done = await SearchCubit.get(
                                             context,
                                           ).favStation(!isFav, stationId ?? 0, context: context);
+                                          if (!context.mounted) return;
                                           if (done) {
                                             context.showSuccessMessage(
-                                              isFav ? "Removed from favorites" : "Added to favorites",
+                                              isFav ? removedMsg : addedMsg,
                                             );
                                           } else {
-                                            context.showErrorMessage(
-                                              "Failed to update favorite, please try again later",
-                                            );
+                                            context.showErrorMessage(failedMsg);
                                           }
                                         },
                                         child: Icon(
@@ -505,7 +509,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               nearbyStation != null) ...[
                                             if (nearbyStation.distance != null)
                                               Text(
-                                                '${double.parse(nearbyStation.distance!).toStringAsFixed(1)} km away',
+                                                AppLocalizations.of(context)!.kmAway(double.parse(nearbyStation.distance!).toStringAsFixed(1)),
                                                 style: TextStyle(
                                                   color: Colors.grey[700],
                                                   fontSize: 15,
@@ -514,7 +518,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             if (nearbyStation.totalGunsFormat !=
                                                 null)
                                               Text(
-                                                'Guns: ${nearbyStation.totalGunsFormat}',
+                                                AppLocalizations.of(context)!.gunsCount(nearbyStation.totalGunsFormat!),
                                                 style: TextStyle(
                                                   color: Colors.grey[600],
                                                   fontSize: 13,
@@ -571,7 +575,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Divider(color: Color(0xffE6ECEF)),
                                   SizedBox(height: 16),
                                   Text(
-                                    'Connectors Types',
+                                    AppLocalizations.of(context)!.connectorsTypes,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
@@ -651,7 +655,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                     Text(
                                                       connector.price != null
                                                           ? "${connector.price} EGP/KW"
-                                                          : "Price not available",
+                                                          : AppLocalizations.of(context)!.priceNotAvailable,
                                                       style: TextStyle(
                                                         fontSize: 13,
                                                         color:
@@ -672,7 +676,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        'No connectors available',
+                                        AppLocalizations.of(context)!.noConnectorsAvailable,
                                         style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 14,
@@ -688,7 +692,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        'Available Guns: ',
+                                        AppLocalizations.of(context)!.availableGunsLabel,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
@@ -884,7 +888,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           // Title
           Text(
-            'Filter By',
+            AppLocalizations.of(context)!.filterBy,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -901,7 +905,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 children: [
                   // Station Status
                   Text(
-                    'Station Status',
+                    AppLocalizations.of(context)!.stationStatus,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -913,7 +917,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     children: [
                       Expanded(
                         child: _filterButton(
-                          label: 'Available',
+                          label: AppLocalizations.of(context)!.available,
                           isSelected: selectedStatus == 'available',
                           onTap: () {
                             setState(() {
@@ -927,7 +931,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       SizedBox(width: 12),
                       Expanded(
                         child: _filterButton(
-                          label: 'In Use',
+                          label: AppLocalizations.of(context)!.inUse,
                           isSelected: selectedStatus == 'inUse',
                           onTap: () {
                             setState(() {
@@ -944,7 +948,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Connector Type
                   Text(
-                    'Connector Type',
+                    AppLocalizations.of(context)!.connectorType,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -986,7 +990,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   // Favourite Stations (only show if logged in)
                   if (CacheHelper.checkLogin() == 3) ...[
                     Text(
-                      'Favourite Stations',
+                      AppLocalizations.of(context)!.favouriteStations,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -995,7 +999,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ),
                     SizedBox(height: 12),
                     _filterButton(
-                      label: 'Favourite Only',
+                      label: AppLocalizations.of(context)!.favouriteOnly,
                       icon: Icons.star_border,
                       isSelected: favouriteOnly,
                       onTap: () {
@@ -1009,7 +1013,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Minimum Power
                   Text(
-                    'Minimum Power',
+                    AppLocalizations.of(context)!.minimumPower,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -1029,7 +1033,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         isExpanded: true,
                         value: selectedPower,
                         hint: Text(
-                          'Select minimum power',
+                          AppLocalizations.of(context)!.selectMinimumPower,
                           style: TextStyle(
                             color: Color(0xFFBDBDBD),
                             fontSize: 14,
@@ -1105,7 +1109,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       elevation: 0,
                     ),
                     child: Text(
-                      'Apply Filters',
+                      AppLocalizations.of(context)!.applyFilters,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -1143,7 +1147,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ),
                     child: Text(
-                      'Reset All',
+                      AppLocalizations.of(context)!.resetAll,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

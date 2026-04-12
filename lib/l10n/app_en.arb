@@ -1,0 +1,917 @@
+{
+  "@@locale": "en",
+
+  "appName": "MegaPlug",
+  "@appName": { "description": "App name" },
+
+  "poweredByTadafuq": "powered by Tadafuq",
+  "@poweredByTadafuq": {},
+
+  "noOnboardingData": "No onboarding data available",
+  "@noOnboardingData": {},
+
+  "next": "Next",
+  "@next": {},
+
+  "getStarted": "Get Started",
+  "@getStarted": {},
+
+  "welcome": "Welcome!",
+  "@welcome": {},
+
+  "welcomeSubtitle": "Welcome to Mega Plug charging journey.",
+  "@welcomeSubtitle": {},
+
+  "phoneEmail": "Phone / E-mail",
+  "@phoneEmail": {},
+
+  "phoneEmailHint": "Phone or e-mail",
+  "@phoneEmailHint": {},
+
+  "password": "Password",
+  "@password": {},
+
+  "passwordHint": "xxxxxxxxxxx",
+  "@passwordHint": {},
+
+  "forgetPassword": "Forget Password?",
+  "@forgetPassword": {},
+
+  "signIn": "Sign in",
+  "@signIn": {},
+
+  "loginSuccessfully": "Login Successfully",
+  "@loginSuccessfully": {},
+
+  "pleaseEnterPhoneOrEmail": "Please enter your phone or email",
+  "@pleaseEnterPhoneOrEmail": {},
+
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "@pleaseEnterValidEmail": {},
+
+  "enterValidNumber": "Enter valid number",
+  "@enterValidNumber": {},
+
+  "pleaseEnterPassword": "Please enter your password",
+  "@pleaseEnterPassword": {},
+
+  "passwordMinChars": "Password must be at least 6 characters",
+  "@passwordMinChars": {},
+
+  "completeProfile": "Complete your profile",
+  "@completeProfile": {},
+
+  "profileDataProtected": "Only you have access to your personal data, it's fully protected.",
+  "@profileDataProtected": {},
+
+  "fullName": "Full Name",
+  "@fullName": {},
+
+  "fullNameHint": "Full name",
+  "@fullNameHint": {},
+
+  "email": "Email",
+  "@email": {},
+
+  "emailHint": "email",
+  "@emailHint": {},
+
+  "pleaseEnterFullName": "Please enter your full name",
+  "@pleaseEnterFullName": {},
+
+  "pleaseEnterEmail": "Please enter your email",
+  "@pleaseEnterEmail": {},
+
+  "enterValidEmail": "Enter a valid email",
+  "@enterValidEmail": {},
+
+  "passwordMustBe6Digits": "Password must be at least 6 digits",
+  "@passwordMustBe6Digits": {},
+
+  "createdAccountSuccessfully": "Created Account Successfully",
+  "@createdAccountSuccessfully": {},
+
+  "personalizeTitle": "Personalize your charging with your vehicle info",
+  "@personalizeTitle": {},
+
+  "personalizeSubtitle": "Adding your car ensures accurate charging station recommendations.",
+  "@personalizeSubtitle": {},
+
+  "addLater": "Add Later",
+  "@addLater": {},
+
+  "setNewPassword": "Set New Password",
+  "@setNewPassword": {},
+
+  "createStrongPassword": "Create a strong password to secure your account.",
+  "@createStrongPassword": {},
+
+  "createPassword": "Create Password",
+  "@createPassword": {},
+
+  "confirmPasswordLabel": "Confirm Password",
+  "@confirmPasswordLabel": {},
+
+  "enterValidPassword": "Enter a valid password",
+  "@enterValidPassword": {},
+
+  "pleaseEnterConfirmPassword": "Please Enter Confirm Password",
+  "@pleaseEnterConfirmPassword": {},
+
+  "pleaseEnterValidConfirmPassword": "Please enter valid Confirm password",
+  "@pleaseEnterValidConfirmPassword": {},
+
+  "passwordNotSame": "Password not same as confirm password",
+  "@passwordNotSame": {},
+
+  "passwordChangedSuccessfully": "Password Changed Successfully",
+  "@passwordChangedSuccessfully": {},
+
+  "letsGetStarted": "Let's get started",
+  "@letsGetStarted": {},
+
+  "guestSubtitle": "Please create an account or log in to continue",
+  "@guestSubtitle": {},
+
+  "createAccount": "Create an Account",
+  "@createAccount": {},
+
+  "pleaseAddVehicle": "Please add vehicle",
+  "@pleaseAddVehicle": {},
+
+  "searchYourModel": "Search your Model",
+  "@searchYourModel": {},
+
+  "status": "Status",
+  "@status": {},
+
+  "available": "Available",
+  "@available": {},
+
+  "unavailable": "Unavailable",
+  "@unavailable": {},
+
+  "inUse": "In Use",
+  "@inUse": {},
+
+  "retry": "Retry",
+  "@retry": {},
+
+  "charged": "Charged",
+  "@charged": {},
+
+  "charging": "Charging",
+  "@charging": {},
+
+  "powerConsumption": "Power Consumption",
+  "@powerConsumption": {},
+
+  "costConsumption": "Cost consumption",
+  "@costConsumption": {},
+
+  "chargingTime": "Charging time",
+  "@chargingTime": {},
+
+  "outputPower": "Output power from gun",
+  "@outputPower": {},
+
+  "downloadReport": "Download Report (PDF)",
+  "@downloadReport": {},
+
+  "pdfDownloadedSuccessfully": "PDF downloaded successfully",
+  "@pdfDownloadedSuccessfully": {},
+
+  "pdfUrlNotAvailable": "PDF URL not available",
+  "@pdfUrlNotAvailable": {},
+
+  "failedToDownloadPdf": "Failed to download PDF",
+  "@failedToDownloadPdf": {},
+
+  "stopChargingTitle": "Stop Charging?",
+  "@stopChargingTitle": {},
+
+  "areYouSureStopCharging": "Are you sure you want to stop charging?",
+  "@areYouSureStopCharging": {},
+
+  "networkIssue": "Network Issue",
+  "@networkIssue": {},
+
+  "connectionLost": "Connection lost. Please check your internet connection and try again.",
+  "@connectionLost": {},
+
+  "ok": "OK",
+  "@ok": {},
+
+  "stationDetails": "Station Details",
+  "@stationDetails": {},
+
+  "opens24Hours": "Opens 24 hours",
+  "@opens24Hours": {},
+
+  "connectorsTypes": "Connectors Types",
+  "@connectorsTypes": {},
+
+  "noConnectorsAvailable": "No connectors available",
+  "@noConnectorsAvailable": {},
+
+  "close": "Close",
+  "@close": {},
+
+  "couldNotOpenGoogleMaps": "Could not open Google Maps",
+  "@couldNotOpenGoogleMaps": {},
+
+  "priceNotAvailable": "Price not available",
+  "@priceNotAvailable": {},
+
+  "totalCharges": "Total Charges",
+  "@totalCharges": {},
+
+  "points": "Points",
+  "@points": {},
+
+  "rfidCards": "RFID Cards",
+  "@rfidCards": {},
+
+  "setting": "Setting",
+  "@setting": {},
+
+  "supportComplain": "Support/complain",
+  "@supportComplain": {},
+
+  "termsConditions": "Terms and conditions",
+  "@termsConditions": {},
+
+  "logOut": "Log out",
+  "@logOut": {},
+
+  "version": "Version",
+  "@version": {},
+
+  "areYouSureLogOut": "Are you sure you want to log out?",
+  "@areYouSureLogOut": {},
+
+  "editText": "Edit",
+  "@editText": {},
+
+  "myAccount": "My Account",
+  "@myAccount": {},
+
+  "myVehicle": "My Vehicle",
+  "@myVehicle": {},
+
+  "loyaltyPoints": "Loyalty Points",
+  "@loyaltyPoints": {},
+
+  "security": "Security",
+  "@security": {},
+
+  "editProfile": "Edit Profile",
+  "@editProfile": {},
+
+  "birthday": "Birthday",
+  "@birthday": {},
+
+  "selectYourBirthday": "Select your birthday",
+  "@selectYourBirthday": {},
+
+  "gender": "Gender",
+  "@gender": {},
+
+  "male": "Male",
+  "@male": {},
+
+  "female": "Female",
+  "@female": {},
+
+  "pleaseSelectGender": "Please select your gender",
+  "@pleaseSelectGender": {},
+
+  "pleaseSelectBirthday": "Please select your birthday",
+  "@pleaseSelectBirthday": {},
+
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "@profileUpdatedSuccessfully": {},
+
+  "changePasswordTitle": "Change password",
+  "@changePasswordTitle": {},
+
+  "enterOldPassword": "Enter old password",
+  "@enterOldPassword": {},
+
+  "pleaseEnterOldPassword": "Please enter your old password",
+  "@pleaseEnterOldPassword": {},
+
+  "pleaseEnterNewPassword": "Please enter new password",
+  "@pleaseEnterNewPassword": {},
+
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {},
+
+  "passwordChangedSuccessfully2": "Password changed successfully",
+  "@passwordChangedSuccessfully2": {},
+
+  "failedToChangePassword": "Failed to change password",
+  "@failedToChangePassword": {},
+
+  "changePasswordBtn": "Change Password",
+  "@changePasswordBtn": {},
+
+  "deactivate": "Deactivate",
+  "@deactivate": {},
+
+  "activate": "Activate",
+  "@activate": {},
+
+  "noRFIDCardsAdded": "No RFID Cards Added Please Add One",
+  "@noRFIDCardsAdded": {},
+
+  "addRFIDCard": "Add RFID Card",
+  "@addRFIDCard": {},
+
+  "scanQRCode": "Scan QR Code",
+  "@scanQRCode": {},
+
+  "scanQRCodeInfo": "Scan the QR code on your RFID card for instant registration",
+  "@scanQRCodeInfo": {},
+
+  "enterYourRFIDCards": "Enter your RFID Cards",
+  "@enterYourRFIDCards": {},
+
+  "pleaseEnterRFIDNumber": "Please enter your RFID card number",
+  "@pleaseEnterRFIDNumber": {},
+
+  "addCard": "ADD Card",
+  "@addCard": {},
+
+  "rfidCardAdded": "RFID card added successfully",
+  "@rfidCardAdded": {},
+
+  "deleteAccountTitle": "Delete account",
+  "@deleteAccountTitle": {},
+
+  "deleteYourAccount": "Delete Your account ?",
+  "@deleteYourAccount": {},
+
+  "deleteAccountDesc": "Can you please share to us what was not working? We are fixing bugs as soon as we spot them. If something slipped through our fingers, we'd be so grateful to be aware of it and fix it.",
+  "@deleteAccountDesc": {},
+
+  "explanationOptional": "Your explanation is entirely optional...",
+  "@explanationOptional": {},
+
+  "enterYourPassword": "Enter your Password",
+  "@enterYourPassword": {},
+
+  "deleteAccountPasswordDesc": "Confirm your identity by entering your password. You can't recover your account once it's deleted.",
+  "@deleteAccountPasswordDesc": {},
+
+  "areYouSureDeleteAccount": "Are you sure you want to delete your account? This action cannot be undone.",
+  "@areYouSureDeleteAccount": {},
+
+  "accountDeletedSuccessfully": "Account Deleted Successfully",
+  "@accountDeletedSuccessfully": {},
+
+  "availableBalance": "Available Balance",
+  "@availableBalance": {},
+
+  "transactions": "Transactions",
+  "@transactions": {},
+
+  "addCredit": "Add Credit",
+  "@addCredit": {},
+
+  "manageCards": "Manage Cards",
+  "@manageCards": {},
+
+  "creditAdded": "Credit Added",
+  "@creditAdded": {},
+
+  "chargingSession": "Charging Session",
+  "@chargingSession": {},
+
+  "topUpBalance": "Top-up Balance",
+  "@topUpBalance": {},
+
+  "selectAmount": "Select Amount",
+  "@selectAmount": {},
+
+  "customAmount": "Custom Amount",
+  "@customAmount": {},
+
+  "enterAmount": "Enter amount",
+  "@enterAmount": {},
+
+  "selectPaymentMethod": "Select Payment Method",
+  "@selectPaymentMethod": {},
+
+  "newCard": "New Card",
+  "@newCard": {},
+
+  "paymentSuccessful": "Payment successful!",
+  "@paymentSuccessful": {},
+
+  "defaultText": "Default",
+  "@defaultText": {},
+
+  "notifications": "Notifications",
+  "@notifications": {},
+
+  "noNotificationsAvailable": "No notifications available",
+  "@noNotificationsAvailable": {},
+
+  "justNow": "Just now",
+  "@justNow": {},
+
+  "yesterday": "Yesterday",
+  "@yesterday": {},
+
+  "myVehicles": "My Vehicles",
+  "@myVehicles": {},
+
+  "vehicleDeletedSuccessfully": "Vehicle deleted successfully",
+  "@vehicleDeletedSuccessfully": {},
+
+  "deleteVehicle": "Delete Vehicle",
+  "@deleteVehicle": {},
+
+  "areYouSureDeleteVehicle": "Are you sure you want to delete this vehicle? This action cannot be undone.",
+  "@areYouSureDeleteVehicle": {},
+
+  "noVehiclesFound": "No Vehicles Found, Please add your first vehicle",
+  "@noVehiclesFound": {},
+
+  "addYourCarDetails": "Add Your Car Details",
+  "@addYourCarDetails": {},
+
+  "vehicleRegistrationSubtitle": "Enter your vehicle's license plate number to complete registration.",
+  "@vehicleRegistrationSubtitle": {},
+
+  "brand": "Brand",
+  "@brand": {},
+
+  "selectVehicleBrand": "Select Vehicle Brand",
+  "@selectVehicleBrand": {},
+
+  "pleaseSelectBrand": "Please select a brand",
+  "@pleaseSelectBrand": {},
+
+  "plateNumber": "Plate number",
+  "@plateNumber": {},
+
+  "enterPlateNumber": "Enter your plate number here",
+  "@enterPlateNumber": {},
+
+  "pleaseEnterPlateNumber": "Please enter your plate number",
+  "@pleaseEnterPlateNumber": {},
+
+  "yearLabel": "Year",
+  "@yearLabel": {},
+
+  "enterYear": "Enter year (e.g., 2023)",
+  "@enterYear": {},
+
+  "pleaseEnterYear": "Please enter year",
+  "@pleaseEnterYear": {},
+
+  "pleaseEnterValidYear": "Please enter a valid year",
+  "@pleaseEnterValidYear": {},
+
+  "colorLabel": "Color",
+  "@colorLabel": {},
+
+  "enterColor": "Enter color (e.g., Red)",
+  "@enterColor": {},
+
+  "pleaseEnterColor": "Please enter color",
+  "@pleaseEnterColor": {},
+
+  "takePictureVehicle": "Take picture of vehicle licence",
+  "@takePictureVehicle": {},
+
+  "earn100Points": "( Earn 100 loyalty point )",
+  "@earn100Points": {},
+
+  "modelLabel": "Model",
+  "@modelLabel": {},
+
+  "selectVehicleModel": "Select Vehicle Model",
+  "@selectVehicleModel": {},
+
+  "pleaseSelectModel": "Please select a model",
+  "@pleaseSelectModel": {},
+
+  "connectors": "Connectors",
+  "@connectors": {},
+
+  "selectConnectors": "Select Connectors",
+  "@selectConnectors": {},
+
+  "pleaseSelectConnector": "Please select a connector",
+  "@pleaseSelectConnector": {},
+
+  "updateVehicle": "Update Vehicle",
+  "@updateVehicle": {},
+
+  "addVehicle": "Add Vehicle",
+  "@addVehicle": {},
+
+  "vehicleUpdatedSuccessfully": "Vehicle updated successfully",
+  "@vehicleUpdatedSuccessfully": {},
+
+  "vehicleAdded": "Vehicle Added",
+  "@vehicleAdded": {},
+
+  "yourEvIsSetUp": "Your EV is now set up",
+  "@yourEvIsSetUp": {},
+
+  "congratsEarned": "Congratulations! You've earned",
+  "@congratsEarned": {},
+
+  "forAddingPlateNumber": "for adding your plate number",
+  "@forAddingPlateNumber": {},
+
+  "signUpTitle": "Hello there",
+  "@signUpTitle": { "description": "Sign up screen greeting" },
+
+  "signUpSubtitle": "Enter your phone number and we'll send you an OTP code to verify your account.",
+  "@signUpSubtitle": { "description": "Sign up screen subtitle" },
+
+  "enterMobileNumber": "Enter Your Mobile Number",
+  "@enterMobileNumber": {},
+
+  "signUp": "Sign up",
+  "@signUp": {},
+
+  "continueText": "Continue",
+  "@continueText": {},
+
+  "continueAsGuest": "Continue as a guest",
+  "@continueAsGuest": {},
+
+  "otpSentSuccess": "OTP Sent Successfully",
+  "@otpSentSuccess": {},
+
+  "otpVerifiedSuccess": "OTP Verified Successfully",
+  "@otpVerifiedSuccess": {},
+
+  "otpVerificationTitle": "OTP code verification",
+  "@otpVerificationTitle": {},
+
+  "otpSentToPhone": "We've sent a 5-digit code to your mobile\nnumber +20 XXXXX X{lastDigits}",
+  "@otpSentToPhone": {
+    "placeholders": {
+      "lastDigits": { "type": "String" }
+    }
+  },
+
+  "otpSentToEmail": "We've sent a 5-digit code to your email\n{maskedEmail}",
+  "@otpSentToEmail": {
+    "placeholders": {
+      "maskedEmail": { "type": "String" }
+    }
+  },
+
+  "resendCodeIn": "You can resend code in ",
+  "@resendCodeIn": {},
+
+  "resendCodeNow": "You can resend code ",
+  "@resendCodeNow": {},
+
+  "resend": "Resend",
+  "@resend": {},
+
+  "forgotPasswordTitle": "Forgot your Password?",
+  "@forgotPasswordTitle": {},
+
+  "forgotPasswordSubtitle": "Enter your phone number and we will send you an OTP code to reset your password",
+  "@forgotPasswordSubtitle": {},
+
+  "rememberMe": "Remember me",
+  "@rememberMe": {},
+
+  "orText": "Or",
+  "@orText": {},
+
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {},
+
+  "continueWithFacebook": "Continue with Facebook",
+  "@continueWithFacebook": {},
+
+  "connectVehicleTitle": "Connect your",
+  "@connectVehicleTitle": {},
+
+  "connectVehicleHighlight": "Vehicle",
+  "@connectVehicleHighlight": {},
+
+  "connectVehicleSubtitle": "Insert the charging cable into your vehicle and press ",
+  "@connectVehicleSubtitle": {},
+
+  "startCharging": "Start Charging",
+  "@startCharging": {},
+
+  "connectVehicleSubtitleEnd": " to continue.",
+  "@connectVehicleSubtitleEnd": {},
+
+  "connectorTip": "Make sure the connector is fully secured.",
+  "@connectorTip": {},
+
+  "startSession": "Start Session",
+  "@startSession": {},
+
+  "noRfidError": "No default RFID card found. Please add an RFID card.",
+  "@noRfidError": {},
+
+  "findCodeToScan": "Find a code to scan",
+  "@findCodeToScan": {},
+
+  "language": "Language",
+  "@language": {},
+
+  "english": "English",
+  "@english": {},
+
+  "arabic": "Arabic",
+  "@arabic": {},
+
+  "settings": "Settings",
+  "@settings": {},
+
+  "profile": "Profile",
+  "@profile": {},
+
+  "wallet": "Wallet",
+  "@wallet": {},
+
+  "history": "History",
+  "@history": {},
+
+  "home": "Home",
+  "@home": {},
+
+  "logout": "Logout",
+  "@logout": {},
+
+  "save": "Save",
+  "@save": {},
+
+  "cancel": "Cancel",
+  "@cancel": {},
+
+  "confirm": "Confirm",
+  "@confirm": {},
+
+  "delete": "Delete",
+  "@delete": {},
+
+  "edit": "Edit",
+  "@edit": {},
+
+  "search": "Search",
+  "@search": {},
+
+  "loading": "Loading...",
+  "@loading": {},
+
+  "errorOccurred": "An error occurred. Please try again.",
+  "@errorOccurred": {},
+
+  "noInternetConnection": "No internet connection.",
+  "@noInternetConnection": {},
+
+  "stopCharging": "Stop Charging",
+  "@stopCharging": {},
+
+  "map": "Map",
+  "@map": {},
+
+  "chargingHistory": "Charging History",
+  "@chargingHistory": {},
+
+  "totalEnergy": "Total Energy",
+  "@totalEnergy": {},
+
+  "totalCost": "Total Cost",
+  "@totalCost": {},
+
+  "totalTime": "Total Time",
+  "@totalTime": {},
+
+  "totalSessions": "Total Sessions",
+  "@totalSessions": {},
+
+  "noSessionsFound": "No sessions found",
+  "@noSessionsFound": {},
+
+  "sortBy": "Sort By",
+  "@sortBy": {},
+
+  "newest": "Newest",
+  "@newest": {},
+
+  "oldest": "Oldest",
+  "@oldest": {},
+
+  "highestEnergy": "Highest Energy",
+  "@highestEnergy": {},
+
+  "lowestEnergy": "Lowest Energy",
+  "@lowestEnergy": {},
+
+  "allFilter": "All",
+  "@allFilter": {},
+
+  "active": "Active",
+  "@active": {},
+
+  "completed": "Completed",
+  "@completed": {},
+
+  "paymentSuccessful": "Payment successful!",
+  "@paymentSuccessful": {},
+
+  "searchStationsHint": "Search stations, cities, addresses...",
+  "@searchStationsHint": {},
+
+  "noStationsAvailable": "No stations available",
+  "@noStationsAvailable": {},
+
+  "noStationsFound": "No stations found for \"{query}\"",
+  "@noStationsFound": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+
+  "removedFromFavorites": "Removed from favorites",
+  "@removedFromFavorites": {},
+
+  "addedToFavorites": "Added to favorites",
+  "@addedToFavorites": {},
+
+  "failedToUpdateFavorite": "Failed to update favorite, please try again later",
+  "@failedToUpdateFavorite": {},
+
+  "kmAway": "{distance} km away",
+  "@kmAway": {
+    "placeholders": {
+      "distance": {"type": "String"}
+    }
+  },
+
+  "gunsCount": "Guns: {count}",
+  "@gunsCount": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+
+  "availableGunsLabel": "Available Guns: ",
+  "@availableGunsLabel": {},
+
+  "filterBy": "Filter By",
+  "@filterBy": {},
+
+  "stationStatus": "Station Status",
+  "@stationStatus": {},
+
+  "connectorType": "Connector Type",
+  "@connectorType": {},
+
+  "favouriteStations": "Favourite Stations",
+  "@favouriteStations": {},
+
+  "favouriteOnly": "Favourite Only",
+  "@favouriteOnly": {},
+
+  "minimumPower": "Minimum Power",
+  "@minimumPower": {},
+
+  "selectMinimumPower": "Select minimum power",
+  "@selectMinimumPower": {},
+
+  "applyFilters": "Apply Filters",
+  "@applyFilters": {},
+
+  "resetAll": "Reset All",
+  "@resetAll": {},
+
+  "paymentMethods": "Payment Methods",
+  "@paymentMethods": {},
+
+  "deactivated": "Deactivated",
+  "@deactivated": {},
+
+  "cardDetails": "Card Details",
+  "@cardDetails": {},
+
+  "creditCard": "Credit Card",
+  "@creditCard": {},
+
+  "setAsDefaultCard": "Set as Default Card",
+  "@setAsDefaultCard": {},
+
+  "deactivate": "Deactivate",
+  "@deactivate": {},
+
+  "deleteCard": "Delete Card",
+  "@deleteCard": {},
+
+  "areYouSureDeleteCard": "Are you sure you want to delete this card?",
+  "@areYouSureDeleteCard": {},
+
+  "cantDeleteCard": "Can't delete this card, please try again",
+  "@cantDeleteCard": {},
+
+  "cantDeactivateCard": "Can't deactivate this card, please try again",
+  "@cantDeactivateCard": {},
+
+  "cantSetDefaultCard": "Can't set default for this card, please try again",
+  "@cantSetDefaultCard": {},
+
+  "failedToLoadSettings": "Failed to load settings",
+  "@failedToLoadSettings": {},
+
+  "noSupportInfoAvailable": "No support information available",
+  "@noSupportInfoAvailable": {},
+
+  "noRfidCardFound": "No RFID Card found",
+  "@noRfidCardFound": {},
+
+  "codeIsInvalid": "Code is invalid",
+  "@codeIsInvalid": {},
+
+  "invalidQrCodeFormat": "Invalid QR Code format",
+  "@invalidQrCodeFormat": {},
+
+  "processing": "Processing...",
+  "@processing": {},
+
+  "currentVehicleCharging": "Current Vehicle Charging",
+  "@currentVehicleCharging": {},
+
+  "chargingStoppedSuccessfully": "Charging stopped successfully",
+  "@chargingStoppedSuccessfully": {},
+
+  "sessionIdNotAvailable": "Session ID not available",
+  "@sessionIdNotAvailable": {},
+
+  "missingChargingSessionData": "Missing charging session data",
+  "@missingChargingSessionData": {},
+
+  "support": "Support",
+  "@support": {},
+
+  "complain": "Complain",
+  "@complain": {},
+
+  "complaintTitle": "Complaint Title",
+  "@complaintTitle": {},
+
+  "complaintDescription": "Description of the complaint",
+  "@complaintDescription": {},
+
+  "sendComplain": "Send Complain",
+  "@sendComplain": {},
+
+  "supportAndComplain": "Support and complain",
+  "@supportAndComplain": {},
+
+  "termsAndConditions": "Terms and conditions",
+  "@termsAndConditions": {},
+
+  "noTermsAvailable": "No terms and conditions available",
+  "@noTermsAvailable": {},
+
+  "myVehicleTitle": "My Vehicle",
+  "@myVehicleTitle": {},
+
+  "licensePlate": "License Plate",
+  "@licensePlate": {},
+
+  "vehicleSpecifications": "Vehicle Specifications",
+  "@vehicleSpecifications": {},
+
+  "plateNumber2": "Plate number",
+  "@plateNumber2": {},
+
+  "scanRfidQrCode": "Scan RFID Card QR Code",
+  "@scanRfidQrCode": {},
+
+  "addCard": "Add Card",
+  "@addCard": {},
+
+  "cardholderName": "Cardholder name",
+  "@cardholderName": {},
+
+  "cardNumber": "Card Number",
+  "@cardNumber": {},
+
+  "expiryDate": "Expiry Date",
+  "@expiryDate": {},
+
+  "setAsDefaultCard2": "Set as default card",
+  "@setAsDefaultCard2": {},
+
+  "saveCard": "Save Card",
+  "@saveCard": {}
+}

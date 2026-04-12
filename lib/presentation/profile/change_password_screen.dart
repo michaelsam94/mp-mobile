@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
         ),
         title: Text(
-          'Change password',
+          AppLocalizations.of(context)!.changePasswordTitle,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -58,16 +59,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       ),
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           if (state is SuccessChangePasswordState) {
-            context.showSuccessMessage("Password changed successfully");
+            context.showSuccessMessage(l10n.passwordChangedSuccessfully2);
             Navigator.pop(context);
           } else if (state is ErrorChangePasswordState) {
             context.showErrorMessage(
-              state.message ?? "Failed to change password",
+              state.message ?? l10n.failedToChangePassword,
             );
           }
         },
         builder: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           bool isLoading = state is LoadingChangePasswordState;
 
           return SafeArea(
@@ -78,7 +81,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   // Title
                   Text(
-                    'Change password',
+                    AppLocalizations.of(context)!.changePasswordTitle,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
@@ -89,7 +92,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   // Description
                   Text(
-                    'Create a strong password to secure your account.',
+                    l10n.createStrongPassword,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -101,7 +104,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   // Enter old password
                   Text(
-                    'Enter old password',
+                    l10n.enterOldPassword,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -122,7 +125,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   // Create Password
                   Text(
-                    'Create Password',
+                    l10n.createPassword,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -143,7 +146,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                   // Confirm Password
                   Text(
-                    'Confirm Password',
+                    l10n.confirmPasswordLabel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -173,21 +176,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               // Validation
                               if (oldPasswordController.text.isEmpty) {
                                 context.showErrorMessage(
-                                  "Please enter your old password",
+                                  l10n.pleaseEnterOldPassword,
                                 );
                                 return;
                               }
 
                               if (newPasswordController.text.isEmpty) {
                                 context.showErrorMessage(
-                                  "Please enter new password",
+                                  l10n.pleaseEnterNewPassword,
                                 );
                                 return;
                               }
 
                               if (newPasswordController.text.length < 6) {
                                 context.showErrorMessage(
-                                  "Password must be at least 6 characters",
+                                  l10n.passwordMustBe6Digits,
                                 );
                                 return;
                               }
@@ -195,7 +198,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               if (newPasswordController.text !=
                                   confirmPasswordController.text) {
                                 context.showErrorMessage(
-                                  "Passwords do not match",
+                                  l10n.passwordsDoNotMatch,
                                 );
                                 return;
                               }
@@ -227,7 +230,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               ),
                             )
                           : Text(
-                              'Change Password',
+                              l10n.changePasswordBtn,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

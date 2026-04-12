@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
@@ -91,7 +92,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             onPressed: _handleBackPressed,
           ),
           title: Text(
-            (isSessionStopped == true) ? "Charged" : "Charging",
+            (isSessionStopped == true) ? AppLocalizations.of(context)!.charged : AppLocalizations.of(context)!.charging,
             style: TextStyle(color: Colors.black),
           ),
           centerTitle: true,
@@ -250,7 +251,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
       child: ElevatedButton.icon(
         icon: Icon(Icons.file_download_outlined, color: Colors.white, size: 27),
         label: Text(
-          'Download Report (PDF)',
+          AppLocalizations.of(context)!.downloadReport,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 19,
@@ -278,7 +279,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
           if (url == null || url.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("PDF URL not available", style: TextStyle(color: Colors.white)),
+                content: Text(AppLocalizations.of(context)!.pdfUrlNotAvailable, style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.red.shade700,
                 behavior: SnackBarBehavior.fixed,
                 duration: Duration(seconds: 3),
@@ -377,7 +378,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("PDF downloaded successfully", style: TextStyle(color: Colors.white)),
+                    content: Text(AppLocalizations.of(context)!.pdfDownloadedSuccessfully, style: TextStyle(color: Colors.white)),
                     backgroundColor: Colors.green.shade600,
                     behavior: SnackBarBehavior.fixed,
                     duration: Duration(seconds: 2),
@@ -424,7 +425,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Failed to download PDF", style: TextStyle(color: Colors.white)),
+                    content: Text(AppLocalizations.of(context)!.failedToDownloadPdf, style: TextStyle(color: Colors.white)),
                     backgroundColor: Colors.red.shade700,
                     behavior: SnackBarBehavior.fixed,
                     duration: Duration(seconds: 3),
@@ -556,12 +557,12 @@ class _ChargerScreenState extends State<ChargerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _infoTile(
-              'Power Consumption',
+              AppLocalizations.of(context)!.powerConsumption,
               '${meterData?.energyConsumedValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.energyConsumedUnit ?? 'kWh'}',
               "assets/icons/power_cons.png",
             ),
             _infoTile(
-              'Cost consumption',
+              AppLocalizations.of(context)!.costConsumption,
               '${meterData?.costValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.costCurrency ?? 'EGP'}',
               "assets/icons/cost_con.png",
             ),
@@ -572,12 +573,12 @@ class _ChargerScreenState extends State<ChargerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _infoTile(
-              'Charging time',
+              AppLocalizations.of(context)!.chargingTime,
               meterData?.chargingDurationDisplay ?? '0 min',
               "assets/icons/battery.png",
             ),
             _infoTile(
-              'Output power from gun',
+              AppLocalizations.of(context)!.outputPower,
               '${meterData?.outputPowerValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.outputPowerUnit ?? 'kW'}',
               "assets/icons/output_power.png",
             ),
@@ -596,7 +597,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             setState(() {
               isSessionStopped = true;
             });
-            context.showSuccessMessage("Charging stopped successfully");
+            context.showSuccessMessage(AppLocalizations.of(context)!.chargingStoppedSuccessfully);
             
             // Don't clear meter data here - keep it so user can see final values and download PDF
             // Meter data will be cleared when starting a new session
@@ -641,18 +642,18 @@ class _ChargerScreenState extends State<ChargerScreen> {
               final bool? confirmed = await showDialog<bool>(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: Text('Stop Charging?'),
-                  content: Text('Are you sure you want to stop charging?'),
+                  title: Text(AppLocalizations.of(context)!.stopChargingTitle),
+                  content: Text(AppLocalizations.of(context)!.areYouSureStopCharging),
                   actions: [
                     TextButton(
                       onPressed: () =>
-                          Navigator.pop(context, false), // Return false
-                      child: Text('Cancel'),
+                          Navigator.pop(context, false),
+                      child: Text(AppLocalizations.of(context)!.cancel),
                     ),
                     TextButton(
                       onPressed: () =>
-                          Navigator.pop(context, true), // Return true
-                      child: Text('Stop', style: TextStyle(color: Colors.red)),
+                          Navigator.pop(context, true),
+                      child: Text(AppLocalizations.of(context)!.stopCharging, style: TextStyle(color: Colors.red)),
                     ),
                   ],
                 ),
@@ -690,7 +691,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               Icon(Icons.stop, color: Color(0xffB71C1C)),
               SizedBox(width: 8),
               Text(
-                'Stop Charging',
+                AppLocalizations.of(context)!.stopCharging,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -730,7 +731,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Network Issue',
+                AppLocalizations.of(context)!.networkIssue,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -741,7 +742,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
           ],
         ),
         content: Text(
-          'Connection lost. Please check your internet connection and try again.',
+          AppLocalizations.of(context)!.connectionLost,
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[700],
@@ -757,7 +758,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               context.read<WebSocketCubit>().connect();
             },
             child: Text(
-              'Retry',
+              AppLocalizations.of(context)!.retry,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -773,7 +774,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               _networkErrorDialogShown = false;
             },
             child: Text(
-              'OK',
+              AppLocalizations.of(context)!.ok,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

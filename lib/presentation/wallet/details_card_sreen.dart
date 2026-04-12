@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
 import 'package:mega_plus/presentation/wallet/models/saved_card_response_model.dart';
@@ -31,15 +32,11 @@ class CardDetailsScreen extends StatelessWidget {
           if (state is SuccessGetSavedCardsState) {
             Navigator.pop(context);
           } else if (state is ErrorDeleteSavedCardsState) {
-            context.showErrorMessage("Can't delete this card,please try again");
+            context.showErrorMessage(AppLocalizations.of(context)!.cantDeleteCard);
           } else if (state is ErrorDeactivateSavedCardsState) {
-            context.showErrorMessage(
-              "Can't Deactivate this card,please try again",
-            );
+            context.showErrorMessage(AppLocalizations.of(context)!.cantDeactivateCard);
           } else if (state is ErrorSetDefaultSavedCardsState) {
-            context.showErrorMessage(
-              "Can't set default for this card,please try again",
-            );
+            context.showErrorMessage(AppLocalizations.of(context)!.cantSetDefaultCard);
           }
         },
         builder: (context, state) {
@@ -92,7 +89,7 @@ class CardDetailsScreen extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          "Card Details",
+                          AppLocalizations.of(context)!.cardDetails,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -165,7 +162,7 @@ class CardDetailsScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Credit Card',
+                                  AppLocalizations.of(context)!.creditCard,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -259,7 +256,7 @@ class CardDetailsScreen extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              'Set as Default Card',
+                              AppLocalizations.of(context)!.setAsDefaultCard,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -291,7 +288,7 @@ class CardDetailsScreen extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              'Deactivate',
+                              AppLocalizations.of(context)!.deactivate,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -310,22 +307,20 @@ class CardDetailsScreen extends StatelessWidget {
                             bool? result = await showDialog<bool?>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text('Delete Card'),
-                                content: Text(
-                                  'Are you sure you want to delete this card?',
-                                ),
+                                title: Text(AppLocalizations.of(context)!.deleteCard),
+                                content: Text(AppLocalizations.of(context)!.areYouSureDeleteCard),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, false),
-                                    child: Text('Cancel'),
+                                    child: Text(AppLocalizations.of(context)!.cancel),
                                   ),
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context, true);
                                     },
                                     child: Text(
-                                      'Delete',
+                                      AppLocalizations.of(context)!.delete,
                                       style: TextStyle(color: Colors.red),
                                     ),
                                   ),
@@ -343,7 +338,7 @@ class CardDetailsScreen extends StatelessWidget {
                             size: 22,
                           ),
                           label: Text(
-                            'Delete',
+                            AppLocalizations.of(context)!.delete,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

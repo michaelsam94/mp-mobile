@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/presentation/main/main_screen.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
@@ -46,8 +47,8 @@ class VehicleAddedSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "Vehicle Added",
+          Text(
+            AppLocalizations.of(context)!.vehicleAdded,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -57,8 +58,8 @@ class VehicleAddedSheet extends StatelessWidget {
           const SizedBox(height: 30),
           Image.asset(bellAsset, width: 120, height: 120, fit: BoxFit.contain),
           const SizedBox(height: 28),
-          const Text(
-            "Your EV is now set up",
+          Text(
+            AppLocalizations.of(context)!.yourEvIsSetUp,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 22,
@@ -178,7 +179,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                 });
               }
             } else if (state is SuccessUpdateVehiclesState) {
-              context.showSuccessMessage("Vehicle updated successfully");
+              context.showSuccessMessage(AppLocalizations.of(context)!.vehicleUpdatedSuccessfully);
               Future.delayed(Duration(milliseconds: 500), () {
                 Navigator.pop(context);
               });
@@ -215,8 +216,8 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               },
                             ),
                             const SizedBox(height: 32),
-                            const Text(
-                              'Add Your Car Details',
+                            Text(
+                              AppLocalizations.of(context)!.addYourCarDetails,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 32,
@@ -224,8 +225,8 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              "Enter your vehicle’s license plate number to\ncomplete registration.",
+                            Text(
+                              AppLocalizations.of(context)!.vehicleRegistrationSubtitle,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xff606060),
@@ -233,8 +234,8 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                             ),
                             const SizedBox(height: 40),
                             // Brand Dropdown
-                            const Text(
-                              'Brand',
+                            Text(
+                              AppLocalizations.of(context)!.brand,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -251,7 +252,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               initialValue: cubit.selectedBrand,
                               isExpanded: true,
                               decoration: InputDecoration(
-                                hintText: 'Select Vehicle Brand',
+                                hintText: AppLocalizations.of(context)!.selectVehicleBrand,
                                 hintStyle: TextStyle(
                                   color: Color(0xffB6B6B6),
                                   fontWeight: FontWeight.w500,
@@ -284,12 +285,12 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 cubit.selectBrand(val);
                               },
                               validator: (val) =>
-                                  val == null ? 'Please select a brand' : null,
+                                  val == null ? AppLocalizations.of(context)!.pleaseSelectBrand : null,
                             ),
                             const SizedBox(height: 24),
                             // Plate Number field
-                            const Text(
-                              'Plate number',
+                            Text(
+                              AppLocalizations.of(context)!.plateNumber,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -300,7 +301,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                             TextFormField(
                               controller: _plateNumberController,
                               decoration: InputDecoration(
-                                hintText: 'Enter your plate number here',
+                                hintText: AppLocalizations.of(context)!.enterPlateNumber,
                                 hintStyle: const TextStyle(
                                   color: Color(0xffB6B6B6),
                                   fontSize: 15,
@@ -314,13 +315,13 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 contentPadding: const EdgeInsets.all(16),
                               ),
                               validator: (val) => val == null || val.trim().isEmpty
-                                  ? 'Please enter your plate number'
+                                  ? AppLocalizations.of(context)!.pleaseEnterPlateNumber
                                   : null,
                             ),
                             const SizedBox(height: 24),
                             // Year field
-                            const Text(
-                              'Year',
+                            Text(
+                              AppLocalizations.of(context)!.yearLabel,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -347,19 +348,19 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               ),
                               validator: (val) {
                                 if (val == null || val.trim().isEmpty) {
-                                  return 'Please enter year';
+                                  return AppLocalizations.of(context)!.pleaseEnterYear;
                                 }
                                 final year = int.tryParse(val.trim());
                                 if (year == null || year < 1900 || year > DateTime.now().year + 1) {
-                                  return 'Please enter a valid year';
+                                  return AppLocalizations.of(context)!.pleaseEnterValidYear;
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 24),
                             // Color field
-                            const Text(
-                              'Color',
+                            Text(
+                              AppLocalizations.of(context)!.colorLabel,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -384,7 +385,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 contentPadding: const EdgeInsets.all(16),
                               ),
                               validator: (val) => val == null || val.trim().isEmpty
-                                  ? 'Please enter color'
+                                  ? AppLocalizations.of(context)!.pleaseEnterColor
                                   : null,
                             ),
                             const SizedBox(height: 24),
@@ -548,7 +549,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 cubit.selectModel(val);
                               },
                               validator: (val) =>
-                                  val == null ? 'Please select a model' : null,
+                                  val == null ? AppLocalizations.of(context)!.pleaseSelectModel : null,
                             ),
 
                             const SizedBox(height: 24),
@@ -602,7 +603,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                 cubit.selectConnector(val);
                               },
                               validator: (val) => val == null
-                                  ? 'Please select a connector'
+                                  ? AppLocalizations.of(context)!.pleaseSelectConnector
                                   : null,
                             ),
 
@@ -622,7 +623,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                                   _submit(context);
                                 },
                                 child: Text(
-                                  widget.vehicle != null ? 'Update Vehicle' : 'Add Vehicle',
+                                  widget.vehicle != null ? AppLocalizations.of(context)!.updateVehicle : AppLocalizations.of(context)!.addVehicle,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,

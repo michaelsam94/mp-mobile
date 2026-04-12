@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/vehicles/cubit/vehicles_cubit.dart';
 import 'package:mega_plus/presentation/vehicles/models/vehicle_response_model.dart';
@@ -103,21 +104,19 @@ class MyVehiclesScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Delete Vehicle'),
-          content: Text(
-            'Are you sure you want to delete this vehicle? This action cannot be undone.',
-          ),
+          title: Text(AppLocalizations.of(context)!.deleteVehicle),
+          content: Text(AppLocalizations.of(context)!.areYouSureDeleteVehicle),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
                 VehiclesCubit.get(context).deleteVehicle(vehicle.id!);
               },
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -163,7 +162,7 @@ class MyVehiclesScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      "My Vehicles",
+                      AppLocalizations.of(context)!.myVehicles,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -177,7 +176,7 @@ class MyVehiclesScreen extends StatelessWidget {
             BlocConsumer<VehiclesCubit, VehiclesState>(
               listener: (context, state) {
                 if (state is SuccessDeleteVehiclesState) {
-                  context.showSuccessMessage("Vehicle deleted successfully");
+                  context.showSuccessMessage(AppLocalizations.of(context)!.vehicleDeletedSuccessfully);
                 } else if (state is ErrorDeleteVehiclesState) {
                   context.showErrorMessage(state.message);
                 }
@@ -244,7 +243,7 @@ class MyVehiclesScreen extends StatelessWidget {
                       : cubit.vehicles.isEmpty
                       ? Center(
                           child: Text(
-                            "No Vehicles Found, Please add you first vehicle",
+                            AppLocalizations.of(context)!.noVehiclesFound,
                           ),
                         )
                       : ListView.builder(

@@ -1,0 +1,599 @@
+{
+  "@@locale": "ar",
+
+  "appName": "ميجابلاج",
+
+  "poweredByTadafuq": "مدعوم من تدفق",
+
+  "noOnboardingData": "لا توجد بيانات تهيئة متاحة",
+
+  "next": "التالي",
+
+  "getStarted": "ابدأ الآن",
+
+  "welcome": "أهلاً!",
+
+  "welcomeSubtitle": "أهلاً بك في رحلة شحن ميجابلاج.",
+
+  "phoneEmail": "الهاتف / البريد الإلكتروني",
+
+  "phoneEmailHint": "الهاتف أو البريد الإلكتروني",
+
+  "password": "كلمة المرور",
+
+  "passwordHint": "xxxxxxxxxxx",
+
+  "forgetPassword": "نسيت كلمة المرور؟",
+
+  "signIn": "تسجيل الدخول",
+
+  "loginSuccessfully": "تم تسجيل الدخول بنجاح",
+
+  "pleaseEnterPhoneOrEmail": "الرجاء إدخال رقم الهاتف أو البريد الإلكتروني",
+
+  "pleaseEnterValidEmail": "الرجاء إدخال بريد إلكتروني صحيح",
+
+  "enterValidNumber": "أدخل رقماً صحيحاً",
+
+  "pleaseEnterPassword": "الرجاء إدخال كلمة المرور",
+
+  "passwordMinChars": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+
+  "completeProfile": "أكمل ملفك الشخصي",
+
+  "profileDataProtected": "أنت فقط من يمكنه الوصول إلى بياناتك الشخصية، فهي محمية تماماً.",
+
+  "fullName": "الاسم الكامل",
+
+  "fullNameHint": "الاسم الكامل",
+
+  "email": "البريد الإلكتروني",
+
+  "emailHint": "البريد الإلكتروني",
+
+  "pleaseEnterFullName": "الرجاء إدخال اسمك الكامل",
+
+  "pleaseEnterEmail": "الرجاء إدخال بريدك الإلكتروني",
+
+  "enterValidEmail": "أدخل بريداً إلكترونياً صحيحاً",
+
+  "passwordMustBe6Digits": "يجب أن تكون كلمة المرور 6 أرقام على الأقل",
+
+  "createdAccountSuccessfully": "تم إنشاء الحساب بنجاح",
+
+  "personalizeTitle": "خصّص تجربة الشحن بمعلومات مركبتك",
+
+  "personalizeSubtitle": "إضافة سيارتك تضمن توصيات دقيقة لمحطات الشحن.",
+
+  "addLater": "إضافة لاحقاً",
+
+  "setNewPassword": "تعيين كلمة مرور جديدة",
+
+  "createStrongPassword": "أنشئ كلمة مرور قوية لتأمين حسابك.",
+
+  "createPassword": "إنشاء كلمة مرور",
+
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+
+  "enterValidPassword": "أدخل كلمة مرور صحيحة",
+
+  "pleaseEnterConfirmPassword": "الرجاء إدخال تأكيد كلمة المرور",
+
+  "pleaseEnterValidConfirmPassword": "الرجاء إدخال تأكيد كلمة مرور صحيحة",
+
+  "passwordNotSame": "كلمة المرور لا تطابق التأكيد",
+
+  "passwordChangedSuccessfully": "تم تغيير كلمة المرور بنجاح",
+
+  "letsGetStarted": "لنبدأ",
+
+  "guestSubtitle": "الرجاء إنشاء حساب أو تسجيل الدخول للمتابعة",
+
+  "createAccount": "إنشاء حساب",
+
+  "pleaseAddVehicle": "الرجاء إضافة مركبة",
+
+  "searchYourModel": "ابحث عن موديلك",
+
+  "status": "الحالة",
+
+  "available": "متاح",
+
+  "unavailable": "غير متاح",
+
+  "inUse": "قيد الاستخدام",
+
+  "retry": "إعادة المحاولة",
+
+  "charged": "تم الشحن",
+
+  "charging": "جارٍ الشحن",
+
+  "powerConsumption": "استهلاك الطاقة",
+
+  "costConsumption": "استهلاك التكلفة",
+
+  "chargingTime": "وقت الشحن",
+
+  "outputPower": "الطاقة الخارجة من المشبك",
+
+  "downloadReport": "تنزيل التقرير (PDF)",
+
+  "pdfDownloadedSuccessfully": "تم تنزيل PDF بنجاح",
+
+  "pdfUrlNotAvailable": "رابط PDF غير متاح",
+
+  "failedToDownloadPdf": "فشل تنزيل PDF",
+
+  "stopChargingTitle": "إيقاف الشحن؟",
+
+  "areYouSureStopCharging": "هل أنت متأكد من إيقاف الشحن؟",
+
+  "networkIssue": "مشكلة في الشبكة",
+
+  "connectionLost": "انقطع الاتصال. الرجاء التحقق من اتصالك بالإنترنت والمحاولة مجدداً.",
+
+  "ok": "موافق",
+
+  "stationDetails": "تفاصيل المحطة",
+
+  "opens24Hours": "مفتوح 24 ساعة",
+
+  "connectorsTypes": "أنواع الموصلات",
+
+  "noConnectorsAvailable": "لا توجد موصلات متاحة",
+
+  "close": "إغلاق",
+
+  "couldNotOpenGoogleMaps": "تعذر فتح خرائط Google",
+
+  "priceNotAvailable": "السعر غير متاح",
+
+  "totalCharges": "إجمالي الشحنات",
+
+  "points": "النقاط",
+
+  "rfidCards": "بطاقات RFID",
+
+  "setting": "الإعدادات",
+
+  "supportComplain": "الدعم/الشكاوى",
+
+  "termsConditions": "الشروط والأحكام",
+
+  "logOut": "تسجيل الخروج",
+
+  "version": "الإصدار",
+
+  "areYouSureLogOut": "هل أنت متأكد من تسجيل الخروج؟",
+
+  "editText": "تعديل",
+
+  "myAccount": "حسابي",
+
+  "myVehicle": "مركبتي",
+
+  "loyaltyPoints": "نقاط الولاء",
+
+  "security": "الأمان",
+
+  "editProfile": "تعديل الملف الشخصي",
+
+  "birthday": "تاريخ الميلاد",
+
+  "selectYourBirthday": "اختر تاريخ ميلادك",
+
+  "gender": "الجنس",
+
+  "male": "ذكر",
+
+  "female": "أنثى",
+
+  "pleaseSelectGender": "الرجاء اختيار الجنس",
+
+  "pleaseSelectBirthday": "الرجاء اختيار تاريخ الميلاد",
+
+  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح",
+
+  "changePasswordTitle": "تغيير كلمة المرور",
+
+  "enterOldPassword": "أدخل كلمة المرور القديمة",
+
+  "pleaseEnterOldPassword": "الرجاء إدخال كلمة المرور القديمة",
+
+  "pleaseEnterNewPassword": "الرجاء إدخال كلمة المرور الجديدة",
+
+  "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+
+  "passwordChangedSuccessfully2": "تم تغيير كلمة المرور بنجاح",
+
+  "failedToChangePassword": "فشل تغيير كلمة المرور",
+
+  "changePasswordBtn": "تغيير كلمة المرور",
+
+  "deactivate": "إلغاء التفعيل",
+
+  "activate": "تفعيل",
+
+  "noRFIDCardsAdded": "لا توجد بطاقات RFID، الرجاء إضافة واحدة",
+
+  "addRFIDCard": "إضافة بطاقة RFID",
+
+  "scanQRCode": "مسح رمز QR",
+
+  "scanQRCodeInfo": "امسح رمز QR الموجود على بطاقة RFID للتسجيل الفوري",
+
+  "enterYourRFIDCards": "أدخل بطاقات RFID",
+
+  "pleaseEnterRFIDNumber": "الرجاء إدخال رقم بطاقة RFID",
+
+  "addCard": "إضافة البطاقة",
+
+  "rfidCardAdded": "تمت إضافة بطاقة RFID بنجاح",
+
+  "deleteAccountTitle": "حذف الحساب",
+
+  "deleteYourAccount": "حذف حسابك؟",
+
+  "deleteAccountDesc": "هل يمكنك مشاركتنا ما لم يكن يعمل؟ نحن نصلح الأخطاء بمجرد اكتشافها. إذا فاتنا شيء، سنكون ممتنين جداً للإبلاغ عنه وإصلاحه.",
+
+  "explanationOptional": "شرحك اختياري تماماً...",
+
+  "enterYourPassword": "أدخل كلمة مرورك",
+
+  "deleteAccountPasswordDesc": "أكّد هويتك بإدخال كلمة مرورك. لا يمكنك استعادة حسابك بعد حذفه.",
+
+  "areYouSureDeleteAccount": "هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+
+  "accountDeletedSuccessfully": "تم حذف الحساب بنجاح",
+
+  "availableBalance": "الرصيد المتاح",
+
+  "transactions": "المعاملات",
+
+  "addCredit": "إضافة رصيد",
+
+  "manageCards": "إدارة البطاقات",
+
+  "creditAdded": "تمت إضافة الرصيد",
+
+  "chargingSession": "جلسة شحن",
+
+  "topUpBalance": "شحن الرصيد",
+
+  "selectAmount": "اختر المبلغ",
+
+  "customAmount": "مبلغ مخصص",
+
+  "enterAmount": "أدخل المبلغ",
+
+  "selectPaymentMethod": "اختر طريقة الدفع",
+
+  "newCard": "بطاقة جديدة",
+
+  "paymentSuccessful": "تمت عملية الدفع بنجاح!",
+
+  "defaultText": "افتراضي",
+
+  "notifications": "الإشعارات",
+
+  "noNotificationsAvailable": "لا توجد إشعارات متاحة",
+
+  "justNow": "الآن",
+
+  "yesterday": "أمس",
+
+  "myVehicles": "مركباتي",
+
+  "vehicleDeletedSuccessfully": "تم حذف المركبة بنجاح",
+
+  "deleteVehicle": "حذف المركبة",
+
+  "areYouSureDeleteVehicle": "هل أنت متأكد من حذف هذه المركبة؟ لا يمكن التراجع عن هذا الإجراء.",
+
+  "noVehiclesFound": "لم يتم العثور على مركبات، الرجاء إضافة مركبتك الأولى",
+
+  "addYourCarDetails": "أضف تفاصيل سيارتك",
+
+  "vehicleRegistrationSubtitle": "أدخل رقم لوحة مركبتك لإتمام التسجيل.",
+
+  "brand": "الماركة",
+
+  "selectVehicleBrand": "اختر ماركة المركبة",
+
+  "pleaseSelectBrand": "الرجاء اختيار ماركة",
+
+  "plateNumber": "رقم اللوحة",
+
+  "enterPlateNumber": "أدخل رقم اللوحة هنا",
+
+  "pleaseEnterPlateNumber": "الرجاء إدخال رقم اللوحة",
+
+  "yearLabel": "السنة",
+
+  "enterYear": "أدخل السنة (مثال: 2023)",
+
+  "pleaseEnterYear": "الرجاء إدخال السنة",
+
+  "pleaseEnterValidYear": "الرجاء إدخال سنة صحيحة",
+
+  "colorLabel": "اللون",
+
+  "enterColor": "أدخل اللون (مثال: أحمر)",
+
+  "pleaseEnterColor": "الرجاء إدخال اللون",
+
+  "takePictureVehicle": "التقط صورة لرخصة المركبة",
+
+  "earn100Points": "( اكسب 100 نقطة ولاء )",
+
+  "modelLabel": "الموديل",
+
+  "selectVehicleModel": "اختر موديل المركبة",
+
+  "pleaseSelectModel": "الرجاء اختيار موديل",
+
+  "connectors": "الموصلات",
+
+  "selectConnectors": "اختر الموصلات",
+
+  "pleaseSelectConnector": "الرجاء اختيار موصل",
+
+  "updateVehicle": "تحديث المركبة",
+
+  "addVehicle": "إضافة مركبة",
+
+  "vehicleUpdatedSuccessfully": "تم تحديث المركبة بنجاح",
+
+  "vehicleAdded": "تمت إضافة المركبة",
+
+  "yourEvIsSetUp": "تم إعداد سيارتك الكهربائية الآن",
+
+  "congratsEarned": "تهانينا! لقد كسبت",
+
+  "forAddingPlateNumber": "لإضافة رقم لوحتك",
+
+  "signUpTitle": "مرحباً",
+
+  "signUpSubtitle": "أدخل رقم هاتفك وسنرسل لك رمز OTP للتحقق من حسابك.",
+
+  "enterMobileNumber": "أدخل رقم جوالك",
+
+  "signUp": "إنشاء حساب",
+
+  "continueText": "متابعة",
+
+  "continueAsGuest": "المتابعة كضيف",
+
+  "otpSentSuccess": "تم إرسال رمز التحقق بنجاح",
+
+  "otpVerifiedSuccess": "تم التحقق من الرمز بنجاح",
+
+  "otpVerificationTitle": "التحقق من رمز OTP",
+
+  "otpSentToPhone": "لقد أرسلنا رمزاً مكوناً من 5 أرقام إلى رقم هاتفك\n+20 XXXXX X{lastDigits}",
+
+  "otpSentToEmail": "لقد أرسلنا رمزاً مكوناً من 5 أرقام إلى بريدك الإلكتروني\n{maskedEmail}",
+
+  "resendCodeIn": "يمكنك إعادة إرسال الرمز خلال ",
+
+  "resendCodeNow": "يمكنك إعادة إرسال الرمز ",
+
+  "resend": "إعادة الإرسال",
+
+  "forgotPasswordTitle": "نسيت كلمة المرور؟",
+
+  "forgotPasswordSubtitle": "أدخل رقم هاتفك وسنرسل لك رمز OTP لإعادة تعيين كلمة المرور",
+
+  "rememberMe": "تذكرني",
+
+  "orText": "أو",
+
+  "continueWithGoogle": "المتابعة بواسطة Google",
+
+  "continueWithFacebook": "المتابعة بواسطة Facebook",
+
+  "connectVehicleTitle": "قم بتوصيل",
+
+  "connectVehicleHighlight": "مركبتك",
+
+  "connectVehicleSubtitle": "أدخل كابل الشحن في مركبتك واضغط على ",
+
+  "startCharging": "بدء الشحن",
+
+  "connectVehicleSubtitleEnd": " للمتابعة.",
+
+  "connectorTip": "تأكد من تثبيت الموصل بشكل كامل.",
+
+  "startSession": "بدء الجلسة",
+
+  "noRfidError": "لم يتم العثور على بطاقة RFID افتراضية. الرجاء إضافة بطاقة RFID.",
+
+  "findCodeToScan": "ابحث عن رمز للمسح",
+
+  "language": "اللغة",
+
+  "english": "الإنجليزية",
+
+  "arabic": "العربية",
+
+  "settings": "الإعدادات",
+
+  "profile": "الملف الشخصي",
+
+  "wallet": "المحفظة",
+
+  "history": "السجل",
+
+  "home": "الرئيسية",
+
+  "logout": "تسجيل الخروج",
+
+  "save": "حفظ",
+
+  "cancel": "إلغاء",
+
+  "confirm": "تأكيد",
+
+  "delete": "حذف",
+
+  "edit": "تعديل",
+
+  "search": "بحث",
+
+  "loading": "جارٍ التحميل...",
+
+  "errorOccurred": "حدث خطأ. الرجاء المحاولة مرة أخرى.",
+
+  "noInternetConnection": "لا يوجد اتصال بالإنترنت.",
+
+  "stopCharging": "إيقاف الشحن",
+
+  "map": "الخريطة",
+
+  "chargingHistory": "سجل الشحن",
+
+  "totalEnergy": "إجمالي الطاقة",
+
+  "totalCost": "إجمالي التكلفة",
+
+  "totalTime": "إجمالي الوقت",
+
+  "totalSessions": "إجمالي الجلسات",
+
+  "noSessionsFound": "لم يتم العثور على جلسات",
+
+  "sortBy": "ترتيب حسب",
+
+  "newest": "الأحدث",
+
+  "oldest": "الأقدم",
+
+  "highestEnergy": "أعلى طاقة",
+
+  "lowestEnergy": "أقل طاقة",
+
+  "allFilter": "الكل",
+
+  "active": "نشط",
+
+  "completed": "مكتمل",
+
+  "paymentSuccessful": "تمت عملية الدفع بنجاح!",
+
+  "searchStationsHint": "ابحث عن محطات، مدن، عناوين...",
+
+  "noStationsAvailable": "لا توجد محطات متاحة",
+
+  "noStationsFound": "لم يتم العثور على محطات لـ \"{query}\"",
+
+  "removedFromFavorites": "تمت الإزالة من المفضلة",
+
+  "addedToFavorites": "تمت الإضافة إلى المفضلة",
+
+  "failedToUpdateFavorite": "فشل تحديث المفضلة، يرجى المحاولة لاحقاً",
+
+  "kmAway": "{distance} كم",
+
+  "gunsCount": "المحطات: {count}",
+
+  "availableGunsLabel": "المحطات المتاحة: ",
+
+  "filterBy": "تصفية حسب",
+
+  "stationStatus": "حالة المحطة",
+
+  "connectorType": "نوع الموصل",
+
+  "favouriteStations": "المحطات المفضلة",
+
+  "favouriteOnly": "المفضلة فقط",
+
+  "minimumPower": "أدنى طاقة",
+
+  "selectMinimumPower": "اختر أدنى طاقة",
+
+  "applyFilters": "تطبيق التصفية",
+
+  "resetAll": "إعادة تعيين الكل",
+
+  "paymentMethods": "طرق الدفع",
+
+  "deactivated": "معطّل",
+
+  "cardDetails": "تفاصيل البطاقة",
+
+  "creditCard": "بطاقة ائتمان",
+
+  "setAsDefaultCard": "تعيين كبطاقة افتراضية",
+
+  "deactivate": "تعطيل",
+
+  "deleteCard": "حذف البطاقة",
+
+  "areYouSureDeleteCard": "هل أنت متأكد من حذف هذه البطاقة؟",
+
+  "cantDeleteCard": "لا يمكن حذف هذه البطاقة، يرجى المحاولة مرة أخرى",
+
+  "cantDeactivateCard": "لا يمكن تعطيل هذه البطاقة، يرجى المحاولة مرة أخرى",
+
+  "cantSetDefaultCard": "لا يمكن تعيين هذه البطاقة كافتراضية، يرجى المحاولة مرة أخرى",
+
+  "failedToLoadSettings": "فشل تحميل الإعدادات",
+
+  "noSupportInfoAvailable": "لا تتوفر معلومات دعم",
+
+  "noRfidCardFound": "لم يتم العثور على بطاقة RFID",
+
+  "codeIsInvalid": "الرمز غير صالح",
+
+  "invalidQrCodeFormat": "صيغة رمز QR غير صالحة",
+
+  "processing": "جارٍ المعالجة...",
+
+  "currentVehicleCharging": "شحن السيارة الحالية",
+
+  "chargingStoppedSuccessfully": "تم إيقاف الشحن بنجاح",
+
+  "sessionIdNotAvailable": "معرف الجلسة غير متاح",
+
+  "missingChargingSessionData": "بيانات جلسة الشحن مفقودة",
+
+  "support": "الدعم",
+
+  "complain": "شكوى",
+
+  "complaintTitle": "عنوان الشكوى",
+
+  "complaintDescription": "وصف الشكوى",
+
+  "sendComplain": "إرسال الشكوى",
+
+  "supportAndComplain": "الدعم والشكاوى",
+
+  "termsAndConditions": "الشروط والأحكام",
+
+  "noTermsAvailable": "لا تتوفر شروط وأحكام",
+
+  "myVehicleTitle": "سيارتي",
+
+  "licensePlate": "لوحة الترخيص",
+
+  "vehicleSpecifications": "مواصفات السيارة",
+
+  "plateNumber2": "رقم اللوحة",
+
+  "scanRfidQrCode": "مسح رمز QR لبطاقة RFID",
+
+  "addCard": "إضافة بطاقة",
+
+  "cardholderName": "اسم حامل البطاقة",
+
+  "cardNumber": "رقم البطاقة",
+
+  "expiryDate": "تاريخ الانتهاء",
+
+  "setAsDefaultCard2": "تعيين كبطاقة افتراضية",
+
+  "saveCard": "حفظ البطاقة"
+}

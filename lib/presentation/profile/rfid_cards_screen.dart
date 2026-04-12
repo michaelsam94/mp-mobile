@@ -6,6 +6,7 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/profile/models/rfid_response_model.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/rfid_qr_scanner_screen.dart';
 
 class RFIDCardsScreen extends StatelessWidget {
@@ -80,7 +81,7 @@ class RFIDCardsScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      item.status == 1 ? "Deactivate" : "Activate",
+                      item.status == 1 ? AppLocalizations.of(context)!.deactivate : AppLocalizations.of(context)!.activate,
                       style: TextStyle(
                         color: green,
                         fontWeight: FontWeight.bold,
@@ -108,7 +109,7 @@ class RFIDCardsScreen extends StatelessWidget {
                       size: 24,
                     ),
                     label: Text(
-                      "Delete",
+                      AppLocalizations.of(context)!.delete,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -155,7 +156,7 @@ class RFIDCardsScreen extends StatelessWidget {
           if (state is ErrorGetRFIDState) {
             context.showErrorMessage(state.message);
           } else if (state is SuccessAddRFIDState) {
-            context.showSuccessMessage('RFID card added successfully');
+            context.showSuccessMessage(AppLocalizations.of(context)!.rfidCardAdded);
           }
         },
         builder: (context, state) {
@@ -187,7 +188,7 @@ class RFIDCardsScreen extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          "RFID Cards",
+                          AppLocalizations.of(context)!.rfidCards,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -208,7 +209,7 @@ class RFIDCardsScreen extends StatelessWidget {
                         ),
                       )
                     : ProfileCubit.get(context).rfidCards.isEmpty
-                    ? Center(child: Text("No RFID Cards Added Please Add One"))
+                    ? Center(child: Text(AppLocalizations.of(context)!.noRFIDCardsAdded))
                     : ListView.builder(
                         shrinkWrap: true,
                         itemCount: ProfileCubit.get(context).rfidCards.length,
@@ -268,8 +269,8 @@ class RFIDCardsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Add RFID Card',
+                    Text(
+                      AppLocalizations.of(context)!.addRFIDCard,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -308,11 +309,11 @@ class RFIDCardsScreen extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.qr_code_scanner, color: Colors.white),
-                        SizedBox(width: 8),
+                      children: [
+                        const Icon(Icons.qr_code_scanner, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
-                          'Scan QR Code',
+                          AppLocalizations.of(context)!.scanQRCode,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -327,8 +328,8 @@ class RFIDCardsScreen extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 // Text تحت زر الـ Scan
-                const Text(
-                  'Scan the QR code on your RFID card for instant registration',
+                Text(
+                  AppLocalizations.of(context)!.scanQRCodeInfo,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, color: Color(0xff9E9E9E)),
                 ),
@@ -356,10 +357,10 @@ class RFIDCardsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Label
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Enter your RFID Cards',
+                    AppLocalizations.of(context)!.enterYourRFIDCards,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -391,7 +392,7 @@ class RFIDCardsScreen extends StatelessWidget {
                       validator: (value) {
                         final text = value?.trim() ?? '';
                         if (text.isEmpty) {
-                          return 'Please enter your RFID card number';
+                          return AppLocalizations.of(context)!.pleaseEnterRFIDNumber;
                         }
 
                         return null;
@@ -419,8 +420,8 @@ class RFIDCardsScreen extends StatelessWidget {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'ADD Card',
+                    child: Text(
+                      AppLocalizations.of(context)!.addCard,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,

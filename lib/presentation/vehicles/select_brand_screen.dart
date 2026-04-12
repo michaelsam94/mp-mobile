@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 
 class SelectBrandScreen extends StatefulWidget {
   const SelectBrandScreen({super.key});
@@ -108,8 +109,8 @@ class _SelectBrandScreenState extends State<SelectBrandScreen> {
                 },
               ),
               const SizedBox(height: 40),
-              const Text(
-                'Select your EV Brand',
+              Text(
+                AppLocalizations.of(context)!.selectVehicleBrand,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 32,
@@ -126,7 +127,7 @@ class _SelectBrandScreenState extends State<SelectBrandScreen> {
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search your Model',
+                  hintText: AppLocalizations.of(context)!.searchYourModel,
                   hintStyle: const TextStyle(
                     fontSize: 14,
                     color: Color(0xffB6B6B6),
@@ -169,8 +170,8 @@ class _SelectBrandScreenState extends State<SelectBrandScreen> {
                     elevation: 0,
                   ),
                   onPressed: _submit,
-                  child: const Text(
-                    'Continue',
+                  child: Text(
+                    AppLocalizations.of(context)!.continueText,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,

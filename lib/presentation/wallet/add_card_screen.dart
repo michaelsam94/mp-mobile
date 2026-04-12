@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 
 class AddCardScreen extends StatefulWidget {
   const AddCardScreen({super.key});
@@ -42,7 +43,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Add Card",
+                      AppLocalizations.of(context)!.addCard,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -74,7 +75,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Credit Card",
+                        AppLocalizations.of(context)!.creditCard,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -126,7 +127,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   children: [
                     // Cardholder name
                     Text(
-                      "Cardholder name",
+                      AppLocalizations.of(context)!.cardholderName,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
@@ -136,7 +137,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     SizedBox(height: 7),
                     TextField(
                       decoration: InputDecoration(
-                        hintText: "Enter amount",
+                        hintText: AppLocalizations.of(context)!.enterAmount,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -153,7 +154,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     SizedBox(height: 15),
                     // Card number
                     Text(
-                      "Card Number",
+                      AppLocalizations.of(context)!.cardNumber,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
@@ -187,7 +188,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Expiry Date",
+                                AppLocalizations.of(context)!.expiryDate,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 17,
@@ -278,7 +279,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ),
                 SizedBox(width: 6),
                 Text(
-                  "Set as default card",
+                  AppLocalizations.of(context)!.setAsDefaultCard2,
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                 ),
               ],
@@ -297,7 +298,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     ),
                   ),
                   child: Text(
-                    "Save Card",
+                    AppLocalizations.of(context)!.saveCard,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 21,

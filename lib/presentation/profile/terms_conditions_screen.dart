@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 
 import 'cubit/profile_cubit.dart';
 
@@ -46,7 +47,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Terms and condition",
+                      AppLocalizations.of(context)!.termsAndConditions,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
@@ -88,7 +89,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                             onPressed: () {
                               ProfileCubit.get(context).getTermsConditions();
                             },
-                            child: Text("Retry"),
+                            child: Text(AppLocalizations.of(context)!.retry),
                           ),
                         ],
                       ),
@@ -100,7 +101,7 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen> {
                   if (cubit.termsConditions.isEmpty) {
                     return Center(
                       child: Text(
-                        "No terms and conditions available",
+                        AppLocalizations.of(context)!.noTermsAvailable,
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     );

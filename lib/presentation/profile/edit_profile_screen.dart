@@ -8,6 +8,7 @@ import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -91,9 +92,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       if (_selectedGender == null) {
-        context.showErrorMessage('Please select your gender');
+        context.showErrorMessage(l10n.pleaseSelectGender);
         return;
       }
       ProfileCubit.get(context).updateProfile(
@@ -121,7 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           if (state is SuccessUpdateProfileState) {
-            context.showSuccessMessage("Profile updated successfully");
+            context.showSuccessMessage(AppLocalizations.of(context)!.profileUpdatedSuccessfully);
             // Profile will be reloaded automatically by ProfileCubit
             Navigator.pop(context);
           } else if (state is ErrorUpdateProfileState) {
@@ -139,6 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
         },
         builder: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           if (state is LoadingUpdateProfileState) {
             return Center(
               child: ShimmerWidget(
@@ -162,8 +165,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Edit Profile',
+                  Text(
+                    l10n.editProfile,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 32,
@@ -171,8 +174,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Only you have access to your personal data,\nit\'s fully protected.',
+                  Text(
+                    l10n.profileDataProtected,
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xff606060),
@@ -207,8 +210,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Full Name',
+                        Text(
+                          l10n.fullName,
                           style: TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
@@ -219,7 +222,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         TextFormField(
                           controller: _nameController,
                           decoration: InputDecoration(
-                            hintText: 'Full name',
+                            hintText: l10n.fullNameHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
                               borderSide: const BorderSide(
@@ -231,12 +234,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           validator: (val) =>
                               (val == null || val.trim().isEmpty)
-                              ? 'Please enter your full name'
+                              ? l10n.pleaseEnterFullName
                               : null,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Email',
+                        Text(
+                          l10n.email,
                           style: TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
@@ -248,7 +251,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            hintText: 'email',
+                            hintText: l10n.emailHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
                               borderSide: const BorderSide(
@@ -260,20 +263,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           validator: (val) {
                             if (val == null || val.isEmpty) {
-                              return 'Please enter your email';
+                              return l10n.pleaseEnterEmail;
                             }
                             final emailRegex = RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                             );
                             if (!emailRegex.hasMatch(val)) {
-                              return 'Enter a valid email';
+                              return l10n.enterValidEmail;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Birthday',
+                        Text(
+                          l10n.birthday,
                           style: TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
@@ -286,7 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           readOnly: true,
                           onTap: _selectDate,
                           decoration: InputDecoration(
-                            hintText: 'Select your birthday',
+                            hintText: l10n.selectYourBirthday,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(11),
                               borderSide: const BorderSide(
@@ -299,12 +302,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           validator: (val) =>
                               (val == null || val.isEmpty)
-                              ? 'Please select your birthday'
+                              ? l10n.pleaseSelectBirthday
                               : null,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Gender',
+                        Text(
+                          l10n.gender,
                           style: TextStyle(
                             color: Color(0xff121212),
                             fontWeight: FontWeight.w500,
@@ -342,7 +345,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         Icon(Icons.check, color: AppColors.primary, size: 18),
                                       if (_selectedGender == 'male') SizedBox(width: 6),
                                       Text(
-                                        'Male',
+                                        l10n.male,
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -385,7 +388,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         Icon(Icons.check, color: AppColors.primary, size: 18),
                                       if (_selectedGender == 'female') SizedBox(width: 6),
                                       Text(
-                                        'Female',
+                                        l10n.female,
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -413,8 +416,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               elevation: 0,
                             ),
                             onPressed: _submit,
-                            child: const Text(
-                              'Save',
+                            child: Text(
+                              l10n.save,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,

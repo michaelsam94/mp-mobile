@@ -11,6 +11,7 @@ import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'cubit/history_cubit.dart';
 import 'history_model.dart';
 import 'history_repository.dart';
@@ -209,7 +210,7 @@ class HistoryView extends StatelessWidget {
                             onPressed: () {
                               context.read<HistoryCubit>().getChargingHistory();
                             },
-                            child: const Text('Retry'),
+                            child: Text(AppLocalizations.of(context)!.retry),
                           ),
                         ],
                       ),
@@ -237,7 +238,7 @@ class HistoryView extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          "Charging History",
+          AppLocalizations.of(context)!.chargingHistory,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -260,10 +261,10 @@ class HistoryView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            _buildStatsGrid(state.data.summary),
+            _buildStatsGrid(context, state.data.summary),
             const SizedBox(height: 14),
             _buildFilters(context, state),
-            _buildSessionsList(state.displayedSessions),
+            _buildSessionsList(context, state.displayedSessions),
             if (state.displayedSessions.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildDownloadButton(context),
@@ -275,7 +276,7 @@ class HistoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsGrid(HistorySummary summary) {
+  Widget _buildStatsGrid(BuildContext context, HistorySummary summary) {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -286,22 +287,22 @@ class HistoryView extends StatelessWidget {
       children: [
         _buildCard(
           "assets/icons/total_energy.svg",
-          'Total Energy',
+          AppLocalizations.of(context)!.totalEnergy,
           summary.displayTotalKwh,
         ),
         _buildCard(
           "assets/icons/total_cost.svg",
-          'Total Cost',
+          AppLocalizations.of(context)!.totalCost,
           summary.displayTotalCost,
         ),
         _buildCard(
           "assets/icons/total_time.svg",
-          'Total Time',
+          AppLocalizations.of(context)!.totalTime,
           summary.totalDuration,
         ),
         _buildCard(
           "assets/icons/total_sessions.svg",
-          'Total Sessions',
+          AppLocalizations.of(context)!.totalSessions,
           '${summary.totalSessions}',
         ),
       ],
@@ -358,7 +359,7 @@ class HistoryView extends StatelessWidget {
                 value: state.selectedFilter,
                 underline: const SizedBox(),
                 isExpanded: true,
-                items: ['All', 'Active', 'Completed']
+                items: [AppLocalizations.of(context)!.allFilter, AppLocalizations.of(context)!.active, AppLocalizations.of(context)!.completed]
                     .map(
                       (e) => DropdownMenuItem(
                         value: e,
@@ -426,8 +427,8 @@ class HistoryView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Sort By',
+              Text(
+                AppLocalizations.of(context)!.sortBy,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -435,10 +436,10 @@ class HistoryView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ...[
-                'Newest',
-                'Oldest',
-                'Highest Energy',
-                'Lowest Energy',
+                AppLocalizations.of(context)!.newest,
+                AppLocalizations.of(context)!.oldest,
+                AppLocalizations.of(context)!.highestEnergy,
+                AppLocalizations.of(context)!.lowestEnergy,
               ].map((sortType) => ListTile(
                     title: Text(sortType),
                     trailing: currentSort == sortType
@@ -456,7 +457,7 @@ class HistoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionsList(List<ChargingSession> sessions) {
+  Widget _buildSessionsList(BuildContext context, List<ChargingSession> sessions) {
     if (sessions.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(40),
@@ -466,7 +467,7 @@ class HistoryView extends StatelessWidget {
               Icon(Icons.history, size: 60, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
-                'No sessions found',
+                AppLocalizations.of(context)!.noSessionsFound,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -509,7 +510,7 @@ class HistoryView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Total Cost',
+                    AppLocalizations.of(context)!.totalCost,
                     style: TextStyle(color: Colors.grey[700], fontSize: 15),
                   ),
                   Row(
@@ -551,7 +552,7 @@ class HistoryView extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      session.isActive ? 'Active' : 'Completed',
+                      session.isActive ? AppLocalizations.of(context)!.active : AppLocalizations.of(context)!.completed,
                       style: TextStyle(
                         color: session.isActive 
                             ? Colors.orange 
@@ -903,7 +904,7 @@ class HistoryView extends StatelessWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text("PDF downloaded successfully", style: TextStyle(color: Colors.white)),
+                      content: Text(AppLocalizations.of(context)!.pdfDownloadedSuccessfully, style: TextStyle(color: Colors.white)),
                       backgroundColor: Colors.green.shade600,
                       behavior: SnackBarBehavior.fixed,
                       duration: const Duration(seconds: 2),
@@ -950,7 +951,7 @@ class HistoryView extends StatelessWidget {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text("Failed to download PDF", style: TextStyle(color: Colors.white)),
+                      content: Text(AppLocalizations.of(context)!.failedToDownloadPdf, style: TextStyle(color: Colors.white)),
                       backgroundColor: Colors.red.shade700,
                       behavior: SnackBarBehavior.fixed,
                       duration: const Duration(seconds: 3),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/presentation/wallet/cubit/wallet_cubit.dart';
@@ -19,7 +20,7 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final l10n = AppLocalizations.of(context)!;
     WalletCubit.get(context).getWallet();
 
     return Scaffold(
@@ -44,7 +45,7 @@ class WalletScreen extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  "Wallet",
+                  l10n.wallet,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -83,7 +84,7 @@ class WalletScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 6),
                         Text(
-                          "Available Balance""",
+                          l10n.availableBalance,
                           style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 14,
@@ -112,7 +113,7 @@ class WalletScreen extends StatelessWidget {
                               size: 22,
                             ),
                             label: Text(
-                              'Add Credit',
+                              l10n.addCredit,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -164,7 +165,7 @@ class WalletScreen extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      "Manage Cards",
+                                      l10n.manageCards,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -248,7 +249,7 @@ class WalletScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 21.0),
               child: Text(
-                "Transactions",
+                l10n.transactions,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -365,7 +366,7 @@ class WalletScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    isTopUp ? "Credit Added" : "Charging Session",
+                                    isTopUp ? l10n.creditAdded : l10n.chargingSession,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,

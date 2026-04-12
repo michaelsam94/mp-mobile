@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mega_plus/presentation/start/splash_screen.dart';
 import 'package:mega_plus/presentation/profile/edit_profile_screen.dart';
@@ -130,6 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -167,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      "Profile",
+                      l10n.profile,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -224,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           size: 18,
                                         ),
                                         label: Text(
-                                          'Edit',
+                                          l10n.editText,
                                           style: TextStyle(
                                             color: green,
                                             fontWeight: FontWeight.bold,
@@ -293,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Total Charges',
+                                          l10n.totalCharges,
                                           style: TextStyle(
                                             color: Colors.grey[700],
                                             fontSize: 13,
@@ -336,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Points',
+                                          l10n.points,
                                           style: TextStyle(
                                             color: Colors.grey[700],
                                             fontSize: 13,
@@ -367,28 +369,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // Menu Items
                 profileMenu(
                   icon: Icons.credit_card_rounded,
-                  text: "RFID Cards",
+                  text: l10n.rfidCards,
                   onTap: () {
                     context.goTo(RFIDCardsScreen());
                   },
                 ),
                 profileMenu(
                   icon: Icons.settings_outlined,
-                  text: "Setting",
+                  text: l10n.setting,
                   onTap: () {
                     context.goTo(SettingsScreen());
                   },
                 ),
                 profileMenu(
                   icon: Icons.support_agent,
-                  text: "Support/complain",
+                  text: l10n.supportComplain,
                   onTap: () {
                     context.goTo(SupportScreen());
                   },
                 ),
                 profileMenu(
                   icon: Icons.assignment_outlined,
-                  text: "Terms and conditions",
+                  text: l10n.termsConditions,
                   onTap: () {
                     context.goTo(TermsConditionsScreen());
                   },
@@ -413,7 +415,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       size: 24,
                     ),
                     title: Text(
-                      "Log out",
+                      l10n.logOut,
                       style: TextStyle(
                         color: Color(0xffB71C1C),
                         fontWeight: FontWeight.bold,
@@ -428,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Powered by Tadafuq",
+                        l10n.poweredByTadafuq,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -438,8 +440,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 4),
                       Text(
                         appVersion.isNotEmpty && buildNumber.isNotEmpty
-                            ? "Version $appVersion ($buildNumber)"
-                            : "Version",
+                            ? "${l10n.version} $appVersion ($buildNumber)"
+                            : l10n.version,
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                     ],
@@ -473,7 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Icon(Icons.exit_to_app, color: Colors.redAccent, size: 42),
               SizedBox(height: 16),
               Text(
-                'Are you sure you want to log out?',
+                AppLocalizations.of(context)!.areYouSureLogOut,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
@@ -490,7 +492,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       onPressed: () => Navigator.of(ctx).pop(),
                       child: Text(
-                        'Cancel',
+                        AppLocalizations.of(context)!.cancel,
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
@@ -509,7 +511,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onConfirmLogout();
                       },
                       child: Text(
-                        'Logout',
+                        AppLocalizations.of(context)!.logOut,
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

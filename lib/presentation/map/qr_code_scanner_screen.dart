@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/map/start_session_screen.dart';
 import 'package:mega_plus/presentation/profile/cubit/profile_cubit.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -55,14 +56,14 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
           );
           
         } else {
-          context.showErrorMessage("No RFID Card found");
+          context.showErrorMessage(AppLocalizations.of(context)!.noRfidCardFound);
         }
       } else {
-        context.showErrorMessage("Code is invalid");
+        context.showErrorMessage(AppLocalizations.of(context)!.codeIsInvalid);
       }
     } catch (e) {
       print('Error parsing QR Code: $e');
-      context.showErrorMessage("Invalid QR Code format");
+      context.showErrorMessage(AppLocalizations.of(context)!.invalidQrCodeFormat);
       // إعادة تشغيل السكانر
       Future.delayed(Duration(seconds: 2), () {
         controller.start();
@@ -138,7 +139,7 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  isProcessing ? "Processing..." : "Find a code to scan",
+                  isProcessing ? AppLocalizations.of(context)!.processing : AppLocalizations.of(context)!.findCodeToScan,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
