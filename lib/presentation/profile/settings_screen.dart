@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/profile/change_password_screen.dart';
 import 'package:mega_plus/presentation/vehicles/my_vehicles_screen.dart';
@@ -147,6 +149,32 @@ class SettingsScreen extends StatelessWidget {
               subtitle: "0 ${l10n.points}",
               iconColor: green,
               showTrailing: false,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),
+              child: Text(
+                l10n.language,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            BlocBuilder<LocaleCubit, Locale>(
+              builder: (context, locale) {
+                final isArabic = locale.languageCode == 'ar';
+                return settingsItem(
+                  icon: Icons.language,
+                  title: isArabic ? l10n.arabic : l10n.english,
+                  subtitle: isArabic ? l10n.english : l10n.arabic,
+                  iconColor: green,
+                  showTrailing: false,
+                  onTap: () {
+                    LocaleCubit.get(context).toggleLocale();
+                  },
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(left: 21.0, top: 14, bottom: 3),

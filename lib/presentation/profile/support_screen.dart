@@ -95,7 +95,12 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     );
   }
 
-  Widget _buildSupportCard(String label, String value, IconData icon, {VoidCallback? onTap}) {
+  Widget _buildSupportCard(
+    String label,
+    String value,
+    IconData icon, {
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(19),
@@ -129,15 +134,15 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: AppColors.primary,
-                    ),
-                  ),
+                  // SizedBox(height: 5),
+                  // Text(
+                  //   value,
+                  //   style: TextStyle(
+                  //     fontWeight: FontWeight.bold,
+                  //     fontSize: 17,
+                  //     color: AppColors.primary,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -162,7 +167,11 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
     return Icons.link;
   }
 
-  Future<void> _openSupportLink(BuildContext context, String key, String value) async {
+  Future<void> _openSupportLink(
+    BuildContext context,
+    String key,
+    String value,
+  ) async {
     try {
       final k = key.toLowerCase();
       final v = value.trim();
@@ -195,7 +204,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
 
   Widget _buildSupportTab() {
     final cubit = ProfileCubit.get(context);
-    
+
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         if (state is LoadingGetSettingsState) {
@@ -206,7 +215,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             ),
           );
         }
-        
+
         if (state is ErrorGetSettingsState) {
           return Center(
             child: Padding(
@@ -218,7 +227,7 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             ),
           );
         }
-        
+
         // Build support cards from all settings (key-value pairs)
         List<Widget> supportCards = [];
 
@@ -250,12 +259,8 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             ),
           );
         }
-        
-        return SingleChildScrollView(
-          child: Column(
-            children: supportCards,
-          ),
-        );
+
+        return SingleChildScrollView(child: Column(children: supportCards));
       },
     );
   }

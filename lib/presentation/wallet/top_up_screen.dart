@@ -19,7 +19,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
   final Color green = Color(0xFF07C355);
   final Color bgGreen = Color(0xFFE6F9EE);
   int selectedAmount = 50;
-  List<int> amounts = [50, 100, 150, 200];
+  List<int> amounts = [100, 200, 500, 1000];
   final TextEditingController _customAmount = TextEditingController();
   String? selectedCardToken; // null means "New Card"
 
@@ -441,7 +441,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                           ),
                                         ),
                                         child: Text(
-                                          AppLocalizations.of(context)!.defaultText,
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.defaultText,
                                           style: TextStyle(
                                             color: green,
                                             fontSize: 12,
@@ -479,7 +481,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   // Payment requires 3DS - open redirection URL
                   await context.goTo(
                     PayWithUrlScreen(
-                      checkoutUrl: WalletCubit.get(context).redirectionUrl ?? "",
+                      checkoutUrl:
+                          WalletCubit.get(context).redirectionUrl ?? "",
                     ),
                   );
                   // Refresh balance and go back to wallet screen
@@ -487,7 +490,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   Navigator.pop(context);
                 } else if (state is SuccessPayWithSavedCardState) {
                   // Payment with saved card successful (no redirect needed)
-                  context.showSuccessMessage(AppLocalizations.of(context)!.paymentSuccessful);
+                  context.showSuccessMessage(
+                    AppLocalizations.of(context)!.paymentSuccessful,
+                  );
                   // Refresh balance and go back to wallet screen
                   WalletCubit.get(context).getWallet();
                   Navigator.pop(context);
