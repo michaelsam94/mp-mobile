@@ -18,7 +18,8 @@ class TopUpScreen extends StatefulWidget {
 class _TopUpScreenState extends State<TopUpScreen> {
   final Color green = Color(0xFF07C355);
   final Color bgGreen = Color(0xFFE6F9EE);
-  int selectedAmount = 50;
+  int selectedAmount = 100;
+  double total = (((100 * 1.25) / 100) + 1.7) + 100;
   List<int> amounts = [100, 200, 500, 1000];
   final TextEditingController _customAmount = TextEditingController();
   String? selectedCardToken; // null means "New Card"
@@ -32,6 +33,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    total = (((selectedAmount * 1.25) / 100) + 1.7) + selectedAmount;
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -465,6 +467,79 @@ class _TopUpScreenState extends State<TopUpScreen> {
             ),
 
             SizedBox(height: 40),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 2,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Color(0xFFE9E9E9)),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(AppLocalizations.of(context)!.amount),
+                        Text(
+                          "$selectedAmount ${AppLocalizations.of(context)!.egp}",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(AppLocalizations.of(context)!.tax),
+                        Text(
+                          "${((selectedAmount * 1.25) / 100) + 1.7} ${AppLocalizations.of(context)!.egp}",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 12),
+                    Divider(color: Colors.grey),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.totalLabel,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "${(((selectedAmount * 1.25) / 100) + 1.7) + selectedAmount} ${AppLocalizations.of(context)!.egp}",
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 40),
             // Submit button
             BlocConsumer<WalletCubit, WalletState>(
               listener: (context, state) async {
@@ -536,8 +611,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                             )
                           : Text(
                               selectedCardToken != null
-                                  ? 'Pay $selectedAmount EGP'
-                                  : 'Top-Up $selectedAmount EGP',
+                                  ? 'Pay $total EGP'
+                                  : 'Top-Up $total EGP',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

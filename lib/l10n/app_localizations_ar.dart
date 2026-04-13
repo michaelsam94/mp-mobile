@@ -922,4 +922,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveCard => 'حفظ البطاقة';
+
+  @override
+  String get egp => 'ج.م';
+
+  @override
+  String get amount => 'المبلغ';
+
+  @override
+  String get tax => 'الضريبة';
+
+  @override
+  String get totalLabel => 'الإجمالي';
+
+  @override
+  String get failedToLoadSession => 'فشل تحميل جلسة الشحن';
+
+  @override
+  String get errorLoadingSession => 'خطأ في تحميل جلسة الشحن';
+
+  @override
+  String get errorAccessingStorage => 'خطأ في الوصول إلى التخزين';
+
+  @override
+  String get unableToOpenPdf => 'تعذر فتح ملف PDF';
+
+  @override
+  String get errorOpeningPdf => 'خطأ في فتح PDF';
+
+  @override
+  String get errorDownloadingPdf => 'خطأ في تنزيل PDF';
+
+  @override
+  String get pleaseAgreePrivacy => 'يرجى الموافقة على سياسة الخصوصية أولاً';
+
+  @override
+  String get pleaseSelectCategory => 'يرجى اختيار فئة';
+
+  @override
+  String get pleaseEnterTitle => 'يرجى إدخال عنوان';
+
+  @override
+  String get pleaseEnterDescription => 'يرجى إدخال وصف';
+
+  @override
+  String get iAcknowledgePrivacy => 'أقر بدقة المعلومات وأوافق على ';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
 }

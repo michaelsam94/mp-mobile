@@ -913,5 +913,53 @@
   "@setAsDefaultCard2": {},
 
   "saveCard": "Save Card",
-  "@saveCard": {}
+  "@saveCard": {},
+
+  "egp": "EGP",
+  "@egp": {},
+
+  "amount": "Amount",
+  "@amount": {},
+
+  "tax": "Tax",
+  "@tax": {},
+
+  "totalLabel": "Total",
+  "@totalLabel": {},
+
+  "failedToLoadSession": "Failed to load charging session",
+  "@failedToLoadSession": {},
+
+  "errorLoadingSession": "Error loading charging session",
+  "@errorLoadingSession": {},
+
+  "errorAccessingStorage": "Error accessing storage",
+  "@errorAccessingStorage": {},
+
+  "unableToOpenPdf": "Unable to open PDF file",
+  "@unableToOpenPdf": {},
+
+  "errorOpeningPdf": "Error opening PDF",
+  "@errorOpeningPdf": {},
+
+  "errorDownloadingPdf": "Error downloading PDF",
+  "@errorDownloadingPdf": {},
+
+  "pleaseAgreePrivacy": "Please agree to the privacy policy first",
+  "@pleaseAgreePrivacy": {},
+
+  "pleaseSelectCategory": "Please select a category",
+  "@pleaseSelectCategory": {},
+
+  "pleaseEnterTitle": "Please enter a title",
+  "@pleaseEnterTitle": {},
+
+  "pleaseEnterDescription": "Please enter a description",
+  "@pleaseEnterDescription": {},
+
+  "iAcknowledgePrivacy": "I acknowledge the accuracy of the information and agree to the ",
+  "@iAcknowledgePrivacy": {},
+
+  "privacyPolicy": "privacy policy",
+  "@privacyPolicy": {}
 }

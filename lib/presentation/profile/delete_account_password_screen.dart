@@ -90,8 +90,8 @@ class _DeleteAccountPasswordScreenState
 
                       // Password Label
                       Text(
-                        'Password',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.password,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF212121),

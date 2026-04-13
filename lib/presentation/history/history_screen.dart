@@ -359,21 +359,20 @@ class HistoryView extends StatelessWidget {
                 value: state.selectedFilter,
                 underline: const SizedBox(),
                 isExpanded: true,
-                items: [AppLocalizations.of(context)!.allFilter, AppLocalizations.of(context)!.active, AppLocalizations.of(context)!.completed]
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(
-                          e,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff606060),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                items: [
+                  DropdownMenuItem(
+                    value: HistoryCubit.filterAll,
+                    child: Text(AppLocalizations.of(context)!.allFilter, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff606060))),
+                  ),
+                  DropdownMenuItem(
+                    value: HistoryCubit.filterActive,
+                    child: Text(AppLocalizations.of(context)!.active, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff606060))),
+                  ),
+                  DropdownMenuItem(
+                    value: HistoryCubit.filterCompleted,
+                    child: Text(AppLocalizations.of(context)!.completed, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xff606060))),
+                  ),
+                ],
                 onChanged: (value) {
                   if (value != null) {
                     context.read<HistoryCubit>().applyFilter(value);
@@ -399,7 +398,7 @@ class HistoryView extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    state.selectedSort,
+                    _getSortLabel(context, state.selectedSort),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -414,7 +413,25 @@ class HistoryView extends StatelessWidget {
     );
   }
 
+  String _getSortLabel(BuildContext context, String sortKey) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (sortKey) {
+      case HistoryCubit.sortNewest: return l10n.newest;
+      case HistoryCubit.sortOldest: return l10n.oldest;
+      case HistoryCubit.sortHighestEnergy: return l10n.highestEnergy;
+      case HistoryCubit.sortLowestEnergy: return l10n.lowestEnergy;
+      default: return l10n.newest;
+    }
+  }
+
   void _showSortOptions(BuildContext context, String currentSort) {
+    final l10n = AppLocalizations.of(context)!;
+    final sortOptions = [
+      (HistoryCubit.sortNewest, l10n.newest),
+      (HistoryCubit.sortOldest, l10n.oldest),
+      (HistoryCubit.sortHighestEnergy, l10n.highestEnergy),
+      (HistoryCubit.sortLowestEnergy, l10n.lowestEnergy),
+    ];
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -428,25 +445,17 @@ class HistoryView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context)!.sortBy,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                l10n.sortBy,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              ...[
-                AppLocalizations.of(context)!.newest,
-                AppLocalizations.of(context)!.oldest,
-                AppLocalizations.of(context)!.highestEnergy,
-                AppLocalizations.of(context)!.lowestEnergy,
-              ].map((sortType) => ListTile(
-                    title: Text(sortType),
-                    trailing: currentSort == sortType
+              ...sortOptions.map((option) => ListTile(
+                    title: Text(option.$2),
+                    trailing: currentSort == option.$1
                         ? const Icon(Icons.check, color: AppColors.primary)
                         : null,
                     onTap: () {
-                      context.read<HistoryCubit>().applySort(sortType);
+                      context.read<HistoryCubit>().applySort(option.$1);
                       Navigator.pop(sheetContext);
                     },
                   )),
@@ -525,7 +534,7 @@ class HistoryView extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        'egp',
+                        AppLocalizations.of(context)!.egp,
                         style: TextStyle(color: Colors.grey[700], fontSize: 17),
                       ),
                     ],
@@ -663,7 +672,7 @@ class HistoryView extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                response.data['message'] ?? 'Failed to load charging session',
+                response.data['message'] ?? AppLocalizations.of(context)!.failedToLoadSession,
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.red.shade700,
@@ -684,7 +693,7 @@ class HistoryView extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Error loading charging session: ${e.toString()}',
+              AppLocalizations.of(context)!.errorLoadingSession,
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red.shade700,
@@ -751,7 +760,7 @@ class HistoryView extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                response.data['message'] ?? 'Failed to load current charging session',
+                response.data['message'] ?? AppLocalizations.of(context)!.failedToLoadSession,
                 style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.red.shade700,
@@ -772,7 +781,7 @@ class HistoryView extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Error loading charging session: ${e.toString()}',
+              AppLocalizations.of(context)!.errorLoadingSession,
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red.shade700,
@@ -798,9 +807,9 @@ class HistoryView extends StatelessWidget {
             color: Colors.white,
             size: 27,
           ),
-          label: const Text(
-            'Download Report (PDF)',
-            style: TextStyle(
+          label: Text(
+            AppLocalizations.of(context)!.downloadReport,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 19,
               color: Colors.white,
@@ -869,7 +878,7 @@ class HistoryView extends StatelessWidget {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Error accessing storage: ${e2.toString()}", style: const TextStyle(color: Colors.white)),
+                          content: Text(AppLocalizations.of(context)!.errorAccessingStorage, style: const TextStyle(color: Colors.white)),
                           backgroundColor: Colors.red.shade700,
                           behavior: SnackBarBehavior.fixed,
                           duration: const Duration(seconds: 3),
@@ -920,7 +929,7 @@ class HistoryView extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text("Unable to open PDF file. File saved at: $filePath", style: const TextStyle(color: Colors.white)),
+                          content: Text(AppLocalizations.of(context)!.unableToOpenPdf, style: const TextStyle(color: Colors.white)),
                           backgroundColor: Colors.red.shade700,
                           behavior: SnackBarBehavior.fixed,
                           duration: const Duration(seconds: 3),
@@ -937,7 +946,7 @@ class HistoryView extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("Error opening PDF: ${e.toString()}", style: const TextStyle(color: Colors.white)),
+                        content: Text(AppLocalizations.of(context)!.errorOpeningPdf, style: const TextStyle(color: Colors.white)),
                         backgroundColor: Colors.red.shade700,
                         behavior: SnackBarBehavior.fixed,
                         duration: const Duration(seconds: 3),
@@ -970,7 +979,7 @@ class HistoryView extends StatelessWidget {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Error downloading PDF: ${e.toString()}", style: const TextStyle(color: Colors.white)),
+                    content: Text(AppLocalizations.of(context)!.errorDownloadingPdf, style: const TextStyle(color: Colors.white)),
                     backgroundColor: Colors.red.shade700,
                     behavior: SnackBarBehavior.fixed,
                     duration: const Duration(seconds: 3),

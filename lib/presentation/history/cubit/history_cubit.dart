@@ -11,21 +11,30 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   HistoryCubit(this.repository) : super(HistoryInitial());
 
+  // Internal filter keys (language-independent)
+  static const String filterAll = 'all';
+  static const String filterActive = 'active';
+  static const String filterCompleted = 'completed';
+
+  // Internal sort keys (language-independent)
+  static const String sortNewest = 'newest';
+  static const String sortOldest = 'oldest';
+  static const String sortHighestEnergy = 'highestEnergy';
+  static const String sortLowestEnergy = 'lowestEnergy';
+
   Future<void> getChargingHistory() async {
     emit(HistoryLoading());
     try {
       final response = await repository.getChargingHistory();
       if (response.success) {
         final validSessions = _getValidSessions(response.data.sessions);
-        // Apply default filter (All) and sort (Newest)
-        final filteredSessions = validSessions; // All by default
-        final sortedSessions = _applySorting(filteredSessions, 'Newest');
-        
+        final sortedSessions = _applySorting(validSessions, sortNewest);
+
         emit(HistorySuccess(
           data: response.data,
           displayedSessions: sortedSessions,
-          selectedFilter: 'All',
-          selectedSort: 'Newest',
+          selectedFilter: filterAll,
+          selectedSort: sortNewest,
         ));
       } else {
         emit(HistoryError(response.message));
@@ -48,13 +57,13 @@ class HistoryCubit extends Cubit<HistoryState> {
       List<ChargingSession> filteredSessions;
 
       switch (filter) {
-        case 'Active':
+        case filterActive:
           filteredSessions = validSessions.where((s) => s.status == 'on').toList();
           break;
-        case 'Completed':
+        case filterCompleted:
           filteredSessions = validSessions.where((s) => s.status == 'off').toList();
           break;
-        default: // All
+        default: // filterAll
           filteredSessions = validSessions;
       }
 
@@ -76,13 +85,13 @@ class HistoryCubit extends Cubit<HistoryState> {
       List<ChargingSession> filteredSessions;
 
       switch (currentState.selectedFilter) {
-        case 'Active':
+        case filterActive:
           filteredSessions = validSessions.where((s) => s.status == 'on').toList();
           break;
-        case 'Completed':
+        case filterCompleted:
           filteredSessions = validSessions.where((s) => s.status == 'off').toList();
           break;
-        default: // All
+        default: // filterAll
           filteredSessions = validSessions;
       }
 
@@ -100,7 +109,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     final sortedList = List<ChargingSession>.from(sessions);
 
     switch (sortType) {
-      case 'Newest':
+      case sortNewest:
         sortedList.sort((a, b) {
           if (a.startTime == null || b.startTime == null) {
             if (a.startTime == null && b.startTime == null) return 0;
@@ -116,7 +125,7 @@ class HistoryCubit extends Cubit<HistoryState> {
           }
         });
         break;
-      case 'Oldest':
+      case sortOldest:
         sortedList.sort((a, b) {
           if (a.startTime == null || b.startTime == null) {
             if (a.startTime == null && b.startTime == null) return 0;
@@ -132,14 +141,14 @@ class HistoryCubit extends Cubit<HistoryState> {
           }
         });
         break;
-      case 'Highest Energy':
+      case sortHighestEnergy:
         sortedList.sort((a, b) {
           final aKwh = double.tryParse(a.kwh ?? '0') ?? 0.0;
           final bKwh = double.tryParse(b.kwh ?? '0') ?? 0.0;
           return bKwh.compareTo(aKwh); // highest first
         });
         break;
-      case 'Lowest Energy':
+      case sortLowestEnergy:
         sortedList.sort((a, b) {
           final aKwh = double.tryParse(a.kwh ?? '0') ?? 0.0;
           final bKwh = double.tryParse(b.kwh ?? '0') ?? 0.0;

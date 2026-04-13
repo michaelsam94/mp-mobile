@@ -443,12 +443,11 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text:
-                            "I acknowledge the accuracy of the information and agree to the ",
-                        style: TextStyle(fontSize: 15),
+                        text: AppLocalizations.of(context)!.iAcknowledgePrivacy,
+                        style: const TextStyle(fontSize: 15),
                       ),
                       TextSpan(
-                        text: "privacy policy",
+                        text: AppLocalizations.of(context)!.privacyPolicy,
                         style: TextStyle(
                           fontSize: 15,
                           color: green,
@@ -473,19 +472,19 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
             child: ElevatedButton(
               onPressed: () {
                 if (!ProfileCubit.get(context).agreePrivacy) {
-                  context.showErrorMessage("Please agree on privacy first");
+                  context.showErrorMessage(AppLocalizations.of(context)!.pleaseAgreePrivacy);
                   return;
                 }
                 if (ProfileCubit.get(context).selectedCategory == null) {
-                  context.showErrorMessage("Please select cateogry");
+                  context.showErrorMessage(AppLocalizations.of(context)!.pleaseSelectCategory);
                   return;
                 }
                 if (titleController.text.isEmpty) {
-                  context.showErrorMessage("Please enter title");
+                  context.showErrorMessage(AppLocalizations.of(context)!.pleaseEnterTitle);
                   return;
                 }
                 if (descController.text.isEmpty) {
-                  context.showErrorMessage("Please enter description");
+                  context.showErrorMessage(AppLocalizations.of(context)!.pleaseEnterDescription);
                   return;
                 }
 

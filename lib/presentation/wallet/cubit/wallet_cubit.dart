@@ -24,33 +24,37 @@ class WalletCubit extends Cubit<WalletState> {
       if (response.statusCode == 200 && response.data["success"] == true) {
         var data = response.data["data"];
         List<WalletTransactionModel> allTransactions = [];
-        
+
         // Parse topup transactions
         if (data["topup_transactions"] != null) {
           var topupList = data["topup_transactions"] as List;
           allTransactions.addAll(
-            topupList.map((e) => WalletTransactionModel.fromTopUp(
-              TopUpTransactionResponseModel.fromJson(e),
-            )),
+            topupList.map(
+              (e) => WalletTransactionModel.fromTopUp(
+                TopUpTransactionResponseModel.fromJson(e),
+              ),
+            ),
           );
         }
-        
+
         // Parse charging transactions
         if (data["charging_transactions"] != null) {
           var chargingList = data["charging_transactions"] as List;
           allTransactions.addAll(
-            chargingList.map((e) => WalletTransactionModel.fromCharging(
-              ChargingTransactionResponseModel.fromJson(e),
-            )),
+            chargingList.map(
+              (e) => WalletTransactionModel.fromCharging(
+                ChargingTransactionResponseModel.fromJson(e),
+              ),
+            ),
           );
         }
-        
+
         // Sort by date (most recent first) - assuming createdAt is in format that can be compared
         allTransactions.sort((a, b) {
           // Simple string comparison - you might want to parse dates properly
           return (b.createdAt ?? '').compareTo(a.createdAt ?? '');
         });
-        
+
         transactions = allTransactions;
         emit(SuccessGetTransactionsWalletState());
       } else {
@@ -86,7 +90,12 @@ class WalletCubit extends Cubit<WalletState> {
     try {
       var response = await DioHelper.getData(
         url: EndPoints.getPayUrl,
-        query: {"amount": amount},
+        query: {
+          "amount": amount,
+          "tax_amount": 1.25,
+          "tax_percentage": (amount * 1.25) / 100,
+          "fixed_vat": 1.7,
+        },
         // data: FormData.fromMap({"amount": amount}),
       );
       print(response.data.toString());

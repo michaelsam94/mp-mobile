@@ -137,8 +137,8 @@ class _DeleteAccountReasonScreenState extends State<DeleteAccountReasonScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Continue',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.continueText,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,

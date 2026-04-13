@@ -595,5 +595,37 @@
 
   "setAsDefaultCard2": "تعيين كبطاقة افتراضية",
 
-  "saveCard": "حفظ البطاقة"
+  "saveCard": "حفظ البطاقة",
+
+  "egp": "ج.م",
+
+  "amount": "المبلغ",
+
+  "tax": "الضريبة",
+
+  "totalLabel": "الإجمالي",
+
+  "failedToLoadSession": "فشل تحميل جلسة الشحن",
+
+  "errorLoadingSession": "خطأ في تحميل جلسة الشحن",
+
+  "errorAccessingStorage": "خطأ في الوصول إلى التخزين",
+
+  "unableToOpenPdf": "تعذر فتح ملف PDF",
+
+  "errorOpeningPdf": "خطأ في فتح PDF",
+
+  "errorDownloadingPdf": "خطأ في تنزيل PDF",
+
+  "pleaseAgreePrivacy": "يرجى الموافقة على سياسة الخصوصية أولاً",
+
+  "pleaseSelectCategory": "يرجى اختيار فئة",
+
+  "pleaseEnterTitle": "يرجى إدخال عنوان",
+
+  "pleaseEnterDescription": "يرجى إدخال وصف",
+
+  "iAcknowledgePrivacy": "أقر بدقة المعلومات وأوافق على ",
+
+  "privacyPolicy": "سياسة الخصوصية"
 }

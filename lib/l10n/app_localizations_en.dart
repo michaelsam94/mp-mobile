@@ -924,4 +924,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveCard => 'Save Card';
+
+  @override
+  String get egp => 'EGP';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get tax => 'Tax';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get failedToLoadSession => 'Failed to load charging session';
+
+  @override
+  String get errorLoadingSession => 'Error loading charging session';
+
+  @override
+  String get errorAccessingStorage => 'Error accessing storage';
+
+  @override
+  String get unableToOpenPdf => 'Unable to open PDF file';
+
+  @override
+  String get errorOpeningPdf => 'Error opening PDF';
+
+  @override
+  String get errorDownloadingPdf => 'Error downloading PDF';
+
+  @override
+  String get pleaseAgreePrivacy => 'Please agree to the privacy policy first';
+
+  @override
+  String get pleaseSelectCategory => 'Please select a category';
+
+  @override
+  String get pleaseEnterTitle => 'Please enter a title';
+
+  @override
+  String get pleaseEnterDescription => 'Please enter a description';
+
+  @override
+  String get iAcknowledgePrivacy => 'I acknowledge the accuracy of the information and agree to the ';
+
+  @override
+  String get privacyPolicy => 'privacy policy';
 }

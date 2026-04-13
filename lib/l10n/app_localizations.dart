@@ -1867,6 +1867,23 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Card'**
   String get saveCard;
+
+  String get egp;
+  String get amount;
+  String get tax;
+  String get totalLabel;
+  String get failedToLoadSession;
+  String get errorLoadingSession;
+  String get errorAccessingStorage;
+  String get unableToOpenPdf;
+  String get errorOpeningPdf;
+  String get errorDownloadingPdf;
+  String get pleaseAgreePrivacy;
+  String get pleaseSelectCategory;
+  String get pleaseEnterTitle;
+  String get pleaseEnterDescription;
+  String get iAcknowledgePrivacy;
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate
