@@ -1,6 +1,7 @@
 class MapStationResponseModel {
   int? id;
   String? name;
+  String? nameAr;
   String? latitude;
   String? longitude;
   String? status;
@@ -14,6 +15,7 @@ class MapStationResponseModel {
   MapStationResponseModel({
     this.id,
     this.name,
+    this.nameAr,
     this.latitude,
     this.longitude,
     this.status,
@@ -28,6 +30,7 @@ class MapStationResponseModel {
   MapStationResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'].toString();
+    nameAr = json['name_ar']?.toString();
     latitude = json['latitude'].toString();
     longitude = json['longitude'].toString();
     status = json['status'];
@@ -43,6 +46,7 @@ class MapStationResponseModel {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['name'] = name;
+    data['name_ar'] = nameAr;
     data['latitude'] = latitude;
     data['longitude'] = longitude;
     data['status'] = status;

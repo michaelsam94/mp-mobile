@@ -3,17 +3,30 @@ import 'package:mega_plus/core/helpers/network/end_points.dart';
 class TipResponseModel {
   int? id;
   String? title;
+  String? titleAr;
   String? description;
+  String? descriptionAr;
   int? sort;
   List<TipMedia>? media;
   String? mediaUrl;
 
-  TipResponseModel({this.id, this.title, this.description, this.sort, this.media, this.mediaUrl});
+  TipResponseModel({
+    this.id,
+    this.title,
+    this.description,
+    this.sort,
+    this.media,
+    this.mediaUrl,
+    this.titleAr,
+    this.descriptionAr,
+  });
 
   TipResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
+    titleAr = json['title_ar'];
     description = json['description'];
+    descriptionAr = json['description_ar'];
     sort = json['sort'];
     mediaUrl = json['media_url'];
     if (json['media'] != null) {

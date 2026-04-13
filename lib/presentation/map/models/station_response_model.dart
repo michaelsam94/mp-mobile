@@ -1,6 +1,7 @@
 class StationResponseModel {
   int? id;
   String? name;
+  String? nameAr;
   String? address;
   String? city;
   double? latitude;
@@ -15,6 +16,7 @@ class StationResponseModel {
   StationResponseModel({
     this.id,
     this.name,
+    this.nameAr,
     this.address,
     this.city,
     this.latitude,
@@ -30,6 +32,7 @@ class StationResponseModel {
   StationResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
+    nameAr = json['name_ar'];
     address = json['address'];
     city = json['city'];
     latitude = json['latitude'];

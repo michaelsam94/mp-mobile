@@ -6,6 +6,7 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/login/login_screen.dart';
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:mega_plus/presentation/onboarding/cubit/on_boarding_cubit.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -23,6 +24,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = LocaleCubit.get(context).isArabic;
     final cubit = OnBoardingCubit.get(context);
     cubit.getData();
     return Scaffold(
@@ -121,7 +123,7 @@ class OnboardingScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            currentTip.title ?? "",
+                            (isArabic ? currentTip.titleAr : currentTip.title) ?? "",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 30,
@@ -131,7 +133,7 @@ class OnboardingScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 6),
                           Text(
-                            currentTip.description ?? "",
+                            (isArabic ? currentTip.descriptionAr : currentTip.description) ?? "",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 16, color: Color(0xff606060)),
                           ),

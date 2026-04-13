@@ -6,6 +6,7 @@ import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
 import 'package:mega_plus/presentation/map/station_details_cubit/station_details_cubit.dart';
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StationDetailsSheet extends StatelessWidget {
@@ -207,6 +208,7 @@ class StationDetailsSheet extends StatelessWidget {
 
         if (state is SuccessStationDetailsState) {
           final station = state.station;
+          final isArabic = LocaleCubit.get(context).isArabic;
           return Container(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.9,
@@ -287,7 +289,7 @@ class StationDetailsSheet extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  station.name ?? 'Unknown Station',
+                                  (isArabic ? station.nameAr : station.name) ?? 'Unknown Station',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 17,
