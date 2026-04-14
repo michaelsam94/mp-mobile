@@ -970,4 +970,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String helloUser(String name) {
+    return 'مرحباً، $name';
+  }
+
+  @override
+  String get complaintCategory => 'فئة الشكوى *';
+
+  @override
+  String get errorStoppingCharging => 'خطأ في إيقاف الشحن';
+
+  @override
+  String get errorProcessingUpdate => 'خطأ في معالجة التحديث';
 }

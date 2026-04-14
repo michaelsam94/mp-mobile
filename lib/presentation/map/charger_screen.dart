@@ -165,7 +165,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Error processing update: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                  content: Text(AppLocalizations.of(context)!.errorProcessingUpdate, style: TextStyle(color: Colors.white)),
                   backgroundColor: Colors.red.shade700,
                   behavior: SnackBarBehavior.fixed,
                   duration: Duration(seconds: 3),
@@ -343,7 +343,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("Error accessing storage: ${e2.toString()}", style: TextStyle(color: Colors.white)),
+                        content: Text(AppLocalizations.of(context)!.errorAccessingStorage, style: TextStyle(color: Colors.white)),
                         backgroundColor: Colors.red.shade700,
                         behavior: SnackBarBehavior.fixed,
                         duration: Duration(seconds: 3),
@@ -394,7 +394,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text("Unable to open PDF file. File saved at: $filePath", style: TextStyle(color: Colors.white)),
+                        content: Text(AppLocalizations.of(context)!.unableToOpenPdf, style: TextStyle(color: Colors.white)),
                         backgroundColor: Colors.red.shade700,
                         behavior: SnackBarBehavior.fixed,
                         duration: Duration(seconds: 3),
@@ -411,7 +411,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Error opening PDF: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                      content: Text(AppLocalizations.of(context)!.errorOpeningPdf, style: TextStyle(color: Colors.white)),
                       backgroundColor: Colors.red.shade700,
                       behavior: SnackBarBehavior.fixed,
                       duration: Duration(seconds: 3),
@@ -448,7 +448,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Error downloading PDF: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                  content: Text(AppLocalizations.of(context)!.errorDownloadingPdf, style: TextStyle(color: Colors.white)),
                   backgroundColor: Colors.red.shade700,
                   behavior: SnackBarBehavior.fixed,
                   duration: Duration(seconds: 3),
@@ -617,7 +617,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("Error: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                content: Text(AppLocalizations.of(context)!.errorOccurred, style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.red.shade700,
                 behavior: SnackBarBehavior.fixed,
                 duration: Duration(seconds: 3),
@@ -676,7 +676,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Error stopping charging: ${e.toString()}", style: TextStyle(color: Colors.white)),
+                    content: Text(AppLocalizations.of(context)!.errorStoppingCharging, style: TextStyle(color: Colors.white)),
                     backgroundColor: Colors.red.shade700,
                     behavior: SnackBarBehavior.fixed,
                     duration: Duration(seconds: 3),

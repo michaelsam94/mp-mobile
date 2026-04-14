@@ -182,7 +182,7 @@ class _MapScreenState extends State<MapScreen> {
                             color: Colors.red,
                           ),
                           SizedBox(height: 16),
-                          Text('Error: ${state.message}'),
+                          Text(AppLocalizations.of(context)!.errorOccurred),
                           SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => cubit.initData(),

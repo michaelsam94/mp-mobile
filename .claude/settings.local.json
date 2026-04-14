@@ -11,7 +11,8 @@
       "Bash(grep -rn \"\\\\\"[A-Z][a-zA-Z ]\\\\{3,\\\\}\\\\\"\" d:/projects/mp-mobile/lib/presentation/)",
       "Bash(grep -rn \"\\\\\"[A-Z][a-zA-Z ]\\\\{3,\\\\}\\\\\"\" d:/projects/mp-mobile/lib/presentation/vehicles/current_vehicle_charging_screen.dart)",
       "Bash(grep -rn \"\\\\\"[A-Z][a-zA-Z ]\\\\{4,\\\\}\\\\\"\" d:/projects/mp-mobile/lib/presentation/)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(grep -v \"l10n\\\\|//\")"
     ]
   }
 }

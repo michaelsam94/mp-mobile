@@ -968,8 +968,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterDescription => 'Please enter a description';
 
   @override
-  String get iAcknowledgePrivacy => 'I acknowledge the accuracy of the information and agree to the ';
+  String get iAcknowledgePrivacy =>
+      'I acknowledge the accuracy of the information and agree to the ';
 
   @override
   String get privacyPolicy => 'privacy policy';
+
+  @override
+  String helloUser(String name) {
+    return 'Hello, $name';
+  }
+
+  @override
+  String get complaintCategory => 'Complaint category *';
+
+  @override
+  String get errorStoppingCharging => 'Error stopping charging';
+
+  @override
+  String get errorProcessingUpdate => 'Error processing update';
 }

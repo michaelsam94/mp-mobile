@@ -264,7 +264,7 @@ class StationDetailsSheet extends StatelessWidget {
                       SizedBox(height: 18),
                       Row(
                         children: [
-                          _statusBadge(_formatStatus(station.status ?? 'available')),
+                          _statusBadge(context, _formatStatus(context, station.status ?? 'available')),
                           SizedBox(width: 12),
                           Text(
                             AppLocalizations.of(context)!.opens24Hours,
@@ -464,41 +464,38 @@ class StationDetailsSheet extends StatelessWidget {
     }
   }
 
-  String _formatStatus(String? status) {
-    if (status == null) return 'Available';
-    // Convert API status format to display format
+  String _formatStatus(BuildContext context, String? status) {
+    final l10n = AppLocalizations.of(context)!;
+    if (status == null) return l10n.available;
     switch (status.toLowerCase()) {
       case 'available':
-        return 'Available';
+        return l10n.available;
       case 'inuse':
       case 'in_use':
-        return 'In Use';
+        return l10n.inUse;
       case 'unavailable':
-        return 'Unavailable';
+        return l10n.unavailable;
       default:
-        return status; // Return as-is if unknown format
+        return status;
     }
   }
 
-  Widget _statusBadge(String status) {
+  Widget _statusBadge(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
     Color colorBG;
     Color colorText;
-    switch (status) {
-      case 'Available':
-        colorText = Color(0xff058A3C);
-        colorBG = Color(0xffE6F9EE);
-        break;
-      case 'In Use':
-        colorText = Color(0xff1261FF);
-        colorBG = Color(0xffE8EFFF);
-        break;
-      case 'Unavailable':
-        colorText = Color(0xffC31D07);
-        colorBG = Color(0xffFFEAE7);
-        break;
-      default:
-        colorText = Colors.grey.shade300;
-        colorBG = Colors.grey.shade300;
+    if (status == l10n.available) {
+      colorText = Color(0xff058A3C);
+      colorBG = Color(0xffE6F9EE);
+    } else if (status == l10n.inUse) {
+      colorText = Color(0xff1261FF);
+      colorBG = Color(0xffE8EFFF);
+    } else if (status == l10n.unavailable) {
+      colorText = Color(0xffC31D07);
+      colorBG = Color(0xffFFEAE7);
+    } else {
+      colorText = Colors.grey.shade300;
+      colorBG = Colors.grey.shade300;
     }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -715,41 +712,38 @@ class ConnectorCard extends StatelessWidget {
     return 'assets/images/${prefix}_$statusKey.png';
   }
 
-  String _formatConnectorStatus(String? status) {
-    if (status == null) return 'Available';
-    // Convert API status format to display format
+  String _formatConnectorStatus(BuildContext context, String? status) {
+    final l10n = AppLocalizations.of(context)!;
+    if (status == null) return l10n.available;
     switch (status.toLowerCase()) {
       case 'available':
-        return 'Available';
+        return l10n.available;
       case 'inuse':
       case 'in_use':
-        return 'In Use';
+        return l10n.inUse;
       case 'unavailable':
-        return 'Unavailable';
+        return l10n.unavailable;
       default:
-        return status; // Return as-is if unknown format
+        return status;
     }
   }
 
-  Widget _connectorStatusBadge(String status) {
+  Widget _connectorStatusBadge(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
     Color colorBG;
     Color colorText;
-    switch (status) {
-      case 'Available':
-        colorText = Color(0xff058A3C);
-        colorBG = Color(0xffE6F9EE);
-        break;
-      case 'In Use':
-        colorText = Color(0xff1261FF);
-        colorBG = Color(0xffE8EFFF);
-        break;
-      case 'Unavailable':
-        colorText = Color(0xffC31D07);
-        colorBG = Color(0xffFFEAE7);
-        break;
-      default:
-        colorText = Colors.grey.shade300;
-        colorBG = Colors.grey.shade300;
+    if (status == l10n.available) {
+      colorText = Color(0xff058A3C);
+      colorBG = Color(0xffE6F9EE);
+    } else if (status == l10n.inUse) {
+      colorText = Color(0xff1261FF);
+      colorBG = Color(0xffE8EFFF);
+    } else if (status == l10n.unavailable) {
+      colorText = Color(0xffC31D07);
+      colorBG = Color(0xffFFEAE7);
+    } else {
+      colorText = Colors.grey.shade300;
+      colorBG = Colors.grey.shade300;
     }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -804,7 +798,7 @@ class ConnectorCard extends StatelessWidget {
                 ),
                 Text(
                   gun.price != null
-                    ? "${double.tryParse(gun.price!)?.toStringAsFixed(2) ?? gun.price} EGP/KW"
+                    ? "${double.tryParse(gun.price!)?.toStringAsFixed(2) ?? gun.price} ${AppLocalizations.of(context)!.egp}/KW"
                     : AppLocalizations.of(context)!.priceNotAvailable,
                   style: TextStyle(
                     fontSize: 13,
@@ -815,7 +809,7 @@ class ConnectorCard extends StatelessWidget {
               ],
             ),
           ),
-          _connectorStatusBadge(_formatConnectorStatus(gun.status)),
+          _connectorStatusBadge(context, _formatConnectorStatus(context, gun.status)),
         ],
       ),
     );

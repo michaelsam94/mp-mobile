@@ -348,16 +348,16 @@ class _SupportAndComplainScreenState extends State<SupportScreen> {
           ),
           SizedBox(height: 14),
           Text(
-            "Complaint category *",
+            AppLocalizations.of(context)!.complaintCategory,
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),
           SizedBox(height: 8),
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
               return ProfileCubit.get(context).complaintsCategories.isEmpty
-                  ? Text("Loading....")
+                  ? Text(AppLocalizations.of(context)!.loading)
                   : _buildDropdown(
-                      label: "Complaint category *",
+                      label: AppLocalizations.of(context)!.complaintCategory,
                       items: ProfileCubit.get(context).complaintsCategories,
                       value: ProfileCubit.get(context).selectedCategory,
                       onChanged: (val) {

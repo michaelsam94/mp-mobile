@@ -69,17 +69,17 @@ class VehicleAddedSheet extends StatelessWidget {
           const SizedBox(height: 13),
           Text.rich(
             TextSpan(
-              text: "Congratulations! You’ve earned ",
+              text: "${AppLocalizations.of(context)!.congratsEarned} ",
               style: TextStyle(fontSize: 16, color: Color(0xff757575)),
               children: [
                 TextSpan(
-                  text: "100 points",
+                  text: "100 ${AppLocalizations.of(context)!.points}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
                 ),
-                TextSpan(text: " for adding your plate number"),
+                TextSpan(text: " ${AppLocalizations.of(context)!.forAddingPlateNumber}"),
               ],
             ),
             textAlign: TextAlign.center,
@@ -483,7 +483,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                             const SizedBox(height: 8),
                             Center(
                               child: Text(
-                                '( Earn 100 loyalty point )',
+                                AppLocalizations.of(context)!.earn100Points,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.primary,
@@ -492,8 +492,8 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
-                              'Model',
+                            Text(
+                              AppLocalizations.of(context)!.modelLabel,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -510,7 +510,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               initialValue: cubit.selectedModel,
                               isExpanded: true,
                               decoration: InputDecoration(
-                                hintText: 'Select Vehicle Model',
+                                hintText: AppLocalizations.of(context)!.selectVehicleModel,
                                 hintStyle: const TextStyle(
                                   color: Color(0xffB6B6B6),
                                   fontWeight: FontWeight.w500,
@@ -553,8 +553,8 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                             ),
 
                             const SizedBox(height: 24),
-                            const Text(
-                              'Connectors',
+                            Text(
+                              AppLocalizations.of(context)!.connectors,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xff121212),
@@ -571,7 +571,7 @@ class _VehicleSetupScreenState extends State<VehicleSetupScreen> {
                               initialValue: cubit.selectedConnector,
                               isExpanded: true,
                               decoration: InputDecoration(
-                                hintText: 'Select Connectors',
+                                hintText: AppLocalizations.of(context)!.selectConnectors,
                                 hintStyle: const TextStyle(
                                   color: Color(0xffB6B6B6),
                                   fontSize: 15,

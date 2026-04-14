@@ -11,6 +11,7 @@ import 'package:mega_plus/presentation/wallet/models/wallet_transaction_model.da
 import 'package:mega_plus/presentation/wallet/top_up_screen.dart';
 
 import '../../core/helpers/cache/cache_helper.dart';
+import '../../core/locale/locale_cubit.dart';
 
 class WalletScreen extends StatelessWidget {
   WalletScreen({super.key});
@@ -21,6 +22,7 @@ class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = LocaleCubit.get(context).isArabic;
     WalletCubit.get(context).getWallet();
 
     return Scaffold(
@@ -57,7 +59,9 @@ class WalletScreen extends StatelessWidget {
             // Wallet card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Stack(
+              child: Directionality(
+                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                child: Stack(
                 children: [
                   Container(
                     width: double.infinity,
@@ -75,7 +79,7 @@ class WalletScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                         Text(
-                          "Hello, ${CacheHelper.getUserData()?.user?.fullName ?? ''}",
+                          l10n.helloUser(CacheHelper.getUserData()?.user?.fullName ?? ''),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 21,
@@ -219,10 +223,11 @@ class WalletScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  // Logo in top-right corner
-                  Positioned(
+                  // Logo in top-end corner (right in LTR, left in RTL)
+                  Positioned.directional(
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     top: 8,
-                    right: 8,
+                    end: 8,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Opacity(
@@ -243,6 +248,7 @@ class WalletScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
               ),
             ),
             SizedBox(height: 24),

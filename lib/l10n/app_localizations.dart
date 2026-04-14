@@ -1868,22 +1868,125 @@ abstract class AppLocalizations {
   /// **'Save Card'**
   String get saveCard;
 
+  /// No description provided for @egp.
+  ///
+  /// In en, this message translates to:
+  /// **'EGP'**
   String get egp;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
   String get amount;
+
+  /// No description provided for @tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
   String get tax;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
   String get totalLabel;
+
+  /// No description provided for @failedToLoadSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load charging session'**
   String get failedToLoadSession;
+
+  /// No description provided for @errorLoadingSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading charging session'**
   String get errorLoadingSession;
+
+  /// No description provided for @errorAccessingStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error accessing storage'**
   String get errorAccessingStorage;
+
+  /// No description provided for @unableToOpenPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open PDF file'**
   String get unableToOpenPdf;
+
+  /// No description provided for @errorOpeningPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening PDF'**
   String get errorOpeningPdf;
+
+  /// No description provided for @errorDownloadingPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Error downloading PDF'**
   String get errorDownloadingPdf;
+
+  /// No description provided for @pleaseAgreePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to the privacy policy first'**
   String get pleaseAgreePrivacy;
+
+  /// No description provided for @pleaseSelectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
   String get pleaseSelectCategory;
+
+  /// No description provided for @pleaseEnterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a title'**
   String get pleaseEnterTitle;
+
+  /// No description provided for @pleaseEnterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a description'**
   String get pleaseEnterDescription;
+
+  /// No description provided for @iAcknowledgePrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'I acknowledge the accuracy of the information and agree to the '**
   String get iAcknowledgePrivacy;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'privacy policy'**
   String get privacyPolicy;
+
+  /// No description provided for @helloUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, {name}'**
+  String helloUser(String name);
+
+  /// No description provided for @complaintCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint category *'**
+  String get complaintCategory;
+
+  /// No description provided for @errorStoppingCharging.
+  ///
+  /// In en, this message translates to:
+  /// **'Error stopping charging'**
+  String get errorStoppingCharging;
+
+  /// No description provided for @errorProcessingUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Error processing update'**
+  String get errorProcessingUpdate;
 }
 
 class _AppLocalizationsDelegate

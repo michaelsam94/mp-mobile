@@ -961,5 +961,21 @@
   "@iAcknowledgePrivacy": {},
 
   "privacyPolicy": "privacy policy",
-  "@privacyPolicy": {}
+  "@privacyPolicy": {},
+
+  "helloUser": "Hello, {name}",
+  "@helloUser": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "complaintCategory": "Complaint category *",
+  "@complaintCategory": {},
+
+  "errorStoppingCharging": "Error stopping charging",
+  "@errorStoppingCharging": {},
+
+  "errorProcessingUpdate": "Error processing update",
+  "@errorProcessingUpdate": {}
 }

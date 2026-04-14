@@ -627,5 +627,13 @@
 
   "iAcknowledgePrivacy": "أقر بدقة المعلومات وأوافق على ",
 
-  "privacyPolicy": "سياسة الخصوصية"
+  "privacyPolicy": "سياسة الخصوصية",
+
+  "helloUser": "مرحباً، {name}",
+
+  "complaintCategory": "فئة الشكوى *",
+
+  "errorStoppingCharging": "خطأ في إيقاف الشحن",
+
+  "errorProcessingUpdate": "خطأ في معالجة التحديث"
 }

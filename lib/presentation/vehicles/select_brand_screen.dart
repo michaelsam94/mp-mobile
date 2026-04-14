@@ -43,7 +43,7 @@ class _SelectBrandScreenState extends State<SelectBrandScreen> {
     if (_selectedBrand == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a brand!')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectBrand)));
     } else {
       // Selected
       // context.goTo(VehicleSetupScreen());
