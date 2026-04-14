@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/currency_display.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
@@ -98,7 +99,7 @@ class WalletScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 7),
                         Text(
-                          "${WalletCubit.get(context).currency ?? ""} ${WalletCubit.get(context).balance ?? ""}",
+                          "${displayCurrencyLabel(context, WalletCubit.get(context).currency)} ${WalletCubit.get(context).balance ?? ""}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 34,
@@ -394,7 +395,7 @@ class WalletScreen extends StatelessWidget {
                             Align(
                               alignment: Alignment.centerRight,
                               child: Text(
-                                "${item.amount} ${item.currency}",
+                                "${item.amount} ${displayCurrencyLabel(context, item.currency)}",
                                 style: TextStyle(
                                   color: Color(0xFF07C355),
                                   fontSize: 19,

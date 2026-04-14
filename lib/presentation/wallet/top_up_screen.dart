@@ -123,7 +123,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Text(
-                              '$amount EGP',
+                              '$amount ${AppLocalizations.of(context)!.egp}',
                               style: TextStyle(
                                 color: isSelected ? green : Colors.black,
                                 fontWeight: FontWeight.w600,
@@ -611,8 +611,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                             )
                           : Text(
                               selectedCardToken != null
-                                  ? 'Pay $total EGP'
-                                  : 'Top-Up $total EGP',
+                                  ? 'Pay $total ${AppLocalizations.of(context)!.egp}'
+                                  : 'Top-Up $total ${AppLocalizations.of(context)!.egp}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

@@ -654,7 +654,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                     ),
                                                     Text(
                                                       connector.price != null
-                                                          ? "${connector.price} EGP/KW"
+                                                          ? "${connector.price} ${AppLocalizations.of(context)!.egp}/KW"
                                                           : AppLocalizations.of(context)!.priceNotAvailable,
                                                       style: TextStyle(
                                                         fontSize: 13,

@@ -183,5 +183,6 @@ class HistorySummary {
 
   // Helper getters
   String get displayTotalKwh => '${totalKwh.toStringAsFixed(2)} kWh';
-  String get displayTotalCost => '${totalCost.toStringAsFixed(2)} EGP';
+  String formattedTotalCost(String currencyLabel) =>
+      '${totalCost.toStringAsFixed(2)} $currencyLabel';
 }

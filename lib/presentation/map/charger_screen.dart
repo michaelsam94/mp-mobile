@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/currency_display.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/core/helpers/network/dio_helper.dart';
 import 'package:mega_plus/core/services/charging_cubit/charging_cubit.dart';
@@ -563,7 +564,7 @@ class _ChargerScreenState extends State<ChargerScreen> {
             ),
             _infoTile(
               AppLocalizations.of(context)!.costConsumption,
-              '${meterData?.costValue.toStringAsFixed(1) ?? '0.0'} ${meterData?.costCurrency ?? 'EGP'}',
+              '${meterData?.costValue.toStringAsFixed(1) ?? '0.0'} ${displayCurrencyLabel(context, meterData?.costCurrency ?? 'EGP')}',
               "assets/icons/cost_con.png",
             ),
           ],

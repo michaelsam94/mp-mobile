@@ -293,7 +293,7 @@ class HistoryView extends StatelessWidget {
         _buildCard(
           "assets/icons/total_cost.svg",
           AppLocalizations.of(context)!.totalCost,
-          summary.displayTotalCost,
+          summary.formattedTotalCost(AppLocalizations.of(context)!.egp),
         ),
         _buildCard(
           "assets/icons/total_time.svg",
