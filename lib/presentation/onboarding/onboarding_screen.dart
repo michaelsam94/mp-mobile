@@ -123,7 +123,7 @@ class OnboardingScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            (isArabic ? currentTip.titleAr : currentTip.title) ?? "",
+                            (isArabic ? (currentTip.titleAr ?? currentTip.title) : currentTip.title) ?? "",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 30,
@@ -133,7 +133,7 @@ class OnboardingScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 6),
                           Text(
-                            (isArabic ? currentTip.descriptionAr : currentTip.description) ?? "",
+                            (isArabic ? (currentTip.descriptionAr ?? currentTip.description) : currentTip.description) ?? "",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 16, color: Color(0xff606060)),
                           ),

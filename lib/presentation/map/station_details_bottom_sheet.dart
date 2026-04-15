@@ -289,7 +289,7 @@ class StationDetailsSheet extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (isArabic ? station.nameAr : station.name) ?? 'Unknown Station',
+                                  (isArabic ? (station.nameAr ?? station.name) : station.name) ?? 'Unknown Station',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 17,
