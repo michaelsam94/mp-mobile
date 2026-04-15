@@ -176,44 +176,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               ),
                             ),
                     ),
-                    const SizedBox(height: 24),
-                    // Or divider
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider(color: Color(0xffE0E0E0)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            l10n.orText,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ),
-                        const Expanded(
-                          child: Divider(color: Color(0xffE0E0E0)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // Continue with Google
-                    _SocialButton(
-                      label: l10n.continueWithGoogle,
-                      iconPath: "assets/icons/google.svg",
-                      fallbackIcon: Icons.g_mobiledata_rounded,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 12),
-                    // Continue with Facebook
-                    _SocialButton(
-                      label: l10n.continueWithFacebook,
-                      iconPath: "assets/icons/facebook.svg",
-                      fallbackIcon: Icons.facebook_rounded,
-                      onTap: () {},
-                    ),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -221,62 +183,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final String label;
-  final String iconPath;
-  final IconData fallbackIcon;
-  final VoidCallback onTap;
-
-  const _SocialButton({
-    required this.label,
-    required this.iconPath,
-    required this.fallbackIcon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xffE0E0E0)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onPressed: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              iconPath,
-              width: 22,
-              height: 22,
-              errorBuilder: (_, __, ___) => Icon(
-                fallbackIcon,
-                size: 22,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xff121212),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
