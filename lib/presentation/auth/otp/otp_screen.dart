@@ -35,6 +35,20 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final List<FocusNode> focusNodes =
       List.generate(_otpLength, (_) => FocusNode());
 
+  String _phoneLastDigits() {
+    final p = widget.phone;
+    if (p == null || p.isEmpty) return '';
+    return p.length >= 3 ? p.substring(p.length - 3) : p;
+  }
+
+  String _maskedEmail() {
+    final e = widget.email;
+    if (e == null || e.isEmpty) return '';
+    final prefix = e.length >= 2 ? e.substring(0, 2) : e;
+    final suffix = e.length >= 3 ? e.substring(e.length - 3) : '';
+    return '${prefix}XXXXXXX$suffix';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -120,62 +134,77 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           "assets/images/logo.png",
                           height: 36,
                         ),
-                        const SizedBox(height: 24),
-                        // Subtitle
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.otpVerificationTitle,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff121212),
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                        const SizedBox(height: 12),
+                        // Subtitle (localized; follows app text direction)
                         Text(
                           widget.phone != null
-                              ? "We've sent a 5-digit code to your mobile\nnumber +20 XXXXX X${widget.phone!.length >= 3 ? widget.phone!.substring(widget.phone!.length - 3) : widget.phone!}"
-                              : "We've sent a 5-digit code to your email\n${widget.email?.substring(0, 2) ?? ''}XXXXXXX${widget.email != null && widget.email!.length >= 3 ? widget.email!.substring(widget.email!.length - 3) : ''}",
+                              ? l10n.otpSentToPhone(_phoneLastDigits())
+                              : l10n.otpSentToEmail(_maskedEmail()),
                           style: const TextStyle(
                             fontSize: 15,
                             color: Color(0xff606060),
                           ),
+                          textAlign: TextAlign.start,
                         ),
                         const SizedBox(height: 36),
-                        // OTP boxes
-                        Row(
-                          children: List.generate(_otpLength, (i) {
-                            return Expanded(
-                              child: Container(
-                                height: 60,
-                                margin: EdgeInsets.only(
-                                  right: i < _otpLength - 1 ? 10 : 0,
-                                ),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
+                        // OTP boxes: always LTR so digits flow left → right
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Row(
+                            children: List.generate(_otpLength, (i) {
+                              return Expanded(
+                                child: Container(
+                                  height: 60,
+                                  margin: EdgeInsetsDirectional.only(
+                                    end: i < _otpLength - 1 ? 10 : 0,
                                   ),
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: controllers[i].text.isNotEmpty
-                                      ? const Color(0xFFB2ECCA)
-                                      : Colors.transparent,
-                                ),
-                                child: TextField(
-                                  controller: controllers[i],
-                                  focusNode: focusNodes[i],
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  maxLength: 1,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff121212),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: controllers[i].text.isNotEmpty
+                                        ? const Color(0xFFB2ECCA)
+                                        : Colors.transparent,
                                   ),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    focusedErrorBorder: InputBorder.none,
-                                    counterText: "",
+                                  child: TextField(
+                                    controller: controllers[i],
+                                    focusNode: focusNodes[i],
+                                    textDirection: TextDirection.ltr,
+                                    textAlign: TextAlign.center,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 1,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xff121212),
+                                    ),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                      focusedErrorBorder: InputBorder.none,
+                                      counterText: "",
+                                    ),
+                                    onChanged: (v) => _handleInputChange(i, v),
                                   ),
-                                  onChanged: (v) => _handleInputChange(i, v),
                                 ),
-                              ),
-                            );
-                          }),
+                              );
+                            }),
+                          ),
                         ),
                         const SizedBox(height: 28),
                         // Continue button
@@ -244,24 +273,32 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                                     ),
                                   ],
                                 )
-                              : RichText(
-                                  text: TextSpan(
-                                    text: l10n.resendCodeIn,
-                                    style: const TextStyle(
-                                      color: Color(0xff606060),
-                                      fontSize: 15,
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        l10n.resendCodeIn,
+                                        style: const TextStyle(
+                                          color: Color(0xff606060),
+                                          fontSize: 15,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            "${SignUpCubit.get(context).resendSeconds}s",
+                                    Directionality(
+                                      textDirection: TextDirection.ltr,
+                                      child: Text(
+                                        "${SignUpCubit.get(context).resendSeconds}s",
                                         style: TextStyle(
                                           color: AppColors.primary,
                                           fontWeight: FontWeight.w600,
+                                          fontSize: 15,
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                         ),
                       ],
