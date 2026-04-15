@@ -124,6 +124,7 @@ class ChargingSession {
 class Station {
   final int id;
   final String name;
+  final String? nameAr;
   final String address;
   final String city;
   final num latitude;
@@ -135,6 +136,7 @@ class Station {
   Station({
     required this.id,
     required this.name,
+    this.nameAr,
     required this.address,
     required this.city,
     required this.latitude,
@@ -148,6 +150,7 @@ class Station {
     return Station(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
+      nameAr: json['name_ar'],
       address: json['address'] ?? '',
       city: json['city'] ?? '',
       latitude: (json['latitude'] ?? 0).toDouble(),

@@ -150,11 +150,14 @@ class SearchCubit extends Cubit<SearchState> {
       return;
     }
 
+    final isArabic = CacheHelper.getString('app_locale') == 'ar';
     filteredStations = stations.where((station) {
       // Search filter
       bool matchesSearch =
           searchQuery.isEmpty ||
-          (station.name?.toLowerCase().contains(searchQuery) ?? false) ||
+          (isArabic
+              ? (station.nameAr?.toLowerCase().contains(searchQuery) ?? false)
+              : (station.name?.toLowerCase().contains(searchQuery) ?? false)) ||
           (station.address?.toLowerCase().contains(searchQuery) ?? false) ||
           (station.city?.toLowerCase().contains(searchQuery) ?? false);
 

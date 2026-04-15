@@ -11,6 +11,7 @@ import 'package:mega_plus/core/helpers/network/end_points.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'cubit/history_cubit.dart';
 import 'history_model.dart';
@@ -591,7 +592,7 @@ class HistoryView extends StatelessWidget {
               const SizedBox(width: 3),
               Expanded(
                 child: Text(
-                  '${session.station.name}, ${session.station.city}',
+                  '${LocaleCubit.get(context).isArabic ? (session.station.nameAr ?? session.station.name) : session.station.name}, ${session.station.city}',
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,

@@ -7,6 +7,7 @@ import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/services/websocket_cubit/websocket_cubit.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/core/widgets/shimmer_widget.dart';
+import 'package:mega_plus/core/locale/locale_cubit.dart';
 import 'package:mega_plus/presentation/map/map_cubit/map_cubit.dart';
 import 'package:mega_plus/presentation/map/models/map_station_response_model.dart';
 import 'package:mega_plus/presentation/map/models/station_response_model.dart';
@@ -402,16 +403,21 @@ class _SearchScreenState extends State<SearchScreen> {
                       StationResponseModel? fullStation;
                       bool isFav = false;
 
+                      final isArabic = LocaleCubit.get(context).isArabic;
                       if (isNearbyStation) {
                         nearbyStation = station;
                         stationId = nearbyStation.id;
-                        stationName = nearbyStation.name;
+                        stationName = isArabic
+                            ? (nearbyStation.nameAr ?? nearbyStation.name)
+                            : nearbyStation.name;
                         stationStatus = nearbyStation.status;
                         isFav = nearbyStation.isFavourite ?? false;
                       } else {
                         fullStation = station;
                         stationId = fullStation!.id;
-                        stationName = fullStation.name;
+                        stationName = isArabic
+                            ? (fullStation.nameAr ?? fullStation.name)
+                            : fullStation.name;
                         stationStatus = fullStation.status;
                         isFav = fullStation.isFavourite ?? false;
                       }

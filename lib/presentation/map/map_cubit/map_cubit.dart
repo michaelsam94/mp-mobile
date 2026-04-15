@@ -400,7 +400,11 @@ class MapCubit extends Cubit<MapState> {
             ),
             icon: iconCache[iconKey] ?? iconCache[status] ?? BitmapDescriptor.defaultMarker,
             infoWindow: InfoWindow(
-              title: station.name ?? 'Unknown Station',
+              title: (CacheHelper.getString('app_locale') == 'ar'
+                      ? station.nameAr
+                      : station.name) ??
+                  station.name ??
+                  'Unknown Station',
               snippet: station.address ?? station.city ?? '',
             ),
             onTap: () {
