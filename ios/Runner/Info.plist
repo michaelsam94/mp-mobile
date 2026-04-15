@@ -28,12 +28,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photo library access to let you upload images</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access to show your position on the map and help you find nearby stations</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs location access to show your position on the map and help you find nearby charging stations</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to show your position on the map and help you find nearby stations</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to let you upload images</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -43,12 +43,16 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-		<string>UIInterfaceOrientationPortrait</string>
+    	<string>UIInterfaceOrientationPortrait</string>
+    	<string>UIInterfaceOrientationPortraitUpsideDown</string>
+    	<string>UIInterfaceOrientationLandscapeLeft</string>
+    	<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>
