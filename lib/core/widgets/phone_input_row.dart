@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PhoneInputRow extends StatelessWidget {
   final TextEditingController controller;
@@ -71,7 +72,18 @@ class PhoneInputRow extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.number,
+                    maxLength: 11,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    buildCounter: (
+                      _, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) =>
+                        const SizedBox.shrink(),
                     onChanged: onChanged,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -80,7 +92,7 @@ class PhoneInputRow extends StatelessWidget {
                       focusedBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
                       focusedErrorBorder: InputBorder.none,
-                      hintText: 'XXXXXXXXXX',
+                      hintText: '01XXXXXXXXX',
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
