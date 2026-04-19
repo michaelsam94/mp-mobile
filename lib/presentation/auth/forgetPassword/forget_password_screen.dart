@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/egypt_phone_validator.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/otp/otp_screen.dart';
@@ -22,6 +23,18 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final List<Map<String, String>> countryList = [
     {'code': '+20', 'flag': '🇪🇬'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Same cubit is reused across auth; force disabled until field validates.
+      SignUpCubit.get(context).changeConWord(
+        EgyptPhoneValidator.isValidLocal11Digits(phoneController.text),
+      );
+    });
+  }
 
   void _changeCountry(BuildContext context) async {
     String? selectedCode = await showModalBottomSheet<String>(
@@ -118,8 +131,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       controller: phoneController,
                       countryCode: SignUpCubit.get(context).countryCode,
                       onCountryTap: () => _changeCountry(context),
-                      onChanged: (v) =>
-                          SignUpCubit.get(context).changeConWord(v.isNotEmpty),
+                      onChanged: (v) => SignUpCubit.get(context).changeConWord(
+                            EgyptPhoneValidator.isValidLocal11Digits(v),
+                          ),
                     ),
                     const SizedBox(height: 12),
                     // Remember me

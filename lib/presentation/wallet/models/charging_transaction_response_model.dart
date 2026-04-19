@@ -6,9 +6,16 @@ class ChargingTransactionResponseModel {
   ChargingTransactionResponseModel({this.cost, this.currency, this.createdAt});
 
   ChargingTransactionResponseModel.fromJson(Map<String, dynamic> json) {
-    cost = json['cost'];
-    currency = json['currency'];
-    createdAt = json['created_at'];
+    // Prefer cost; some APIs send amount for charging rows.
+    cost = _jsonToDisplayString(json['cost'] ?? json['amount']);
+    currency = _jsonToDisplayString(json['currency']);
+    createdAt = _jsonToDisplayString(json['created_at']);
+  }
+
+  static String? _jsonToDisplayString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
   }
 
   Map<String, dynamic> toJson() {

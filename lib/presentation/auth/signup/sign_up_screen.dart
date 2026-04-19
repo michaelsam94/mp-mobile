@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/egypt_phone_validator.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
 import 'package:mega_plus/l10n/app_localizations.dart';
 import 'package:mega_plus/presentation/auth/otp/otp_screen.dart';
@@ -22,6 +23,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final List<Map<String, String>> countryList = [
     {'code': '+20', 'flag': '🇪🇬'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      SignUpCubit.get(context).changeConWord(
+        EgyptPhoneValidator.isValidLocal11Digits(phoneController.text),
+      );
+    });
+  }
 
   void _changeCountry(BuildContext context) async {
     String? selectedCode = await showModalBottomSheet<String>(
@@ -104,8 +116,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       controller: phoneController,
                       countryCode: SignUpCubit.get(context).countryCode,
                       onCountryTap: () => _changeCountry(context),
-                      onChanged: (v) =>
-                          SignUpCubit.get(context).changeConWord(v.isNotEmpty),
+                      onChanged: (v) => SignUpCubit.get(context).changeConWord(
+                            EgyptPhoneValidator.isValidLocal11Digits(v),
+                          ),
                     ),
                     const SizedBox(height: 28),
                     // Sign up button
@@ -117,7 +130,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
-                                disabledBackgroundColor: AppColors.primary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

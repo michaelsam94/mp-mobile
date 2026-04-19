@@ -78,9 +78,12 @@ class WalletCubit extends Cubit<WalletState> {
         getTransactions();
       } else {
         emit(ErrorGetWalletState());
+        getTransactions();
       }
     } catch (e) {
       emit(ErrorGetWalletState());
+      // Still load payment history if balance endpoint fails or shape mismatches.
+      getTransactions();
     }
   }
 
