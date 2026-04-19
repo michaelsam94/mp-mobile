@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mega_plus/core/helpers/addons_functions.dart';
+import 'package:mega_plus/core/helpers/egypt_phone_validator.dart';
 import 'package:mega_plus/core/helpers/cache/cache_helper.dart';
 import 'package:mega_plus/core/helpers/cache/cache_keys.dart';
 import 'package:mega_plus/core/style/app_colors.dart';
@@ -35,15 +36,49 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
   final formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
+  static final RegExp _emailRegex = RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,4}$');
+
+  void _onCredentialsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  bool _isValidEmail(String text) => _emailRegex.hasMatch(text.trim());
+
+  /// Same rules as [TextFormField] validators: email OR 11-digit Egyptian mobile.
+  bool _isLoginIdentityValid(String raw) {
+    final text = raw.trim();
+    if (text.isEmpty) return false;
+    if (text.contains('@')) return _isValidEmail(text);
+    return EgyptPhoneValidator.isValidLocal11Digits(text);
+  }
+
+  /// Matches password field validator (min 6 characters).
+  bool _isPasswordValidForSignIn(String raw) => raw.length >= 6;
+
+  bool get _canSignIn =>
+      _isLoginIdentityValid(emailController.text) &&
+      _isPasswordValidForSignIn(passwordController.text);
+
   @override
   void initState() {
     super.initState();
+    emailController.addListener(_onCredentialsChanged);
+    passwordController.addListener(_onCredentialsChanged);
     final savedEmailPhone = CacheHelper.getString(CacheKeys.savedEmailPhone.name);
     final savedPassword = CacheHelper.getString(CacheKeys.savedPassword.name);
     if (savedEmailPhone != null && savedPassword != null) {
       emailController.text = savedEmailPhone;
       passwordController.text = savedPassword;
     }
+  }
+
+  @override
+  void dispose() {
+    emailController.removeListener(_onCredentialsChanged);
+    passwordController.removeListener(_onCredentialsChanged);
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -114,10 +149,9 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                         final emailRegex = RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,4}$');
                         if (!emailRegex.hasMatch(text)) return l10n.pleaseEnterValidEmail;
                       } else {
-                        final digitsOnly = text.replaceAll(RegExp(r'[^\d]'), '');
-                        if (digitsOnly.length != 11) return l10n.enterValidNumber;
-                        final validPrefixes = ['010', '012', '015', '011'];
-                        if (!validPrefixes.contains(digitsOnly.substring(0, 3))) return l10n.enterValidNumber;
+                        if (!EgyptPhoneValidator.isValidLocal11Digits(text)) {
+                          return l10n.enterValidNumber;
+                        }
                       }
                       return null;
                     },
@@ -232,19 +266,25 @@ class _LoginScreenUIState extends State<LoginScreenUI> {
                         return ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
+                            disabledBackgroundColor: Colors.grey.shade300,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              cubit.login(emailController.text, passwordController.text);
-                            }
-                          },
+                          onPressed: _canSignIn
+                              ? () {
+                                  if (formKey.currentState!.validate()) {
+                                    cubit.login(
+                                      emailController.text,
+                                      passwordController.text,
+                                    );
+                                  }
+                                }
+                              : null,
                           child: Text(
                             l10n.signIn,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: _canSignIn ? Colors.white : Colors.grey.shade700,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
